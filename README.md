@@ -1,8 +1,8 @@
 # WINGS
 Web-based INterface Ground-station Software  
-WINGS is a software processing telemetry and command for satellites and satellite componetns. WINGS is a web application which can be used from both web browsers and http api requests. WINGS supports C2A-styled (https://github.com/ut-issl/c2a-core) and ISSL-styled telemetry and command formats. Users can implement other formats.  
-Usually, interface software is required for the connection between WINGS and satellites. WINGS_TMTC_IF is such software which supports COM port and socket connection. Users can implement other interface software.  
-WINGS uses ASP .NET (https://github.com/dotnet/aspnetcore) for backend software, MySQL for database, and React (https://github.com/facebook/react) for frontend software.
+WINGS is a software processing telemetry and command for satellites and satellite componetns. WINGS is a web application which can be used from both web browsers and http api requests. WINGS supports [C2A](https://github.com/ut-issl/c2a-core)-styled and ISSL-styled telemetry and command formats. Users can implement other formats.  
+Usually, interface software is required for the connection between WINGS and satellites. [WINGS_TMTC_IF](https://github.com/ut-issl/wings-tmtc-if) is such software which supports COM port and socket connection. Users can implement other interface software.  
+WINGS uses [ASP .NET](https://github.com/dotnet/aspnetcore) for backend software, MySQL for database, and [React](https://github.com/facebook/react) for frontend software.
 
 ## Getting Started for User
 ### Prerequisites
