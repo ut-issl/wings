@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option csharp_namespace = "WINGS.GrpcService";
+
+package tmtc;
+
+service TmtcPacket {
+  rpc TmPacketTransfer (TmPacketDataRpc) returns (TmPacketResponseRpc);
+  rpc TcPacketTransfer (TcPacketRequestRpc) returns (stream TcPacketDataRpc);
+}
+
+message TmPacketDataRpc {
+  string opid = 1;
+  bytes tmPacket = 2;
+}
+
+message TmPacketResponseRpc {
+  string opid = 1;
+  bool ack = 2;
+}
+
+message TcPacketRequestRpc {
+  string opid = 1;
+}
+
+message TcPacketDataRpc {
+  string opid = 1;
+  bytes tcPacket = 2;
+}

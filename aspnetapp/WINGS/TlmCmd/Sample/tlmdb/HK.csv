@@ -1,0 +1,10 @@
+,Target,SAMPLE,,,,,,,,,,,,,,,
+,PacketID,0x01,,,,,,,,,,,,,,,
+,Enable/Disable,ENABLE,,,,,,,,,,,,,,,
+,IsRestricted,FALSE,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,
+Comment,TLM Entry,Onboard Software Info.,,Extraction Info.,,,,Conversion Info.,,,,,,,,Description,Note
+,Name,Var. Type,Variable or Function Name,Ext. Type,Pos. Desiginator,,,Conv. Type,Poly (ƒ°a_i * x^i),,,,,,Status,,
+,,,,,Octet Pos.,bit Pos.,bit Len.,,a0,a1,a2,a3,a4,a5,,,
+,TI,uint32_t,,PACKET,6,0,32,NONE,,,,,,,,Packet Generation Time,
+,MODE,uint8_t,,PACKET,10,0,8,STATUS,,,,,,,"0=init, 1=normal",Modes,
