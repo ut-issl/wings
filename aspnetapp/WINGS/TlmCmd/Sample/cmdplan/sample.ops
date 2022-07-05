@@ -1,0 +1,54 @@
+ #==============================================#
+ #Comment Out
+ #==============================================#
+ #Comand 1
+ OBC_TL.Cmd_ValveOpen 1 2 #Inline Commnet
+
+ #Component is "OBC"
+ #Exec Type is "TL" 
+ #Name is "Cmd_ValveOpen"
+ #The first parameter is TL Exec Time
+ #Following parameters are command parameters
+
+ #==============================================# 
+ #Command 2
+ OBC_RT.Cmd_ValveOpen 1 
+
+ #Component is "OBC"
+ #Exec Type is "RT" 
+ #Name is "Cmd_ValveOpen"
+ #Following parameters are command parameters
+
+ #==============================================#
+ #Command 3(raw parameters)
+.OBC_RT.Cmd_MEM_LOAD 0x12345678 0x123456781234567801
+
+ #Raw parameters are defined in command DB and must be the last parameter.
+ #"0x123456781234567801" is a raw parameter.
+ #raw parameter must be written in hex-style and within 64 bytes.
+
+ #raw parameter can be devided.
+.OBC_RT.Cmd_MEM_LOAD 0x12345678 0x12345678 0x12345678 0x01
+.OBC_RT.Cmd_MEM_LOAD 0x12345678 0x1234 0x5678 0x12345678 0x01
+.OBC_RT.Cmd_MEM_LOAD 0x12345678 0x123456781234567801
+ #==============================================#
+ #StopFlag
+.OBC_RT.Cmd_ValveOpen 1 
+.#top "." is a stop flag.
+
+ #==============================================#
+ #call
+ call test2.ops
+ #open test2.ops in a new tab.
+
+ #==============================================#
+ #wait_sec
+ wait_sec 1.5
+ #wait seconds
+
+ #==============================================#
+ #check_value
+ check_value HK.OBC_MM_STS == FINISHED
+ #telemetry value is checked
+ #The operators are ==, <=, >=, <, >, !=
+ #==============================================#

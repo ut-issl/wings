@@ -1,0 +1,9 @@
+﻿,Target,OBC,,,,,,,,,,,,,,,
+,PacketID,0x00,,,,,,,,,,,,,,,
+,Enable/Disable,ENABLE,,,,,,,,,,,,,,,
+,IsRestricted,FALSE,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,
+Comment,TLM Entry,Onboard Software Info.,,Extraction Info.,,,,Conversion Info.,,,,,,,,Description,Note
+,Name,Var. Type,Variable or Function Name,Ext. Type,Pos. Desiginator,,,Conv. Type,Poly (Σa_i * x^i),,,,,,Status,,
+,,,,,Octet Pos.,bit Pos.,bit Len.,,a0,a1,a2,a3,a4,a5,,,
+,cmd_counter,uint8,,PACKET,8,0,8,NONE,,,,,,,,command counter,

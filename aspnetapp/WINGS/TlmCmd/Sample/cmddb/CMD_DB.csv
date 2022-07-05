@@ -1,0 +1,6 @@
+Comment,Name,Target,Code,Params,,,,,,,,,,,,,Danger Flag,Is Restricted,Description,Note
+,,,,Num Params,Param1,,Param2,,Param3,,Param4,,Param5,,Param6,,,,,
+,,,,,Type,Description,Type,Description,Type,Description,Type,Description,Type,Description,Type,Description,,,,
+,,,,,,,,,,,,,,,,,,,,
+,Cmd_NOP,SAMPLE,,0,,,,,,,,,,,,,,,Dummy Command,
+,Cmd_POWER_ON,SAMPLE,,1,uint8_t,Component Number,,,,,,,,,,,,,Switch ON,
