@@ -139,7 +139,7 @@ namespace WINGS.Controllers
     }
 
     // GET: api/operations/f364../cmd_plans/0/5
-    [HttpGet("cmd_plans/{cmd_file_info_index}/{file_id}")]
+    [HttpGet("cmd_plans/{cmdFileInfoIndex}/{fileId}")]
     public async Task<IActionResult> GetCommandFile(string id, int cmdFileInfoIndex, int fileId)
     {
       if (fileId < 0)
