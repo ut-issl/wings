@@ -52,4 +52,5 @@ INSERT INTO `__EFMigrationsHistory` (`MigrationId`, `ProductVersion`) VALUES
 
 INSERT INTO `Components` (`Id`, `Name`, `TcPacketKey`, `TmPacketKey`, `LocalDirPath`) VALUES
 	('77bd0ce9-453a-4b8a-b474-d8be2faa3e8b', 'MOBC', 'OBC', 'OBC', 'TlmCmd/OBC'),
+  ('984ac2f4-c04d-03cc-a3b1-8270affed10a', 'SECONDARY_OBC', 'SECONDARY_OBC', 'SECONDARY_OBC', 'TlmCmd/SECONDARY_OBC'),
 	('ff0cab42-7002-46f8-abbc-45d0ef82eb87', 'ISSL_COMMON', 'ISSL_COMMON', 'ISSL_COMMON', 'TlmCmd/ISSL_COMMON');
