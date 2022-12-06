@@ -243,7 +243,7 @@ namespace WINGS.Services
     private void SetTctfCrc(byte[] packet, UInt16 tctfPktLen)
     {
       int pos = packet.Length - 4;
-      UInt16 crc_tmp = CRC.CRC16CCITTLeftCalc(packet[..^4], 0xffff);
+      UInt16 crc_tmp = CRC.CRC16CCITTLeftCalc(packet[4..^4], 0xffff);
       byte val = (byte)(crc_tmp >> 8);
       packet[pos] = val;
       val = (byte)(crc_tmp & 0xff);
