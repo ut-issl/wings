@@ -32,7 +32,7 @@ namespace WINGS.Services
     private enum TcpVer { Ver1 = 0 }
     private enum TcpType { Tlm = 0, Cmd = 1 }
     private enum TcpSecHdrFlag { Absent = 0, Present = 1 }
-    private enum TcpApid { MobcCmd = 0x210, AobcCmd = 0x211, TobcCmd = 0x212 }
+    private enum TcpApid { MobcCmd = 0x210, AobcCmd = 0x211, TobcCmd = 0x212, ChuCmd = 0x600 }
     private enum TcpSeqFlag { Cont = 0, First = 1, Last = 2, Single = 3 }
     private enum TcpSeqCnt { Default = 0 }
     private enum TcpFmtId { Control = 1, User = 2, Memory = 3 }
@@ -60,7 +60,7 @@ namespace WINGS.Services
       SetTcpVerNum(packet, TcpVer.Ver1);
       SetTcpType(packet, TcpType.Cmd);
       SetTcpSecHdrFlag(packet, TcpSecHdrFlag.Present);
-      SetTcpApid(packet, TcpApid.AobcCmd);
+      SetTcpApid(packet, TcpApid.ChuCmd);
       SetTcpSeqFlag(packet, TcpSeqFlag.Single);
       SetTcpSeqCnt(packet, TcpSeqCnt.Default);
       SetTcpPktLen(packet, tcpPktLen);
