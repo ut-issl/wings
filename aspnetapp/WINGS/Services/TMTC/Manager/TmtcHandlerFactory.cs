@@ -37,6 +37,9 @@ namespace WINGS.Services
         case "ISSL_COMMON":
           return _serviceProvider.GetService<IsslCommonTmPacketAnalyzer>();
 
+        case "CHU":
+          return _serviceProvider.GetService<ChuTmPacketAnalyzer>();
+
         default:
           throw new NotImplementedException("The TmPacketKey is not defined");
       }
@@ -58,6 +61,9 @@ namespace WINGS.Services
 
         case "ISSL_COMMON":
           return _serviceProvider.GetService<IsslCommonTcPacketGenerator>();
+
+        case "CHU":
+          return _serviceProvider.GetService<ChuTcPacketGenerator>();
 
         default:
           throw new NotImplementedException("The TcPacketKey is not defined");

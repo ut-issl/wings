@@ -81,6 +81,9 @@ namespace WINGS
 
       services.AddTransient<SecondaryObcTmPacketAnalyzer>();
       services.AddTransient<SecondaryObcTcPacketGenerator>();
+
+      services.AddTransient<ChuTmPacketAnalyzer>();
+      services.AddTransient<ChuTcPacketGenerator>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
