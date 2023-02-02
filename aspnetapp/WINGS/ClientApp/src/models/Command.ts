@@ -9,7 +9,9 @@ export type CommandParam = {
 export type Command = {
   component: string,
   execType: string,
-  execTime: number,
+  execTimeInt: number,
+  execTimeDouble: number,
+  execTimeStr: string,
   name: string,
   code: string,
   target: string,

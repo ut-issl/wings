@@ -15,7 +15,9 @@ namespace WINGS.Models
   {
     public string Component { get; set; }
     public CmdExecType ExecType { get; set; }
-    public uint ExecTime { get; set; }
+    public uint ExecTimeInt { get; set; }
+    public double ExecTimeDouble { get; set; }
+    public string ExecTimeStr {get; set; }
     public string Name { get; set; }
     public string Code { get; set; }
     public string Target { get; set; }

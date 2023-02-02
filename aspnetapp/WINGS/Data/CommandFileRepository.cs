@@ -252,11 +252,23 @@ namespace WINGS.Data
           splitlinelist.RemoveAt(0);
           WaitsecParse(splitlinelist, newContent);
           break;
+        case "wait_until":
+          newContent.Type = "control";
+          newContent.Method = splitlinelist[0].ToLower();
+          splitlinelist.RemoveAt(0);
+          WaituntilParse(splitlinelist, newContent);
+          break;
         case "check_value":
           newContent.Type = "control";
           newContent.Method = splitlinelist[0].ToLower();
           splitlinelist.RemoveAt(0);
           CheckValueParse(splitlinelist, newContent);
+          break;
+        case "let":
+          newContent.Type = "control";
+          newContent.Method = splitlinelist[0].ToLower();
+          splitlinelist.RemoveAt(0);
+          LetParse(splitlinelist, newContent);
           break;
       }         
     }
@@ -335,12 +347,92 @@ namespace WINGS.Data
       }
     }
 
+    private void WaituntilParse(List<string> splitlinelist, CommandFileLine newContent)
+    {
+      switch (splitlinelist.Count)
+      {
+        case 3:
+          if (splitlinelist[1] == "==" || splitlinelist[1] == "<=" || splitlinelist[1] == ">=" || splitlinelist[1] == "<" || splitlinelist[1] == ">" || splitlinelist[1] == "!=")
+          {
+            newContent.Body = new
+            {
+              variable = splitlinelist[0],
+              compare = splitlinelist[1],
+              value = splitlinelist[2]
+            };
+          }
+          else if (splitlinelist[1] == "in" && splitlinelist[2].Contains("[") && splitlinelist[2].Contains("]"))
+          {
+            newContent.Body = new
+            {
+              variable = splitlinelist[0],
+              compare = splitlinelist[1],
+              value = splitlinelist[2],
+              statement = "",
+              timeoutsec = ""
+            };
+          }
+          else
+          {
+            newContent.SyntaxError = true;
+            newContent.ErrorMessage = "Method \"wait_until\" : wrong number of data";
+          }
+          break;
+        default:
+          if ((splitlinelist[1] == "==" || splitlinelist[1] == "<=" || splitlinelist[1] == ">=" || splitlinelist[1] == "<" || splitlinelist[1] == ">" || splitlinelist[1] == "!=")
+            && splitlinelist[3].Contains("-timeoutsec") && splitlinelist.Count == 5)
+          {
+            newContent.Body = new
+            {
+              variable = splitlinelist[0],
+              compare = splitlinelist[1],
+              value = splitlinelist[2],
+              statement = splitlinelist[3],
+              timeoutsec = splitlinelist[4]
+            };
+          }
+          else if (splitlinelist[1] == "in" && splitlinelist[2].Contains("[") && splitlinelist[splitlinelist.Count - 3].Contains("]") && splitlinelist[splitlinelist.Count - 2].Contains("-timeoutsec"))
+          {
+            var valueRange = splitlinelist[2];
+            for(int i = 3; i < splitlinelist.Count; i++)
+            {
+              valueRange += " " + splitlinelist[i];
+            }
+
+            newContent.Body = new
+            {
+              variable = splitlinelist[0],
+              compare = splitlinelist[1],
+              value = valueRange,
+              statement = splitlinelist[splitlinelist.Count - 2],
+              timeoutsec = splitlinelist[splitlinelist.Count - 1]
+            };
+            
+          }
+          else
+          {
+            newContent.SyntaxError = true;
+            newContent.ErrorMessage = "Method \"wait_until\" : wrong number of data";
+          }
+          break;
+      }
+    }
+
     private void CheckValueParse(List<string> splitlinelist, CommandFileLine newContent)
     {
       switch (splitlinelist.Count)
       {
         case 3:
           if (splitlinelist[1] == "==" || splitlinelist[1] == "<=" || splitlinelist[1] == ">=" || splitlinelist[1] == "<" || splitlinelist[1] == ">" || splitlinelist[1] == "!=")
+          {
+            newContent.Body = new
+            {
+              variable = splitlinelist[0],
+              compare = splitlinelist[1],
+              value = splitlinelist[2]
+            };
+          }
+          else if (splitlinelist[1] == "in" && splitlinelist[1].Contains("[") && splitlinelist[1].Contains("]"))
           {
             newContent.Body = new
             {
@@ -356,9 +448,49 @@ namespace WINGS.Data
           }
           break;
         default:
-          newContent.SyntaxError = true;
-          newContent.ErrorMessage = "Method \"check_value\" : wrong number of data";
+          if (splitlinelist[1] == "in" && splitlinelist[2].Contains("[") && splitlinelist[splitlinelist.Count - 1].Contains("]"))
+          {
+            var valueRange = splitlinelist[2];
+            for(int i = 3; i < splitlinelist.Count; i++)
+            {
+              valueRange += " " + splitlinelist[i];
+            }
+
+            newContent.Body = new
+            {
+              variable = splitlinelist[0],
+              compare = splitlinelist[1],
+              value = valueRange
+            };
+          }
+          else
+          {
+            newContent.SyntaxError = true;
+            newContent.ErrorMessage = "Method \"check_value\" : wrong number of data";
+          }
           break;
+      }
+    }
+
+    private void LetParse(List<string> splitlinelist, CommandFileLine newContent)
+    {
+      if(splitlinelist.Count >= 3 && splitlinelist[1] == "=")
+      {
+        var equation = splitlinelist[2];
+        if (splitlinelist.Count >= 4) {
+          for (int i = 3; i < splitlinelist.Count; i++) {
+            equation += " " + splitlinelist[i];
+          }
+        }
+        newContent.Body = new
+        {
+          variable = splitlinelist[0],
+          equal = splitlinelist[1],
+          equation = equation
+        };
+      } else {
+        newContent.SyntaxError = true;
+        newContent.ErrorMessage = "Method \"let\" : wrong number of data";
       }
     }
 
@@ -387,18 +519,24 @@ namespace WINGS.Data
       var isViaMobc = false;
       if (dotIndex > 3)
       {
-        var mobcIndex = splitlinelist[0].IndexOf("MOBC_");
-        if (mobcIndex >= 0 && dotIndex > 11)
+        if (splitlinelist[0].Contains("MOBC_"))
         {
-          var afterMobcLine = splitlinelist[0].Substring(mobcIndex + 8);
-          component = afterMobcLine.Substring(0, afterMobcLine.IndexOf('_'));
-          Enum.TryParse(splitlinelist[0].Substring(mobcIndex + 5, dotIndex - mobcIndex - 5), out execType);
-          isViaMobc = true;
+          var cmdLayer = splitlinelist[0].Split(".");
+          if (cmdLayer.Length >= 3 && (cmdLayer[1].Contains("AOBC_") || cmdLayer[1].Contains("TOBC_"))) {
+            component = cmdLayer[1].Substring(0, cmdLayer[0].IndexOf('_'));
+            dotIndex += (cmdLayer[1].Length + 1);
+            isViaMobc = true;
+          }
+          else {
+            component = cmdLayer[0].Substring(0, cmdLayer[0].IndexOf('_'));
+          }
+          Enum.TryParse(cmdLayer[0].Substring(cmdLayer[0].IndexOf('_') + 1), out execType);
         }
         else
         {
-          component = splitlinelist[0].Substring(0, splitlinelist[0].IndexOf('_'));
-          Enum.TryParse(splitlinelist[0].Substring(5, dotIndex - 5), out execType);
+          var componentLine = splitlinelist[0].Substring(0, dotIndex);
+          component = splitlinelist[0].Substring(0, componentLine.IndexOf('_'));
+          Enum.TryParse(componentLine.Substring(componentLine.IndexOf('_') + 1), out execType);
         }
       }
       var cmdBodyBuf = commandDb.FirstOrDefault(c => c.Name == splitlinelist[0].Substring(dotIndex + 1) && c.Component == component);
@@ -413,17 +551,40 @@ namespace WINGS.Data
       newContent.Body.ExecType = execType;
       newContent.Type = "command";
       splitlinelist.RemoveAt(0);
-      if (newContent.Body.ExecType == CmdExecType.TL || newContent.Body.ExecType == CmdExecType.BL || newContent.Body.ExecType == CmdExecType.UTL)
+      if (newContent.Body.ExecType == CmdExecType.TL || newContent.Body.ExecType == CmdExecType.BL)
       {
-        uint execTime;
-        if (uint.TryParse(splitlinelist[0], out execTime)) 
+        uint execTimeInt;
+        if (splitlinelist[0].Contains("{")) {
+          newContent.Body.ExecTimeStr = splitlinelist[0];
+        }
+        else if (uint.TryParse(splitlinelist[0], out execTimeInt)) 
         { 
-          newContent.Body.ExecTime = execTime;
+          newContent.Body.ExecTimeInt = execTimeInt;
+          newContent.Body.ExecTimeStr = splitlinelist[0];
         }
         else
         {
           newContent.SyntaxError = true;
-          newContent.ErrorMessage = "\"CommandExe\" : Exetype is 'TL' or 'BL' or 'UTL'. The first parameter should be uint.";
+          newContent.ErrorMessage = "\"CommandExe\" : Exetype is 'TL' or 'BL'. The first parameter should be uint.";
+          return;
+        }
+        splitlinelist.RemoveAt(0);
+      }
+      else if (newContent.Body.ExecType == CmdExecType.UTL)
+      {
+        double execTimeDouble;
+        if (splitlinelist[0].Contains("{")) {
+          newContent.Body.ExecTimeStr = splitlinelist[0];
+        }
+        else if (double.TryParse(splitlinelist[0], out execTimeDouble)) 
+        { 
+          newContent.Body.ExecTimeDouble = execTimeDouble;
+          newContent.Body.ExecTimeStr = splitlinelist[0];
+        }
+        else
+        {
+          newContent.SyntaxError = true;
+          newContent.ErrorMessage = "\"CommandExe\" : Exetype is 'UTL'. The first parameter should be double.";
           return;
         }
         splitlinelist.RemoveAt(0);
@@ -471,10 +632,15 @@ namespace WINGS.Data
       }
       for (int SL = 0; SL < newContent.Body.Params.Count; SL++)
       {
-        if (splitlinelist[SL].Contains("0x"))
+        if (splitlinelist[SL].Contains("{"))
+        {
+          newContent.Body.Params[SL].Value = splitlinelist[SL];
+          continue;
+        }
+        else if (splitlinelist[SL].Contains("0x"))
         {
           style = NumberStyles.HexNumber;
-          splitlinelist[SL] = splitlinelist[SL].Replace("0x", ""); //TryParseは0xがあると成功しない
+          splitlinelist[SL] = splitlinelist[SL].Replace("0x", ""); 
         }
         else
         {

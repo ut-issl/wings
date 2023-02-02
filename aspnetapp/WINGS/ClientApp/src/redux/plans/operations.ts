@@ -24,14 +24,20 @@ export const openPlan = (id: string) => {
   }
 };
 
-export const postCommand = (row: number, req: Request, ret: boolean[]) => {
+export const postCommand = (row: number, req: Request, paramsValue: string[], ret: boolean[]) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     const opid = getState().operation.id;
+    var body = JSON.parse(JSON.stringify(req.body));
+    if (paramsValue.length != 0) {
+      for (var i = 0; i < paramsValue.length; i++) {
+        body.params[i].value = paramsValue[i];
+      }
+    }
     const res = await fetch(`/api/operations/${opid}/cmd`,{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      },      body: JSON.stringify({ command : req.body })
+      },      body: JSON.stringify({ command : body })
     });
     const json = await res.json();
     if (res.status === 200 && json.ack) {

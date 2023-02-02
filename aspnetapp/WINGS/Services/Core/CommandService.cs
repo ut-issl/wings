@@ -247,7 +247,8 @@ namespace WINGS.Services
       return new CommandLog
       {
         ExecType = command.ExecType,
-        ExecTime = command.ExecTime,
+        ExecTimeInt = command.ExecTimeInt,
+        ExecTimeDouble = command.ExecTimeDouble,
         SentAt = DateTime.Now,
         CmdName = command.Name,
         OperationId = opid,

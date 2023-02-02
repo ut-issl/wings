@@ -7,10 +7,10 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { CommandPlanLine, RequestStatus } from '../../../models';
+import { CommandPlanLine, RequestStatus, CmdFileVariable } from '../../../models';
 import RequestTableRow from './RequestTableRow';
-import { selectedPlanRowAction, execRequestSuccessAction, execRequestErrorAction, execRequestsStartAction, execRequestsEndAction } from '../../../redux/plans/actions';
-import { getActivePlanId, getAllIndexes, getInExecution, getPlanContents, getSelectedRow } from '../../../redux/plans/selectors';
+import { selectedPlanRowAction, execRequestSuccessAction, execRequestErrorAction, execRequestsStartAction, execRequestsEndAction, cmdFileVariableEditAction } from '../../../redux/plans/actions';
+import { getActivePlanId, getAllIndexes, getInExecution, getPlanContents, getSelectedRow, getCommandFileVariables } from '../../../redux/plans/selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { openPlan, postCommand, postCommandFileLineLog } from '../../../redux/plans/operations';
 import { RootState } from '../../../redux/store/RootState';
@@ -74,6 +74,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
   const [showModal, setShowModal] = React.useState(false);
   const [text, setText] = React.useState("");
   const [num, setNum] = React.useState(0);
+  const [cmdFileVariables, setCmdFileVariables] = React.useState<CmdFileVariable[]>(getCommandFileVariables(selector));
 
   let selectedRow = getSelectedRow(selector);
 
@@ -97,6 +98,12 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
 
   const container = document.getElementById('plan-table-container');
   const tbody = document.getElementById('plan-table-body');
+
+  interface GetVariable {
+    value: string | number,
+    isSuccess: boolean,
+    convType: string
+  }
 
   const advanceSelectedRow = (nextRow: number) => {
     selectedRow < content.length-1 && dispatch(selectedPlanRowAction(nextRow));
@@ -203,6 +210,90 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
     }
   }
 
+  const getVariableValue = (variableName: string) => {
+    let variableIndex = -1;
+    let outcome: GetVariable = {value: NaN, isSuccess: false, convType: ""};
+    if (cmdFileVariables.findIndex(index => index.variable === variableName) >= 0) {
+      variableIndex = cmdFileVariables.findIndex(index => index.variable === variableName);
+      outcome.value = cmdFileVariables[variableIndex].value;
+      outcome.isSuccess = true;
+    } else if (variableName.indexOf('.') > -1) {
+      var tlms = getLatestTelemetries(selector)[variableName.split('.')[0]];
+      if (tlms.findIndex(index => index.telemetryInfo.name === variableName) >= 0) {
+        variableIndex = tlms.findIndex(index => index.telemetryInfo.name === variableName);
+      } else if (tlms.findIndex(index => index.telemetryInfo.name === variableName.split('.').slice(1).join('.')) >= 0) {
+        variableIndex = tlms.findIndex(index => index.telemetryInfo.name === variableName.split('.').slice(1).join('.'));
+      } else {
+        return outcome;
+      }
+      outcome.value = parseTlmValue(tlms[variableIndex].telemetryValue.value, tlms[variableIndex].telemetryInfo.convType);
+      outcome.isSuccess = true;
+      outcome.convType = tlms[variableIndex].telemetryInfo.convType;
+    }
+    return outcome;
+  }
+
+  const compareValue = (compare: string, variable: GetVariable, refValue: string) => {
+    let comparedValue = (refValue.indexOf("{") == -1) ? refValue 
+                      : getVariableValue(refValue.substring(refValue.indexOf("{") + 1, refValue.indexOf("}"))).value.toString();
+    switch (compare) {
+      case "==":
+        if (variable.value === parseTlmValue(comparedValue, variable.convType)) {
+          return true;
+        } else {
+          return false;
+        }
+      case ">=":
+        if (variable.value >= parseTlmValue(comparedValue, variable.convType)) {
+          return true;
+        } else {
+          return false;
+        }
+      case "<=":
+        if (variable.value <= parseTlmValue(comparedValue, variable.convType)) {
+          return true;
+        } else {
+          return false;
+        }
+      case ">":
+        if (variable.value > parseTlmValue(comparedValue, variable.convType)) {
+          return true;
+        } else {
+          return false;
+        }
+      case "<":
+        if (variable.value < parseTlmValue(comparedValue, variable.convType)) {
+          return true;
+        } else {
+          return false;
+        }
+      case "!=":
+        if (variable.value !== parseTlmValue(comparedValue, variable.convType)) {
+          return true;
+        } else {
+          return false;
+        }
+      case "in":
+        while (refValue.indexOf("{") != -1) {
+          let cmdFileVar = refValue.substring(refValue.indexOf("{") + 1, refValue.indexOf("}"));
+          let varValue = getVariableValue(cmdFileVar);
+          if (!varValue.isSuccess) {
+            return false;
+          }
+          refValue = refValue.replace("{" + cmdFileVar + "}", varValue.value.toString());
+        }
+        let valueLower = parseTlmValue(refValue.substring(refValue.indexOf("[") + 1, refValue.indexOf(",")), variable.convType);
+        let valueUpper = parseTlmValue(refValue.substring(refValue.indexOf(",") + 1, refValue.indexOf("]")), variable.convType);
+        if (variable.value >= valueLower && variable.value <= valueUpper) {
+          return true;
+        } else {
+          return false;
+        }
+      default:
+        return false;
+    }
+  }
+
   const executeRequest = async (row: number): Promise<boolean> => {
     const req = content[row].request;
     let exeret = false;
@@ -214,7 +305,52 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       
       case "command":
         let commandret = [false];
-        await dispatch(postCommand(row, req, commandret));
+        let paramsValue = [];
+        
+        if (req.body.execTimeStr == null) {
+          req.body.execTimeStr = "";
+        }
+        else if (req.body.execTimeStr.indexOf("{") != -1) {
+          let varTi = req.body.execTimeStr.substring(req.body.execTimeStr.indexOf("{") + 1,
+                                                     req.body.execTimeStr.indexOf("}"));
+          let tiValue = getVariableValue(varTi);
+
+          if (!tiValue.isSuccess) {
+            dispatch(execRequestErrorAction(row));
+            return false;
+          }
+
+          if (req.body.execType == "TL" || req.body.execType == "BL") {
+            req.body.execTimeInt = tiValue.value;
+          } else if (req.body.execType == "UTL") {
+            req.body.execTimeDouble = tiValue.value;
+          } else {
+            dispatch(execRequestErrorAction(row));
+            return false;
+          }
+        }
+
+        if (req.body.params.length != 0) {
+          for (let i = 0; i < req.body.params.length; i++) {
+            if (req.body.params[i].value.indexOf("{") != -1) {
+              let varStart = req.body.params[i].value.indexOf("{") + 1;
+              let varEnd = req.body.params[i].value.indexOf("}");
+              let varParam = req.body.params[i].value.substring(varStart, varEnd);
+              let varValue = getVariableValue(varParam);
+
+              if (!varValue.isSuccess) {
+                dispatch(execRequestErrorAction(row));
+                return false;
+              } else {
+                paramsValue.push(varValue.value.toString());
+              }
+              
+            } else {
+              paramsValue.push(req.body.params[i].value);
+            }
+          }
+        }
+        await dispatch(postCommand(row, req, paramsValue, commandret));
         exeret = commandret[0];
         break;
 
@@ -252,81 +388,77 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         }
         break;
 
-      case "check_value":
-        const tlms = getLatestTelemetries(selector)[req.body.variable.split('.')[0]];
-        var tlmidx = -1;
-        if (tlms.findIndex(index => index.telemetryInfo.name === req.body.variable) >= 0) {
-          tlmidx = tlms.findIndex(index => index.telemetryInfo.name === req.body.variable);
-        } else if (tlms.findIndex(index => index.telemetryInfo.name === req.body.variable.split('.').slice(1).join('.')) >= 0) {
-          tlmidx = tlms.findIndex(index => index.telemetryInfo.name === req.body.variable.split('.').slice(1).join('.'));
-        } else {
-          break;
+      case "wait_until":
+        var timer = 0;
+        var timeoutsec = (req.body.timeoutsec == "" || isNaN(req.body.timeoutsec)) ? 10 : Number(req.body.timeoutsec);
+        while (!reqret && timer < timeoutsec) {
+          let latestTlmValue = getVariableValue(req.body.variable);
+          if (!latestTlmValue.isSuccess) {
+            break;
+          }
+
+          if(compareValue(req.body.compare, latestTlmValue, req.body.value)) {
+            reqret = true;
+          } else {
+            await _sleep(1000);
+            timer += 1;
+          }
         }
-        const tlm = tlms[tlmidx];
-        const tlmValue = parseTlmValue(tlm.telemetryValue.value, tlm.telemetryInfo.convType);
-        const comparedValue = parseTlmValue(req.body.value, tlm.telemetryInfo.convType);
-        switch (req.body.compare) {
-          case "==":
-            if (tlmValue === comparedValue) {
-              dispatch(execRequestSuccessAction(row));
-              reqret = true;
-            } else {
-              dispatch(execRequestErrorAction(row));
-              reqret = false;
-            }
-            break;
-          case ">=":
-            if (tlmValue >= comparedValue) {
-              dispatch(execRequestSuccessAction(row));
-              reqret = true;
-            } else {
-              dispatch(execRequestErrorAction(row));
-              reqret = false;
-            }
-            break;
-          case "<=":
-            if (tlmValue <= comparedValue) {
-              dispatch(execRequestSuccessAction(row));
-              reqret = true;
-            } else {
-              dispatch(execRequestErrorAction(row));
-              reqret = false;
-            }
-            break;
-          case ">":
-            if (tlmValue > comparedValue) {
-              dispatch(execRequestSuccessAction(row));
-              reqret = true;
-            } else {
-              dispatch(execRequestErrorAction(row));
-              reqret = false;
-            }
-            break;
-          case "<":
-            if (tlmValue < comparedValue) {
-              dispatch(execRequestSuccessAction(row));
-              reqret = true;
-            } else {
-              dispatch(execRequestErrorAction(row));
-              reqret = false;
-            }
-            break;
-          case "!=":
-            if (tlmValue !== comparedValue) {
-              dispatch(execRequestSuccessAction(row));
-              reqret = true;
-            } else {
-              dispatch(execRequestErrorAction(row));
-              reqret = false;
-            }
-            break;
-          default:
-            dispatch(execRequestErrorAction(row));
-            reqret = false;
-            break;
+        if (reqret) {
+          dispatch(execRequestSuccessAction(row));
+        } else {
+          dispatch(execRequestErrorAction(row));
         }
         break;
-    
+
+      case "check_value":
+        let tlmValue = getVariableValue(req.body.variable);
+        if (!tlmValue.isSuccess) {
+          break;
+        }
+
+        if (compareValue(req.body.compare, tlmValue, req.body.value)) {
+          dispatch(execRequestSuccessAction(row));
+          reqret = true;
+        } else {
+          dispatch(execRequestErrorAction(row));
+          reqret = false;
+        }
+        break;
+      
+      case "let":
+        var equ = req.body.equation;
+        // const innerVar = tlms[tlmidx];
+        // const val = parseTlmValue(innerVar.telemetryValue.value, innerVar.telemetryInfo.convType);
+        reqret = true;
+        while (equ.indexOf("{") != -1) {
+          let cmdFileVar = equ.substring(equ.indexOf("{") + 1, equ.indexOf("}"));
+          let varValue = getVariableValue(cmdFileVar);
+          if (!varValue.isSuccess) {
+            dispatch(execRequestErrorAction(row));
+            return false;
+          }
+          equ = equ.replace("{" + cmdFileVar + "}", varValue.value.toString());
+        }
+        let equAns;
+        try {
+          equAns = eval(equ);
+        }
+        catch (e) {
+          equAns = equ;
+        }
+        var cmdFileVariablesTemp = cmdFileVariables;
+        if (cmdFileVariables.findIndex(index => index.variable === req.body.variable) >= 0) {
+          var varIndex = cmdFileVariables.findIndex(index => index.variable === req.body.variable)
+          cmdFileVariablesTemp[varIndex].value = equAns;
+        } else {
+          cmdFileVariablesTemp.push({variable: req.body.variable, value: equAns});
+        }
+        setCmdFileVariables(cmdFileVariablesTemp);
+        dispatch(execRequestSuccessAction(row));
+        dispatch(cmdFileVariableEditAction(cmdFileVariablesTemp));
+        break;
+      
       default:
         break;
     }

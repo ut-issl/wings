@@ -77,7 +77,9 @@ const CommandSelectionArea = () => {
     const newSelectedCommand = {
       ...command,
       execType: execType,
-      execTime: NaN
+      execTimeInt: NaN,
+      execTimeDouble: NaN,
+      execTimeStr: ""
     };
     dispatch(selectedCommandEditAction(newSelectedCommand));
   };
@@ -92,7 +94,9 @@ const CommandSelectionArea = () => {
       const newSelectedCommand = {
         ...commands[index],
         execType: command.execType,
-        execTime: command.execTime,
+        execTimeInt: command.execTimeInt,
+        execTimeDouble: command.execTimeDouble,
+        execTimeStr: command.execTimeStr,
         isViaMobc: command.isViaMobc
       }
       dispatch(selectedCommandEditAction(newSelectedCommand));
