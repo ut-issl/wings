@@ -165,7 +165,7 @@ namespace WINGS.Services
           UInt16 mask = (UInt16)(((1 << tlm.TelemetryInfo.BitLen) - 1) << (16 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
           UInt16 raw = (UInt16)(packet[tlm.TelemetryInfo.OctetPos] << 8 | packet[tlm.TelemetryInfo.OctetPos + 1]);
           UInt16 defraw = (UInt16)((UInt16)(raw & mask) >> (16 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
-          tlm.TelemetryValue.Value = ConvertValue(defraw, tlm, tlm.TelemetryInfo.BitLen);
+          tlm.TelemetryValue.Value = ConvertValue(defraw, tlm);
           tlm.TelemetryValue.RawValue = defraw.ToString();
         }
         else
@@ -173,7 +173,7 @@ namespace WINGS.Services
           UInt32 mask = (UInt32)(((1 << tlm.TelemetryInfo.BitLen) - 1) << (32 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
           UInt32 raw = (UInt32)(packet[tlm.TelemetryInfo.OctetPos] << 24 | packet[tlm.TelemetryInfo.OctetPos + 1] << 16 | packet[tlm.TelemetryInfo.OctetPos + 2] << 8 | packet[tlm.TelemetryInfo.OctetPos + 3]);
           UInt32 defraw = (UInt32)((UInt32)(raw & mask) >> (32 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
-          tlm.TelemetryValue.Value = ConvertValue(defraw, tlm, tlm.TelemetryInfo.BitLen);
+          tlm.TelemetryValue.Value = ConvertValue(defraw, tlm);
           tlm.TelemetryValue.RawValue = defraw.ToString();
         }
         // support bytenum > 1 (e.g.: BitPos = 0, 8 < BitLen < 15)
@@ -204,7 +204,7 @@ namespace WINGS.Services
       }
     }
 
-    private string ConvertValue<T>(T raw, Telemetry tlm, Byte bitlen)
+    private string ConvertValue<T>(T raw, Telemetry tlm)
     {
       switch (tlm.TelemetryInfo.ConvType)
       {
@@ -236,14 +236,14 @@ namespace WINGS.Services
           }
         
         case "HEX":
-          return HexConvertValue(raw, tlm, bitlen);
+          return HexConvertValue(raw, tlm);
 
         default:
           throw new Exception("Undefined conversion type");
       }      
     }
 
-    private string HexConvertValue<T>(T raw, Telemetry tlm, Byte bitlen)
+    private string HexConvertValue<T>(T raw, Telemetry tlm)
     {
       string hexraw;
       switch (tlm.TelemetryInfo.Type)
