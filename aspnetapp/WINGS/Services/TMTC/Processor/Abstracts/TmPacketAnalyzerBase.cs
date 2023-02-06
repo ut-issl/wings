@@ -106,7 +106,7 @@ namespace WINGS.Services
           case "int16_t":
           case "int16":
           {
-            Int16 raw = (Int16)(packet[tlm.TelemetryInfo.OctetPos] << 8 | packet[tlm.TelemetryInfo.OctetPos+1]);
+            Int16 raw = (Int16)(packet[tlm.TelemetryInfo.OctetPos] << 8 | packet[tlm.TelemetryInfo.OctetPos + 1]);
             tlm.TelemetryValue.Value = ConvertValue(raw, tlm);
             tlm.TelemetryValue.RawValue = raw.ToString();
             break;
@@ -114,7 +114,7 @@ namespace WINGS.Services
           case "uint32_t":
           case "uint32":
           {
-            UInt32 raw = (UInt32)(packet[tlm.TelemetryInfo.OctetPos] << 24 | packet[tlm.TelemetryInfo.OctetPos+1] << 16 | packet[tlm.TelemetryInfo.OctetPos+2] << 8 | packet[tlm.TelemetryInfo.OctetPos+3]);
+            UInt32 raw = (UInt32)(packet[tlm.TelemetryInfo.OctetPos] << 24 | packet[tlm.TelemetryInfo.OctetPos + 1] << 16 | packet[tlm.TelemetryInfo.OctetPos + 2] << 8 | packet[tlm.TelemetryInfo.OctetPos + 3]);
             tlm.TelemetryValue.Value = ConvertValue(raw, tlm);
             tlm.TelemetryValue.RawValue = raw.ToString();
             break;
@@ -122,14 +122,14 @@ namespace WINGS.Services
           case "int32_t":
           case "int32":
           {
-            Int32 raw = (Int32)(packet[tlm.TelemetryInfo.OctetPos] << 24 | packet[tlm.TelemetryInfo.OctetPos+1] << 16 | packet[tlm.TelemetryInfo.OctetPos+2] << 8 | packet[tlm.TelemetryInfo.OctetPos+3]);
+            Int32 raw = (Int32)(packet[tlm.TelemetryInfo.OctetPos] << 24 | packet[tlm.TelemetryInfo.OctetPos + 1] << 16 | packet[tlm.TelemetryInfo.OctetPos + 2] << 8 | packet[tlm.TelemetryInfo.OctetPos + 3]);
             tlm.TelemetryValue.Value = ConvertValue(raw, tlm);
             tlm.TelemetryValue.RawValue = raw.ToString();
             break;
           }
           case "float":
           {
-            var temp = new byte[]{packet[tlm.TelemetryInfo.OctetPos+3], packet[tlm.TelemetryInfo.OctetPos+2], packet[tlm.TelemetryInfo.OctetPos+1], packet[tlm.TelemetryInfo.OctetPos]};
+            var temp = new byte[]{packet[tlm.TelemetryInfo.OctetPos + 3], packet[tlm.TelemetryInfo.OctetPos + 2], packet[tlm.TelemetryInfo.OctetPos + 1], packet[tlm.TelemetryInfo.OctetPos]};
             Single raw = BitConverter.ToSingle(temp, 0);
             tlm.TelemetryValue.Value = ConvertValue(raw, tlm);
             tlm.TelemetryValue.RawValue = raw.ToString();
@@ -137,8 +137,8 @@ namespace WINGS.Services
           }
           case "double":
           {
-            var temp = new byte[]{packet[tlm.TelemetryInfo.OctetPos+7], packet[tlm.TelemetryInfo.OctetPos+6], packet[tlm.TelemetryInfo.OctetPos+5], packet[tlm.TelemetryInfo.OctetPos+4],
-                                  packet[tlm.TelemetryInfo.OctetPos+3], packet[tlm.TelemetryInfo.OctetPos+2], packet[tlm.TelemetryInfo.OctetPos+1], packet[tlm.TelemetryInfo.OctetPos]};
+            var temp = new byte[]{packet[tlm.TelemetryInfo.OctetPos + 7], packet[tlm.TelemetryInfo.OctetPos + 6], packet[tlm.TelemetryInfo.OctetPos + 5], packet[tlm.TelemetryInfo.OctetPos + 4],
+                                  packet[tlm.TelemetryInfo.OctetPos + 3], packet[tlm.TelemetryInfo.OctetPos + 2], packet[tlm.TelemetryInfo.OctetPos + 1], packet[tlm.TelemetryInfo.OctetPos]};
             Double raw = BitConverter.ToDouble(temp, 0);
             tlm.TelemetryValue.Value = ConvertValue(raw, tlm);
             tlm.TelemetryValue.RawValue = raw.ToString();
@@ -153,10 +153,29 @@ namespace WINGS.Services
       else
       {
         // int bytenum = (tlm.TelemetryInfo.BitPos + tlm.TelemetryInfo.BitLen - 1) / 8 + 1;
-        Byte defraw;
-        Byte mask;
-        mask = (Byte)(((1 << tlm.TelemetryInfo.BitLen) - 1) << (8 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
-        defraw = (Byte)((UInt16)(packet[tlm.TelemetryInfo.OctetPos] & mask) >> (8 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
+        if (tlm.TelemetryInfo.BitLen < 9)
+        {
+          Byte mask = (Byte)(((1 << tlm.TelemetryInfo.BitLen) - 1) << (8 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
+          Byte defraw = (Byte)((Byte)(packet[tlm.TelemetryInfo.OctetPos] & mask) >> (8 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
+          tlm.TelemetryValue.Value = ConvertValue(defraw, tlm);
+          tlm.TelemetryValue.RawValue = defraw.ToString();
+        }
+        else if (tlm.TelemetryInfo.BitLen < 17) 
+        {
+          UInt16 mask = (UInt16)(((1 << tlm.TelemetryInfo.BitLen) - 1) << (16 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
+          UInt16 raw = (UInt16)(packet[tlm.TelemetryInfo.OctetPos] << 8 | packet[tlm.TelemetryInfo.OctetPos + 1]);
+          UInt16 defraw = (UInt16)((UInt16)(raw & mask) >> (16 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
+          tlm.TelemetryValue.Value = ConvertValue(defraw, tlm);
+          tlm.TelemetryValue.RawValue = defraw.ToString();
+        }
+        else
+        {
+          UInt32 mask = (UInt32)(((1 << tlm.TelemetryInfo.BitLen) - 1) << (16 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
+          UInt32 raw = (UInt32)(packet[tlm.TelemetryInfo.OctetPos] << 24 | packet[tlm.TelemetryInfo.OctetPos + 1] << 16 | packet[tlm.TelemetryInfo.OctetPos + 2] << 8 | packet[tlm.TelemetryInfo.OctetPos + 3]);
+          UInt32 defraw = (UInt32)((UInt32)(raw & mask) >> (16 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
+          tlm.TelemetryValue.Value = ConvertValue(defraw, tlm);
+          tlm.TelemetryValue.RawValue = defraw.ToString();
+        }
         // support bytenum > 1 (e.g.: BitPos = 0, 8 < BitLen < 15)
         /*
         if (bytenum != 1)
@@ -182,8 +201,6 @@ namespace WINGS.Services
           }
         }
         */
-        tlm.TelemetryValue.Value = ConvertValue(defraw, tlm);
-        tlm.TelemetryValue.RawValue = defraw.ToString();
       }
     }
 
