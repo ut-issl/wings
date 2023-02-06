@@ -19,7 +19,7 @@ const useStyles = makeStyles(
   createStyles({
     root: {
       display: 'flex',
-      height: 700,
+      height: 820,
     },
     tabs: {
       borderRight: "1px solid",
@@ -46,6 +46,9 @@ const useStyles = makeStyles(
       width: '80%',
       maxHeight: 435,
     },
+    planTab: {
+      width: 700
+    }
 }));
 
 const a11yProps = (index: any) => {
@@ -80,6 +83,7 @@ const PlanDisplayArea = () => {
   };
 
   const handleValueChange = (event: React.ChangeEvent<{}>, value: number) => {
+    // 自動実行中はタブ切り替えを受け付けない
     if (!inExecution) {
       dispatch(activatePlanAction(openedIds[value]));
     }
@@ -101,47 +105,100 @@ const PlanDisplayArea = () => {
     );
   };
 
-  return (
-    <div className={classes.root}>
-      <Tabs
-        orientation="vertical"
-        variant="scrollable"
-        value={value < 0 ? false : value}
-        onChange={handleValueChange}
-        className={classes.tabs}
-      >
-        {planIndexes.length > 0 && (
-          planIndexes.map((index,i) => (
-            index.id === UNPLANNED_ID ?
-            <Tab
-              key={index.id} label={index.name} {...a11yProps(i)} className={classes.tab}
-              style={{paddingLeft: "30px"}}
-            />
-            : (<Tooltip key={index.id} title={index.name} placement="right">
+  if (activePlanId=="_unplanned"){
+    return (
+      <div className={classes.root}>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={value < 0 ? false : value}
+          onChange={handleValueChange}
+          className={classes.tabs}
+        >          
+          {planIndexes.length > 0 && (
+            planIndexes.map((index,i) => (
+              index.id === UNPLANNED_ID ?
               <Tab
-                label={index.name} {...a11yProps(i)} className={classes.tab}
-                icon={<CloseIconInTab onClick={() => closePlan(index.id)}/>}
+                key={index.id} label={index.name} {...a11yProps(i)} className={classes.tab}
+                style={{paddingLeft: "30px"}}
               />
-            </Tooltip>)
-          ))
-        )}
-        <IconButtonInTabs onClick={handleDialogOpen}>
-          <AddIcon />
-        </IconButtonInTabs>
-      </Tabs>
-      {planIndexes.length > 0 && (
-        planIndexes.map((index,i) => (
-          <PlanTabPanel key={index.id} value={value} index={i} name={index.name} content={planContents[index.id]} />
-        ))
-      )}
-      <OpenPlanDialog
-        classes={{ paper: classes.dialogPaper }}
-        keepMounted
-        open={dialogOpen}
-        onClose={handleDialogClose}
-      />
-    </div>
-  );
+              : (<Tooltip key={index.id} title={index.name} placement="right">
+                <Tab
+                  label={index.name} {...a11yProps(i)} className={classes.tab}
+                  icon={<CloseIconInTab onClick={() => closePlan(index.id)}/>}
+                />
+              </Tooltip>)
+            ))
+          )}
+          <IconButtonInTabs onClick={handleDialogOpen}>
+            <AddIcon />
+          </IconButtonInTabs>
+        </Tabs>
+        <div className={classes.planTab} >
+          {planIndexes.length > 0 && (
+            planIndexes.map((index,i) => (
+              <PlanTabPanel key={index.id} value={value} index={i} name={index.name} content={planContents[index.id]} />
+            ))
+          )}
+        </div>
+        
+        <OpenPlanDialog
+          classes={{ paper: classes.dialogPaper }}
+          keepMounted
+          open={dialogOpen}
+          onClose={handleDialogClose}
+        />
+              
+      </div>
+    );
+  } else{
+    return (
+      <div className={classes.root}>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={value < 0 ? false : value}
+          onChange={handleValueChange}
+          className={classes.tabs}
+        >
+          
+          {planIndexes.length > 0 && (
+            planIndexes.map((index,i) => (
+              index.id === UNPLANNED_ID ?
+              <Tab
+                key={index.id} label={index.name} {...a11yProps(i)} className={classes.tab}
+                style={{paddingLeft: "30px"}}
+              />
+              : (<Tooltip key={index.id} title={index.name} placement="right">
+                <Tab
+                  label={index.name} {...a11yProps(i)} className={classes.tab}
+                  icon={<CloseIconInTab onClick={() => closePlan(index.id)}/>}
+                />
+              </Tooltip>)
+            ))
+          )}
+          <IconButtonInTabs onClick={handleDialogOpen}>
+            <AddIcon />
+          </IconButtonInTabs>
+        </Tabs>
+        <div className={classes.planTab} >
+          {planIndexes.length > 0 && (
+            planIndexes.map((index,i) => (
+              <PlanTabPanel key={index.id} value={value} index={i} name={index.name} content={planContents[index.id]} />
+            ))
+          )}
+        </div>
+          
+        <OpenPlanDialog
+          classes={{ paper: classes.dialogPaper }}
+          keepMounted
+          open={dialogOpen}
+          onClose={handleDialogClose}
+        />
+              
+      </div>
+    );
+  }
 }
 
 export default PlanDisplayArea;

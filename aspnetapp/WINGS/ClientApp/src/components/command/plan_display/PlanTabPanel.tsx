@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
+import { Button, TextField } from '@material-ui/core';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,11 +10,18 @@ import TableRow from '@material-ui/core/TableRow';
 import { CommandPlanLine, RequestStatus } from '../../../models';
 import RequestTableRow from './RequestTableRow';
 import { selectedPlanRowAction, execRequestSuccessAction, execRequestErrorAction, execRequestsStartAction, execRequestsEndAction } from '../../../redux/plans/actions';
-import { getAllIndexes, getInExecution, getSelectedRow } from '../../../redux/plans/selectors';
+import { getActivePlanId, getAllIndexes, getInExecution, getPlanContents, getSelectedRow } from '../../../redux/plans/selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { openPlan, postCommand, postCommandFileLineLog } from '../../../redux/plans/operations';
 import { RootState } from '../../../redux/store/RootState';
 import { getLatestTelemetries } from '../../../redux/telemetries/selectors';
+import { openErrorDialogAction } from '../../../redux/ui/actions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import { Dialog } from '@material-ui/core';
+import { getOpid } from '../../../redux/operations/selectors';
+import { finishEditCommandLineAction } from '../../../redux/plans/actions';
 
 const useStyles = makeStyles(
   createStyles({
@@ -25,6 +33,21 @@ const useStyles = makeStyles(
       position: "absolute",
       zIndex: -10,
       outline: 0
+    },
+    button: {
+      width: 120
+    },
+    activeTab: {
+      height: 700,
+      zIndex: 99,
+      position: "absolute",
+      backgroundColor: "#212121"
+    },
+    inactiveTab: {
+      height: 700,
+      zIndex: 1,
+      position: "absolute",
+      backgroundColor: "#212121"
     }
 }));
 
@@ -44,6 +67,13 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
   const selector = useSelector((state: RootState) => state);
 
   const [lastSelectedRow, setLastSelectedRow] = React.useState(-1);
+
+  const opid = getOpid(selector);
+  const activePlanId = getActivePlanId(selector);
+
+  const [showModal, setShowModal] = React.useState(false);
+  const [text, setText] = React.useState("");
+  const [num, setNum] = React.useState(0);
 
   let selectedRow = getSelectedRow(selector);
 
@@ -70,7 +100,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
 
   const advanceSelectedRow = (nextRow: number) => {
     selectedRow < content.length-1 && dispatch(selectedPlanRowAction(nextRow));
-    if (container && tbody) {
+    if (container && tbody && tbody.getElementsByTagName('tr')[0] != undefined) {
       const trHeight = tbody.getElementsByTagName('tr')[0].clientHeight;
       const top = Math.ceil(container.scrollTop/trHeight);
       if ((nextRow - top) > 15) {
@@ -81,7 +111,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
 
   const backSelectedRow = (nextRow: number) => {
     selectedRow > 0 && dispatch(selectedPlanRowAction(nextRow));
-    if (container && tbody) {
+    if (container && tbody && tbody.getElementsByTagName('tr')[0] != undefined) {
       const trHeight = tbody.getElementsByTagName('tr')[0].clientHeight;
       const top = Math.ceil(container.scrollTop/trHeight);
       if ((nextRow - top) < 4) {
@@ -111,6 +141,50 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       await executeMultipleRequests()
       dispatch(execRequestsEndAction());
     }
+  }
+
+  const handleChangeCmdLine = (e: any) => {
+    setText(() => e.target.value)
+  }
+
+  const editCmdline = async (i: number) => {
+    const res = await fetch(`/api/operations/${opid}/cmd_plans/0/${activePlanId}/${i}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    const json = await res.json();
+    if (res.status === 200) {
+      const data = json.data;
+      //dispatch(editCommandLineAction(num, data));
+      setText(data);
+    } else {
+      const message = `Status Code: ${res.status}\n${json.message ? json.message: "unknown error"}`;
+      dispatch(openErrorDialogAction(message));
+    }
+    setNum(() => i+1);
+    setShowModal(true);
+  }
+
+  const finishEditting = async () => {
+    // do things like LoadCommandFileAsync
+    const res = await fetch(`/api/operations/${opid}/cmd_plans/0/${activePlanId}/${num-1}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({text: text})
+    });
+    const json = await res.json();
+    if (res.status === 200) {
+      const commandFileLine = json.data;
+      dispatch(finishEditCommandLineAction(num-1, commandFileLine));
+    } else {
+      const message = `Status Code: ${res.status}\n${json.message ? json.message: "unknown error"}`;
+      dispatch(openErrorDialogAction(message));
+    }
+    setShowModal(false);
   }
 
   const executeMultipleRequests = async () => {
@@ -280,48 +354,82 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
     await dispatch(postCommandFileLineLog(content_tmp));
   }
 
-  if (value !== index) {
-    return <></>
-  };
-
   return (
-    <div
-      role="tabpanel"
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-    >
-      <input
-        type="text"
-        className={classes.tableEventShifter}
-        style={{backgroundColor: "red"}}
-        ref={textInput}
-        onKeyDown={(event) => handleKeyDown(event)}
-        readOnly
-      >
-      </input>
-      <TableContainer className={classes.container} id="plan-table-container">
-        <Table stickyHeader onClick={handleTableClick}>
-          <TableHead>
-            <TableRow>
-              <TableCell style={{width: "40px", padding: "0"}}/>
-              <TableCell style={{width: "27px", padding: "0"}}/>
-              <TableCell style={{fontWeight: "bold"}}>{name}</TableCell>
-              <TableCell style={{width: "40px", padding: "0"}}/>
-            </TableRow>
-          </TableHead>
-          <TableBody id="plan-table-body">
-            {content.length > 0 && (
-              content.map((line, i) => (
-                <RequestTableRow
-                  key={i} line={line} index={i} isSelected={i === selectedRow}
-                  onClick={() => handleRowClick(i)}
-                />
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </div>
+    <>
+      <div className={(value !== index) ? classes.inactiveTab : classes.activeTab}>
+        <div
+          role="tabpanel"
+          id={`vertical-tabpanel-${index}`}
+          aria-labelledby={`vertical-tab-${index}`}
+        >
+          <input
+            type="text"
+            className={classes.tableEventShifter}
+            style={{backgroundColor: "red"}}
+            ref={textInput}
+            onKeyDown={(event) => handleKeyDown(event)}
+            readOnly
+          >
+          </input>
+          <TableContainer className={classes.container} id="plan-table-container">
+            <Table stickyHeader onClick={handleTableClick}>
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{width: "40px", padding: "0"}}/>
+                  <TableCell style={{width: "27px", padding: "0"}}/>
+                  <TableCell style={{fontWeight: "bold"}}>{name}</TableCell>
+                  <TableCell style={{width: "120px", padding: "0"}}/>
+                </TableRow>
+              </TableHead>
+              <TableBody id="plan-table-body">
+                {content.length > 0 && (
+                  content.map((line, i) => (
+                    <RequestTableRow
+                      key={i} line={line} index={i} isSelected={i === selectedRow}
+                      onClick={() => handleRowClick(i)}
+                      onDoubleClick={() => {editCmdline(i)}}
+                    />
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <Dialog
+            disableBackdropClick
+            disableEscapeKeyDown
+            maxWidth="md"
+            aria-labelledby="edit-commandLine"
+            open={showModal}
+            keepMounted={true}
+          >
+            <DialogTitle id="edit-commandLine">Edit Command Line</DialogTitle>
+            <DialogContent dividers>
+              <p>You can edit the selected command line.</p>
+            </DialogContent>
+            <DialogActions>
+              <TextField
+                label="edit" onChange={handleChangeCmdLine}
+                value={text} type="text" style={{width: 940}}
+              />
+            </DialogActions>
+            <DialogActions>
+              <Button
+                variant="contained" color="primary" className={classes.button}
+                onClick={()=>{setShowModal(false)}}
+              >
+                Cancel
+              </Button> 
+              <Button
+                variant="contained" color="primary" className={classes.button}
+                onClick={finishEditting}
+              >
+                Update
+              </Button> 
+            </DialogActions>
+          </Dialog>
+        </div>
+      </div>
+    </>
   );
 }
 

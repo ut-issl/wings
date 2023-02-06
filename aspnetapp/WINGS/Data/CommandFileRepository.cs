@@ -115,6 +115,60 @@ namespace WINGS.Data
       };
     }
 
+    public async Task<string> GetCommandRowAsync(TlmCmdFileConfig config, CommandFileIndex index, int row)
+    {
+      var reader = await GetCommandFileReaderAsync(config.Location, config.CmdFileInfo[index.CmdFileInfoIndex], index.FilePath);
+      string line;
+      int counter = 0;
+      while ((line = reader.ReadLine()) != null)
+      {
+        if (counter==row){
+          break;
+        }
+        counter++;
+      }
+      return line;
+    }
+
+    public async Task<CommandFileLine> LoadCommandRowAsync(TlmCmdFileConfig config, CommandFileIndex index, List<Command> commandDb, int row, string line)
+    {
+      var reader = await GetCommandFileReaderAsync(config.Location, config.CmdFileInfo[index.CmdFileInfoIndex], index.FilePath);
+      var newContent = new CommandFileLine();
+      if (String.IsNullOrWhiteSpace(line))
+      {
+        newContent.Type = "comment";
+        newContent.Body = "";
+        return newContent;
+      }
+
+      StopFlagCheck (ref line, newContent);
+
+      CommentCheck (ref line, newContent);
+      if (newContent.Type != null)
+      {
+        return newContent;
+      }
+
+      ControlCheck (ref line, newContent);
+      if (newContent.Type != null)
+      {
+        return newContent;          
+      }
+
+      CommandCheck(ref line, newContent, commandDb);
+      if (newContent.Type != null)
+      {
+        return newContent;     
+      }
+
+      if (newContent.SyntaxError == false)
+      {
+        newContent.SyntaxError = true;
+        newContent.ErrorMessage = "Type is null.";
+      }
+      return newContent;
+    }
+
     private Task<IEnumerable<string>> GetCommandFilePathsAsync(TlmCmdFileLocation location, TlmCmdFileLocationInfo cmdFileInfo)
     {
       switch (location)
