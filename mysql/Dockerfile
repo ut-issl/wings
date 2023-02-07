@@ -1,8 +1,5 @@
 FROM mysql:8.0-debian
 
-# Workaround: https://github.com/docker-library/mysql/issues/811
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 467B942D3A79BD29
-
 # Set debian default locale to ja_JP.UTF-8
 RUN apt-get update && \
     apt-get install -y locales && \

@@ -3,7 +3,12 @@ import { Command, CommandPlanLine, Request, RequestStatus } from '../../../model
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import StopIcon from '@material-ui/icons/Stop';
+import { ArrowUpward, ArrowDownward, Delete} from '@material-ui/icons';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { deleteUnplannedCommandAction, moveUpUnplannedCommandAction, moveDownUnplannedCommandAction } from '../../../redux/plans/actions';
+import { getActivePlanId } from '../../../redux/plans/selectors';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../../redux/store/RootState';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,6 +43,15 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     error: {
       color: theme.palette.error.main
+    },
+    delete: {
+      width: 40
+    },
+    arrowUpward: {
+      width: 40
+    },
+    arrowDownward: {
+      width: 40
     }
 }));
 
@@ -46,11 +60,15 @@ export interface RequestTableRowProps {
   index: number,
   isSelected: boolean,
   onClick: ((event: React.MouseEvent<HTMLTableRowElement, MouseEvent>) => void) | undefined
+  onDoubleClick: ((event: React.MouseEvent<HTMLTableRowElement, MouseEvent>) => void) | undefined
 }
 
 const RequestTableRow = (props: RequestTableRowProps) => {
   const classes = useStyles();
-  const spacer = <span style={{marginRight: "10px"}}></span>;
+  const spacer = <span style={{ marginRight: "10px" }}></span>;
+  const dispatch = useDispatch();
+  const selector = useSelector((state: RootState) => state);
+  const activePlanId = getActivePlanId(selector);
 
   const showCommandParam = (command: Command) => {
     return (
@@ -89,6 +107,17 @@ const RequestTableRow = (props: RequestTableRowProps) => {
     if (status.error) return classes.error;
     if (status.success) return classes.execSuccess;
     return "";
+  }
+  const deleteUnplannedCommand = () => {
+    dispatch(deleteUnplannedCommandAction(props.index));
+  }
+
+  const moveUpUnplannedCommand = () => {
+    dispatch(moveUpUnplannedCommandAction(props.index));
+  }
+
+  const moveDownUnplannedCommand = () => {
+    dispatch(moveDownUnplannedCommandAction(props.index));
   }
 
   const showRequestContent = () => {
@@ -131,23 +160,60 @@ const RequestTableRow = (props: RequestTableRowProps) => {
     };
   }
 
-  return (
-    <TableRow
-      className={`${classes.row} ${props.isSelected ? classes.isSelected : ''}`}
-      onClick={props.onClick}
-    >
-      <TableCell className={classes.lineNumCell} align="right">
-        {props.index+1}
-      </TableCell>
-      <TableCell className={classes.stopCell}>
-        {props.line.request.stopFlag && <StopIcon className={classes.stopIcon} />}
-      </TableCell>
-      <TableCell className={classes.requestCell} >
-        {showRequestContent()}
-      </TableCell>
-      <TableCell />
-    </TableRow>
-  );
+  if (activePlanId == '_unplanned'){
+    return (
+      <TableRow
+        className={`${classes.row} ${props.isSelected ? classes.isSelected : ''}`}
+        onClick={props.onClick}
+      >
+        <TableCell className={classes.lineNumCell} align="right">
+          {props.index+1}
+        </TableCell>
+        <TableCell className={classes.stopCell}>
+          {props.line.request.stopFlag && <StopIcon className={classes.stopIcon} />}
+        </TableCell>
+        <TableCell className={classes.requestCell} >
+          {showRequestContent()}
+        </TableCell>
+        <ArrowUpward
+          className={classes.arrowUpward}
+          onClick={moveUpUnplannedCommand}
+        >
+        </ArrowUpward>
+        <ArrowDownward
+          className={classes.arrowDownward}
+          onClick={moveDownUnplannedCommand}
+        >
+        </ArrowDownward>
+        <Delete
+          className={classes.delete}
+          onClick={deleteUnplannedCommand}
+        >
+        </Delete>
+      </TableRow>
+    );
+  } else {
+    return (
+      <>
+      <TableRow
+        className={`${classes.row} ${props.isSelected ? classes.isSelected : ''}`}
+        onClick={props.onClick}
+        onDoubleClick={props.onDoubleClick}
+      >
+        <TableCell className={classes.lineNumCell} align="right">
+          {props.index+1}
+        </TableCell>
+        <TableCell className={classes.stopCell}>
+          {props.line.request.stopFlag && <StopIcon className={classes.stopIcon} />}
+        </TableCell>
+        <TableCell className={classes.requestCell} >
+          {showRequestContent()}
+        </TableCell>
+        <TableCell />
+      </TableRow>
+      </>
+    );
+  }
 };
 
 export default RequestTableRow;
