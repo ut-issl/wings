@@ -153,14 +153,14 @@ namespace WINGS.Services
       else
       {
         // int bytenum = (tlm.TelemetryInfo.BitPos + tlm.TelemetryInfo.BitLen - 1) / 8 + 1;
-        if (tlm.TelemetryInfo.BitLen < 9)
+        if (tlm.TelemetryInfo.BitPos + tlm.TelemetryInfo.BitLen < 9)
         {
           Byte mask = (Byte)(((1 << tlm.TelemetryInfo.BitLen) - 1) << (8 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
           Byte defraw = (Byte)((Byte)(packet[tlm.TelemetryInfo.OctetPos] & mask) >> (8 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
           tlm.TelemetryValue.Value = ConvertValue(defraw, tlm, tlm.TelemetryInfo.BitLen);
           tlm.TelemetryValue.RawValue = defraw.ToString();
         }
-        else if (tlm.TelemetryInfo.BitLen < 17) 
+        else if (tlm.TelemetryInfo.BitPos + tlm.TelemetryInfo.BitLen < 17) 
         {
           UInt16 mask = (UInt16)(((1 << tlm.TelemetryInfo.BitLen) - 1) << (16 - tlm.TelemetryInfo.BitPos - tlm.TelemetryInfo.BitLen));
           UInt16 raw = (UInt16)(packet[tlm.TelemetryInfo.OctetPos] << 8 | packet[tlm.TelemetryInfo.OctetPos + 1]);

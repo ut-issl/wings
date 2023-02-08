@@ -1,8 +1,16 @@
-import { TelemetryPacket, TelemetryPacketHistory } from "../../models";
+import { TelemetryColor, TelemetryPacket, TelemetryPacketHistory } from "../../models";
 
+export const UPDATE_TELEMETRY_COLOR = 'UPDATE_TELEMETRY_COLOR' as const;
 export const UPDATE_LATEST_TELEMETRY = 'UPDATE_LATEST_TELEMETRY' as const;
 export const UPDATE_TELEMETRY_HISTORY = 'UPDATE_TELEMETRY_HISTORY' as const;
 export const ADD_TELEMETRY_HISTORY = 'ADD_TELEMETRY_HISTORY' as const;
+
+export const updateTelemetryColorAction = (telemetryColor: TelemetryColor) => {
+  return {
+    type: UPDATE_TELEMETRY_COLOR,
+    payload: telemetryColor
+  }
+};
 
 export const updateLatestTelemetriesAction = (telemetries: TelemetryPacket[]) => {
   return {

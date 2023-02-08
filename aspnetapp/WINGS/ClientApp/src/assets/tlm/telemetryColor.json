@@ -1,0 +1,5 @@
+{
+  "red": ["ON", "ACTIVE", "Open", "DISABLE", "DIS", "ABNORMAL", "FAIL", "ERROR", "UNAVAILABLE", "DISCONNECT"],
+  "green": ["ENABLE", "ENA", "NORMAL", "SAFE", "SUCCESS", "AVAILABLE", "CONNECT"],
+  "blue": ["OFF", "IDLE", "Close"] 
+}
