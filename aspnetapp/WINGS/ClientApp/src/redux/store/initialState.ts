@@ -42,6 +42,11 @@ const initialState: RootState = {
     logs: []
   },
   tlms: {
+    tlmColor: {
+      red: [],
+      green: [],
+      blue: []
+    },
     latest: {},
     history: {}
   },

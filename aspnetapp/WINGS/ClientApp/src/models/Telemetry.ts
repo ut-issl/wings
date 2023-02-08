@@ -1,3 +1,9 @@
+export type TelemetryColor = {
+  red: string[],
+  green: string[],
+  blue: string[]
+}
+
 export type Telemetry = {
   telemetryInfo: TelemetryInfo,
   telemetryValue: TelemetryValue
@@ -50,6 +56,7 @@ export type TelemetryPacketHistory = {
 }
 
 export type TelemetryState = {
+  tlmColor: TelemetryColor,
   latest: {
     [packetName: string]: Telemetry[]
   },
