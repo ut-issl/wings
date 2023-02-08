@@ -270,6 +270,12 @@ namespace WINGS.Data
           splitlinelist.RemoveAt(0);
           LetParse(splitlinelist, newContent);
           break;
+        case "get":
+          newContent.Type = "control";
+          newContent.Method = splitlinelist[0].ToLower();
+          splitlinelist.RemoveAt(0);
+          GetParse(splitlinelist, newContent);
+          break;
       }         
     }
 
@@ -491,6 +497,31 @@ namespace WINGS.Data
       } else {
         newContent.SyntaxError = true;
         newContent.ErrorMessage = "Method \"let\" : wrong number of data";
+      }
+    }
+
+    private void GetParse(List<string> splitlinelist, CommandFileLine newContent)
+    {
+      switch (splitlinelist.Count)
+      {
+        case 1:
+          newContent.Body = new
+          {
+            variable = splitlinelist[0],
+            value = ""
+          };
+          break;
+        case 2:
+          newContent.Body = new
+          {
+            variable = splitlinelist[0],
+            value = splitlinelist[1]
+          };
+          break;
+        default:
+          newContent.SyntaxError = true;
+          newContent.ErrorMessage = "Method \"get\" : wrong number of data";
+          break;
       }
     }
 

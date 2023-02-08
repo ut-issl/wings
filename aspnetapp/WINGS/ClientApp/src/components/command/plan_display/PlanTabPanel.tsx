@@ -194,6 +194,25 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
     setShowModal(false);
   }
 
+  const setCmdline = async (row: number, cmdlineText: string) => {
+    // do things like LoadCommandFileAsync
+    const res = await fetch(`/api/operations/${opid}/cmd_plans/0/${activePlanId}/${row}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({text: cmdlineText})
+    });
+    const json = await res.json();
+    if (res.status === 200) {
+      const commandFileLine = json.data;
+      dispatch(finishEditCommandLineAction(row, commandFileLine));
+    } else {
+      const message = `Status Code: ${res.status}\n${json.message ? json.message: "unknown error"}`;
+      dispatch(openErrorDialogAction(message));
+    }
+  }
+
   const executeMultipleRequests = async () => {
     let row = selectedRow;
     do {
@@ -457,6 +476,14 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         setCmdFileVariables(cmdFileVariablesTemp);
         dispatch(execRequestSuccessAction(row));
         dispatch(cmdFileVariableEditAction(cmdFileVariablesTemp));
+        break;
+      
+      case "get":
+        let reqValue = getVariableValue(req.body.variable).value;
+        let newText = (req.stopFlag ? "." : " ") + `${req.method} ${req.body.variable} ${reqValue}`;
+        setCmdline(row, newText);
+        dispatch(execRequestSuccessAction(row));
+        reqret = true;
         break;
       
       default:

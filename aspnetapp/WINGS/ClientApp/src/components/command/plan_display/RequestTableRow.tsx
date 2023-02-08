@@ -103,6 +103,9 @@ const RequestTableRow = (props: RequestTableRowProps) => {
       
       case "let":
         return <>{body.variable}{spacer}{body.equal}{spacer}{body.equation}</>
+      
+      case "get":
+        return <>{body.variable}{spacer}{body.value}</>
     
       default:
         return;

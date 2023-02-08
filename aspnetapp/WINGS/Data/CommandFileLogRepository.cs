@@ -157,6 +157,9 @@ namespace WINGS.Data
             case "let":
               sb.Append(command_file_line_log.Method + " " + command_file_line_log.Body.GetProperty("variable").ToString() + " " + command_file_line_log.Body.GetProperty("equal").ToString() + " " + command_file_line_log.Body.GetProperty("equation").ToString());
               break;
+            case "get":
+              sb.Append(command_file_line_log.Method + " " + command_file_line_log.Body.GetProperty("variable").ToString() + " " + command_file_line_log.Body.GetProperty("value").ToString());
+              break;
           }
           if (!String.IsNullOrEmpty(command_file_line_log.InlineComment))
           {

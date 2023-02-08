@@ -56,7 +56,7 @@ The application listed below is required:
 	+ Four types of Command are available for OBC: `RT`, `TL`, `UTL`, `BL`
 - Comment
 	+ Comment function is available by prefixing a line with `#`.
-- その他の機能
+- Other Functions
 	+ `call`: You can call other *.ops file.
 		+ ex.) `call TEST.ops`．
 	+ `wait_sec`: You can specify how many seconds to wait before moving to the next file line.
@@ -66,7 +66,9 @@ The application listed below is required:
 		+ The current telemetry value or an already defined variable using `let` function can be assigned by enclosing it in braces `{}`.
 		+ ex.1)`let testA = 10 + 60 * 10`
         + ex.2) `let testB = {testA} + 10 * Math.sin(Math.PI)`
-	+ `check_value`: 条件式を満たしているのかを評価することができる．
+    + `get`: You can get the current value of the telemerty or the defined variable.
+		+ ex.) `get testA`
+	+ `check_value`: You can check whether a specific value fulfills the requirement.
 		+ `check_value` function is basically used as follows:
             + `check_value A == B`
             + `check_value A >= B`
