@@ -17,7 +17,9 @@ namespace WINGS.Models
   }
   public class PacketInfo
   {
+    public string ApId { get; set; }
     public string Id { get; set; }
+    public string CompoName { get; set; }
     public string Name { get; set; }
     public bool IsRealtimeData { get; set; }
     public bool IsRestricted { get; set; }

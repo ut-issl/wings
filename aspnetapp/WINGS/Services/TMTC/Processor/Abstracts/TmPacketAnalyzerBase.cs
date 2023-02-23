@@ -41,7 +41,9 @@ namespace WINGS.Services
         var targetRealtime = prevTelemetry.FirstOrDefault(packet => (packet.PacketInfo.Id == packetId) && (packet.PacketInfo.IsRealtimeData == true));
 
         var packetInfo = new PacketInfo(){
+          ApId = targetRealtime.PacketInfo.ApId,
           Id = targetRealtime.PacketInfo.Id,
+          CompoName = targetRealtime.PacketInfo.CompoName,
           Name = targetRealtime.PacketInfo.Name,
           IsRealtimeData = false
         };
