@@ -245,7 +245,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       outcome.value = cmdFileVariables[variableIndex].value;
       outcome.isSuccess = true;
     } else if (variableName.indexOf('.') > -1) {
-      var tlms = getLatestTelemetries(selector)[variableName.split('.')[0]];
+      var tlms = getLatestTelemetries(selector)[variableName.split('.')[0]][variableName.split('.')[1]];
       if (tlms.findIndex(index => index.telemetryInfo.name === variableName) >= 0) {
         variableIndex = tlms.findIndex(index => index.telemetryInfo.name === variableName);
       } else if (tlms.findIndex(index => index.telemetryInfo.name === variableName.split('.').slice(1).join('.')) >= 0) {

@@ -108,7 +108,7 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   const selector = useSelector((state: RootState) => state);
   const classes = useStyles();
   const dispatch = useDispatch();
-  const tlms = getLatestTelemetries(selector)[tab.name];
+  const tlms = getLatestTelemetries(selector)[tab.compoName][tab.name];
   const selectedTelemetries = tab.selectedTelemetries;
   const tlmClassList: string[] = [tab.name];
   const tlmColor = getTelemetryColor(selector);

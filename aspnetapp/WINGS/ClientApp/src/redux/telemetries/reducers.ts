@@ -22,7 +22,10 @@ export const TelemetriesReducer = (state = initialState.tlms, action: Actions) =
       const tlmPackets = action.payload;
       var tlms = state.latest;
       tlmPackets.forEach(tlmPacket => {
-        tlms[tlmPacket.packetInfo.name] = tlmPacket.telemetries;
+        if (tlms[tlmPacket.packetInfo.compoName] == undefined) {
+          tlms[tlmPacket.packetInfo.compoName] = {};
+        }
+        tlms[tlmPacket.packetInfo.compoName][tlmPacket.packetInfo.name] = tlmPacket.telemetries;
       })
       return {
         ...state,
@@ -31,7 +34,17 @@ export const TelemetriesReducer = (state = initialState.tlms, action: Actions) =
 
     case Actions.UPDATE_TELEMETRY_HISTORY:
       const tlmPacketHistories = action.payload;
-      const tlmHistories = tlmPacketHistories.reduce((list, tlmPacketHistory) => ({ ...list, [tlmPacketHistory.packetInfo.name]: tlmPacketHistory.telemetryHistories }), {})
+      let tlmHistories = state.history;
+      tlmPacketHistories.forEach(tlmPacketHistory => {
+        if (tlmHistories[tlmPacketHistory.packetInfo.compoName] == undefined) {
+          tlmHistories[tlmPacketHistory.packetInfo.compoName] = {};
+        }
+        tlmHistories[tlmPacketHistory.packetInfo.compoName][tlmPacketHistory.packetInfo.name] = tlmPacketHistory.telemetryHistories;
+      }, {})
+      // const tlmHistories = tlmPacketHistories.reduce((list, tlmPacketHistory) => (
+      //   { [tlmPacketHistory.packetInfo.compoName]: { ...list, [tlmPacketHistory.packetInfo.name]: tlmPacketHistory.telemetryHistories } }
+      // ), {})
+      // const tlmHistories = tlmPacketHistories.reduce((list, tlmPacketHistory) => ({ ...list, [tlmPacketHistory.packetInfo.name]: tlmPacketHistory.telemetryHistories }), {})
       return {
         ...state,
         history: tlmHistories
@@ -42,8 +55,14 @@ export const TelemetriesReducer = (state = initialState.tlms, action: Actions) =
       let tlmHstrs = state.history;
       if (latestTlms.length != 0){
         latestTlms.forEach(tlmPacket => {
-          if(tlmPacket.telemetries[0].telemetryValue.time != null) {
-            tlmHstrs[tlmPacket.packetInfo.name].forEach((element, index) => {
+          if (tlmPacket.telemetries[0].telemetryValue.time != null) {
+            if (tlmHstrs[tlmPacket.packetInfo.compoName] == undefined) {
+              tlmHstrs[tlmPacket.packetInfo.compoName] = {};
+              tlmHstrs[tlmPacket.packetInfo.compoName][tlmPacket.packetInfo.name] = [];
+            } else if (tlmHstrs[tlmPacket.packetInfo.compoName][tlmPacket.packetInfo.name] == undefined) {
+              tlmHstrs[tlmPacket.packetInfo.compoName][tlmPacket.packetInfo.name] = [];
+            }
+            tlmHstrs[tlmPacket.packetInfo.compoName][tlmPacket.packetInfo.name].forEach((element, index) => {
               element.telemetryValues.push(tlmPacket.telemetries[index].telemetryValue);
             })
           }

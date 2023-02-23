@@ -74,7 +74,7 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
   const selector = useSelector((state: RootState) => state);
   const classes = useStyles();
   const dispatch = useDispatch();
-  const telemetryHistories = getTelemetryHistories(selector)[tab.name];
+  const telemetryHistories = getTelemetryHistories(selector);
 
   const [dataType, setDataType] = React.useState(tab.dataType);
   const [dataLength, setDataLength] = React.useState(tab.dataLength);
@@ -111,7 +111,7 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
   },[setDataLength]);
 
   const inputYlabelMin = React.useCallback((event) => {
-    if (Number(event.target.value) != NaN){
+    if (!isNaN(Number(event.target.value))){
       setYlabelMin(event.target.value);
     }
     else{
@@ -120,7 +120,7 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
   },[setYlabelMin]);
 
   const inputYlabelMax = React.useCallback((event) => {
-    if (Number(event.target.value) != NaN){
+    if (!isNaN(Number(event.target.value))){
       setYlabelMax(event.target.value);
     }
     else{
@@ -133,7 +133,7 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
   let isFirstValueSet = false;
 
   tab.selectedTelemetries.forEach((telemetryName,index) =>{
-    const selectedTelemetryHistory = telemetryHistories.find(element => element.telemetryInfo.name == telemetryName);
+    const selectedTelemetryHistory = telemetryHistories[tab.compoName][tab.name].find(element => element.telemetryInfo.name == telemetryName);
     if (selectedTelemetryHistory != undefined) {
       let tlmDataTmp: number[] = [];
       let tlmLabelTmp: string[] = [];
