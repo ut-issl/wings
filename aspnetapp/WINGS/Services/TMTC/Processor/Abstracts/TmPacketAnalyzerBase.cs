@@ -23,19 +23,19 @@ namespace WINGS.Services
     {
     }
 
-    protected async Task<bool> SetTelemetryListValuesAsync(List<TmPacketData> dataList, List<string> packetIdList, List<bool> realtimeFlagList, List<UInt32> TIList, List<TelemetryPacket> prevTelemetry)
+    protected async Task<bool> SetTelemetryListValuesAsync(List<TmPacketData> dataList, List<string> apIdList, List<string> packetIdList, List<bool> realtimeFlagList, List<UInt32> TIList, List<TelemetryPacket> prevTelemetry)
     {
       for (int i = 0; i < dataList.Count(); i++)
       {
-        await SetTelemetryValuesAsync(dataList[i], packetIdList[i], realtimeFlagList[i], TIList[i], prevTelemetry);
+        await SetTelemetryValuesAsync(dataList[i], apIdList[i], packetIdList[i], realtimeFlagList[i], TIList[i], prevTelemetry);
       }
       return true;
     }
 
-    protected async Task<bool> SetTelemetryValuesAsync(TmPacketData data, string packetId, bool isRealtimeData, UInt32 TI, List<TelemetryPacket> prevTelemetry)
+    protected async Task<bool> SetTelemetryValuesAsync(TmPacketData data, string apId, string packetId, bool isRealtimeData, UInt32 TI, List<TelemetryPacket> prevTelemetry)
     {
       var opid = data.Opid;
-      var target = prevTelemetry.FirstOrDefault(packet => (packet.PacketInfo.Id == packetId) && (packet.PacketInfo.IsRealtimeData == isRealtimeData));
+      var target = prevTelemetry.FirstOrDefault(packet => (packet.PacketInfo.ApId == apId) && (packet.PacketInfo.Id == packetId) && (packet.PacketInfo.IsRealtimeData == isRealtimeData));
       if (target == null && isRealtimeData == false)  // case for the first time of recordtlm packet
       {
         var targetRealtime = prevTelemetry.FirstOrDefault(packet => (packet.PacketInfo.Id == packetId) && (packet.PacketInfo.IsRealtimeData == true));
