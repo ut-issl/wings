@@ -41,10 +41,6 @@ export const TelemetriesReducer = (state = initialState.tlms, action: Actions) =
         }
         tlmHistories[tlmPacketHistory.packetInfo.compoName][tlmPacketHistory.packetInfo.name] = tlmPacketHistory.telemetryHistories;
       }, {})
-      // const tlmHistories = tlmPacketHistories.reduce((list, tlmPacketHistory) => (
-      //   { [tlmPacketHistory.packetInfo.compoName]: { ...list, [tlmPacketHistory.packetInfo.name]: tlmPacketHistory.telemetryHistories } }
-      // ), {})
-      // const tlmHistories = tlmPacketHistories.reduce((list, tlmPacketHistory) => ({ ...list, [tlmPacketHistory.packetInfo.name]: tlmPacketHistory.telemetryHistories }), {})
       return {
         ...state,
         history: tlmHistories
