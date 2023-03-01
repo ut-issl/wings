@@ -231,8 +231,11 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
 
   const getVariableValue = (variableName: string) => {
     let variableIndex = -1;
-    let outcome: GetVariable = {value: NaN, isSuccess: false, convType: ""};
-    if (cmdFileVariables.findIndex(index => index.variable === variableName) >= 0) {
+    let outcome: GetVariable = { value: NaN, isSuccess: false, convType: "" };
+    if (variableName.toLowerCase() == "unixtime_now") {
+      outcome.value = Math.floor(new Date().getTime() / 1000);
+      outcome.isSuccess = true;
+    } else if (cmdFileVariables.findIndex(index => index.variable === variableName) >= 0) {
       variableIndex = cmdFileVariables.findIndex(index => index.variable === variableName);
       outcome.value = cmdFileVariables[variableIndex].value;
       outcome.isSuccess = true;
