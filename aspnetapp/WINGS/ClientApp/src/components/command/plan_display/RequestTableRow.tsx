@@ -73,7 +73,7 @@ const RequestTableRow = (props: RequestTableRowProps) => {
   const showCommandParam = (command: Command) => {
     return (
       <>
-        {command.execType !== "RT" && (<>{spacer}{command.execTime}</>)}
+        {command.execType !== "RT" && (<>{spacer}{command.execTimeStr}</>)}
         {command.params.length > 0 && (
           command.params.map((param,i) => (
             <React.Fragment key={i}>
@@ -92,11 +92,20 @@ const RequestTableRow = (props: RequestTableRowProps) => {
       case "wait_sec":
         return <>{body.time}</>
       
+      case "wait_until":
+        return <>{body.variable}{spacer}{body.compare}{spacer}{body.value}{spacer}{body.statement}{spacer}{body.timeoutsec}</>
+      
       case "call":
         return <>{body.fileName}</>
 
       case "check_value":
         return <>{body.variable}{spacer}{body.compare}{spacer}{body.value}</>
+      
+      case "let":
+        return <>{body.variable}{spacer}{body.equal}{spacer}{body.equation}</>
+      
+      case "get":
+        return <>{body.variable}{spacer}{body.value}</>
     
       default:
         return;

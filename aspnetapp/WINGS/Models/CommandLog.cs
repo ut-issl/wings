@@ -11,8 +11,9 @@ namespace WINGS.Models
     [Column(TypeName = "varchar(64)")]
     public CmdExecType ExecType { get; set; }
 
-    public uint ExecTime { get; set; }
-
+    public uint ExecTimeInt { get; set; }
+    public double ExecTimeDouble { get; set; }
+    
     [Column(TypeName = "varchar(255)")]
     public string CmdName { get; set; }
 

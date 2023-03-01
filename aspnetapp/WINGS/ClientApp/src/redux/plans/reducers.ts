@@ -9,6 +9,7 @@ type Actions =
   | ReturnType<typeof Actions.openPlanAction>
   | ReturnType<typeof Actions.closePlanAction>
   | ReturnType<typeof Actions.activatePlanAction>
+  | ReturnType<typeof Actions.cmdFileVariableEditAction>
   | ReturnType<typeof Actions.selectedPlanRowAction>
   | ReturnType<typeof Actions.execRequestSuccessAction>
   | ReturnType<typeof Actions.execRequestErrorAction>
@@ -87,6 +88,13 @@ export const PlansReducer = (state = initialState.plans, action: Actions) => {
         ...state,
         activeId: newActiveId,
         selectedRow: -1
+      }
+    }
+      
+    case Actions.CMDFILE_VARIABLE_EDIT: {
+      return {
+        ...state,
+        cmdFileVariables: action.payload
       }
     }
 

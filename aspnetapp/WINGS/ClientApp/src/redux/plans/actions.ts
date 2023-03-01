@@ -1,9 +1,10 @@
-import { Command, CommandPlanLine, FileIndex, Request } from "../../models";
+import { Command, CommandPlanLine, FileIndex, Request, CmdFileVariable } from "../../models";
 
 export const FETCH_PLAN_INDEXES = 'FETCH_PLAN_INDEXES' as const;
 export const OPEN_PLAN = 'OPEN_PLAN' as const;
 export const CLOSE_PLAN = 'CLOSE_PLAN' as const;
 export const ACTIVATE_PLAN = 'ACTIVATE_PLAN' as const;
+export const CMDFILE_VARIABLE_EDIT = 'CMDFILE_VARIABLE_EDIT' as const;
 export const SELECT_PLAN_ROW = 'SELECT_PLAN_ROW' as const;
 export const EXEC_REQUEST_SUCCESS = 'EXEC_REQUEST_SUCCESS' as const;
 export const EXEC_REQUEST_ERROR = 'EXEC_REQUEST_ERROR' as const;
@@ -49,6 +50,13 @@ export const activatePlanAction = (id: string) => {
     payload: id
   };
 };
+
+export const cmdFileVariableEditAction = (cmdFileVariables: CmdFileVariable[]) => {
+  return {
+    type: CMDFILE_VARIABLE_EDIT,
+    payload: cmdFileVariables
+  }
+}
 
 export const selectedPlanRowAction = (row: number) => {
   return {

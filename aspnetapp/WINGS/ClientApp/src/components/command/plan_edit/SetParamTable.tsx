@@ -44,13 +44,86 @@ const SetParamTable = (props: SetParamAreaProps) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const { command } = props;
+  const [execTime, setExecTime] = React.useState<string>();
+  const [execType, setExecType] = React.useState<string>();
+
+  if (command.execType != execType)
+  {
+    if (command.execType == "RT")
+    {
+      const newSelectedCommand = {
+        ...command,
+        execTimeInt: 0,
+        execTimeDouble: 0,
+        execTimeStr: ""
+      }
+      setExecTime('0');
+      setExecType(command.execType);
+      dispatch(selectedCommandEditAction(newSelectedCommand));
+    }
+    else if (command.execType == 'TL' || command.execType == 'BL')
+    {
+      var execTimeInt = (execTime==undefined)?'0':execTime;
+      const newSelectedCommand = {
+        ...command,
+        execTimeInt: parseInt(execTimeInt),
+        execTimeDouble: 0,
+        execTimeStr: execTimeInt
+      }
+      setExecTime('0');
+      setExecTime(isNaN(parseInt(execTimeInt))?'0':String(parseInt(execTimeInt)));
+      setExecType(command.execType);
+      dispatch(selectedCommandEditAction(newSelectedCommand));
+    }
+    else if (command.execType == 'UTL')
+    {
+      var execTimeDouble = (execTime==undefined)?'0':execTime;
+      if (execTimeDouble.slice(-1) !== '.')
+      {
+        const newSelectedCommand = {
+          ...command,
+          execTimeInt: 0,
+          execTimeDouble: parseFloat(execTimeDouble),
+          execTimeStr: execTimeDouble
+        }
+        setExecTime(isNaN(parseFloat(execTimeDouble))?'0':String(parseFloat(execTimeDouble)));
+        dispatch(selectedCommandEditAction(newSelectedCommand));
+      }
+      else if (execTimeDouble.slice(-2) !== '.')
+      {
+        setExecTime(execTimeDouble);
+      }
+      setExecType(command.execType);
+    }
+  }
 
   const handleExecTimeChange = (event: any) => {
     const newSelectedCommand = {
       ...command,
-      execTime: parseInt(event.target.value)
+      execTimeInt: parseInt(event.target.value),
+      execTimeDouble: 0,
+      execTimeStr: event.target.value.toString()
     }
+    setExecTime(isNaN(parseInt(event.target.value))?'0':String(parseInt(event.target.value)));
     dispatch(selectedCommandEditAction(newSelectedCommand));
+  };
+
+  const handleExecUnixTimeChange = (event: any) => {
+    if (event.target.value.slice(-1) !== '.')
+    {
+      const newSelectedCommand = {
+        ...command,
+        execTimeInt: 0,
+        execTimeDouble: parseFloat(event.target.value),
+        execTimeStr: event.target.value.toString()
+      }
+      setExecTime(isNaN(parseFloat(event.target.value))?'0':String(parseFloat(event.target.value)));
+      dispatch(selectedCommandEditAction(newSelectedCommand));
+    }
+    else if (event.target.value.indexOf('.') == event.target.value.length-1) 
+    {
+      setExecTime(event.target.value);
+    }
   };
 
   const handleParamValueChange = (event: any, i: number) => {
@@ -85,18 +158,32 @@ const SetParamTable = (props: SetParamAreaProps) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {(command.execType === "TL" || command.execType === "BL" || command.execType === "UTL") && (
+          {(command.execType === "TL" || command.execType === "BL") && (
               <TableRow>
                 <TableCell className={classes.nameCell}>Time</TableCell>
                 <TableCell className={classes.valueCell} style={{padding: 0}}>
                   <TextField
                     label="" onChange={handleExecTimeChange}
-                    value={(command.execTime == 0) ? 0 : (command.execTime || "")} type="text"
+                    value={(execTime === '') ? '0' : (execTime || '')} type="text"
                     className={classes.valueInput}
                   />
                 </TableCell>
                 <TableCell className={classes.typeCell}>int32_t</TableCell>
                 <TableCell>TI</TableCell>
+              </TableRow>
+            )}
+            {(command.execType === "UTL") && (
+              <TableRow>
+                <TableCell className={classes.nameCell}>Time</TableCell>
+                <TableCell className={classes.valueCell} style={{padding: 0}}>
+                  <TextField
+                    label="" onChange={handleExecUnixTimeChange}
+                    value={(execTime === '') ? '0' : (execTime || '')} type="text"
+                    className={classes.valueInput}
+                  />
+                </TableCell>
+                <TableCell className={classes.typeCell}>int32_t</TableCell>
+                <TableCell>UnixTime</TableCell>
               </TableRow>
             )}
             {command.params.length > 0 && (

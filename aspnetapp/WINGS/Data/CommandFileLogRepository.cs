@@ -118,13 +118,13 @@ namespace WINGS.Data
               sb.Append("RT." + cmd_tmp.Name);
               break;
             case CmdExecType.TL:
-              sb.Append("TL." + cmd_tmp.Name + " " + cmd_tmp.ExecTime);
+              sb.Append("TL." + cmd_tmp.Name + " " + cmd_tmp.ExecTimeStr);
               break;
             case CmdExecType.BL:
-              sb.Append("BL." + cmd_tmp.Name + " " + cmd_tmp.ExecTime);
+              sb.Append("BL." + cmd_tmp.Name + " " + cmd_tmp.ExecTimeStr);
               break;
             case CmdExecType.UTL:
-              sb.Append("UTL." + cmd_tmp.Name + " " + cmd_tmp.ExecTime);
+              sb.Append("UTL." + cmd_tmp.Name + " " + cmd_tmp.ExecTimeStr);
               break;
             default:
               return "";
@@ -144,11 +144,21 @@ namespace WINGS.Data
             case "wait_sec":
               sb.Append(command_file_line_log.Method + " " + command_file_line_log.Body.GetProperty("time").ToString());
               break;
+            case "wait_until":
+              sb.Append(command_file_line_log.Method + " " + command_file_line_log.Body.GetProperty("variable").ToString() + " " + command_file_line_log.Body.GetProperty("compare").ToString() + " " + command_file_line_log.Body.GetProperty("value").ToString()
+                        + " " + command_file_line_log.Body.GetProperty("statement").ToString() + " " + command_file_line_log.Body.GetProperty("timeoutsec").ToString());
+              break;
             case "call":
               sb.Append(command_file_line_log.Method + " " + command_file_line_log.Body.GetProperty("fileName").ToString());
               break;
             case "check_value":
               sb.Append(command_file_line_log.Method + " " + command_file_line_log.Body.GetProperty("variable").ToString() + " " + command_file_line_log.Body.GetProperty("compare").ToString() + " " + command_file_line_log.Body.GetProperty("value").ToString());
+              break;
+            case "let":
+              sb.Append(command_file_line_log.Method + " " + command_file_line_log.Body.GetProperty("variable").ToString() + " " + command_file_line_log.Body.GetProperty("equal").ToString() + " " + command_file_line_log.Body.GetProperty("equation").ToString());
+              break;
+            case "get":
+              sb.Append(command_file_line_log.Method + " " + command_file_line_log.Body.GetProperty("variable").ToString() + " " + command_file_line_log.Body.GetProperty("value").ToString());
               break;
           }
           if (!String.IsNullOrEmpty(command_file_line_log.InlineComment))

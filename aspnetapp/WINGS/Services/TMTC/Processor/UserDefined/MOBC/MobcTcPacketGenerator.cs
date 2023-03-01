@@ -65,7 +65,6 @@ namespace WINGS.Services
       var channelId = GetChannelId(command);
       var exeType = GetExeType(command);
       var apid = GetApid(command);
-      var ti = GetTi(command);
 
       //TC Transfer Frame (except CRC)
       SetTctfVer(packet, TctfVer.Ver1);
@@ -95,7 +94,7 @@ namespace WINGS.Services
       SetUdCmdType(packet, UdCmdType.Sm);
       SetUdChannelId(packet, channelId);
       SetUdExeType(packet, exeType);
-      SetUdTi(packet, ti, exeType);
+      SetUdTi(packet, exeType, command);
       SetParams(packet, command.Params, UserDataPos + UserDataHdrLen);
 
       //CRC
@@ -203,9 +202,14 @@ namespace WINGS.Services
           return TcpApid.MobcCmd;
       }
     }
-    private uint GetTi(Command command)
+    protected uint GetTi(Command command)
     {
-      return command.ExecTime;
+      return command.ExecTimeInt;
+    }
+
+    protected double GetUnixTi(Command command)
+    {
+      return command.ExecTimeDouble;
     }
 
     private void SetTctfVer(byte[] packet, TctfVer ver)
@@ -391,16 +395,17 @@ namespace WINGS.Services
       int pos = UserDataPos + 3;
       packet[pos] = (byte)type;
     }
-    private void SetUdTi(byte[] packet, uint ti, UdExeType type)
+    private void SetUdTi(byte[] packet, UdExeType type, Command command)
     {
       int pos = UserDataPos + 4;
       if(type == UdExeType.UnixTimeline || type == UdExeType.AobcUnixTimeline || type == UdExeType.TobcUnixTimeline)
       {
-        uint epoch_unix_time = 1577836800; // UNIX TIME of 2020/1/1 00:00:00(UTC)
+        double epoch_unix_time = 1577836800; // UNIX TIME of 2020/1/1 00:00:00(UTC)
         uint converted_unix_time = 0;
-        if (ti - epoch_unix_time > 0)
+        double unixTi = GetUnixTi(command);
+        if (unixTi - epoch_unix_time > 0)
         {
-          converted_unix_time = (ti - epoch_unix_time)*10;
+          converted_unix_time = (uint) Math.Round((unixTi - epoch_unix_time)*10);
         }
         byte val = (byte)(converted_unix_time >> 24);
         packet[pos] = val;
@@ -413,6 +418,7 @@ namespace WINGS.Services
       }
       else
       {
+        uint ti = GetTi(command);
         byte val = (byte)(ti >> 24);
         packet[pos] = val;
         val = (byte)(ti >> 16 & 0xff);
