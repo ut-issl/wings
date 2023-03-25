@@ -62,6 +62,19 @@ const useStyles = makeStyles((theme: Theme) =>
       width: "3cm",
       fontSize: "10pt"
     },
+    title: {
+      color: '#ffff00'
+    },
+    titleWithSpace: {
+      color: 'white',
+      fontSize: 12,
+      paddingRight: 20
+    },
+    titleWithOutSpace: {
+      color: 'white',
+      fontSize: 12,
+      paddingRight: 20
+    }
 }));
 
 export interface GraphTabPanelProps {
@@ -235,6 +248,15 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
 
   return (
     <div className={classes.root}>
+      <div className={classes.titleWithSpace}>
+          <span className={classes.title}>Name : </span>{tab.name}
+      </div>
+      <div className={classes.titleWithSpace}>
+        <span className={classes.title}>Apid : </span> 0x{Number(tab.tlmApid).toString(16)}
+      </div>
+      <div className={classes.titleWithOutSpace}>
+        <span className={classes.title}>Packet Id : </span> 0x{Number(tab.packetId).toString(16)}
+      </div>
       <Toolbar>
         <TextField
           label="Data Length" onChange={inputDataLength}
