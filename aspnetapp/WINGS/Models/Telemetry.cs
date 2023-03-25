@@ -17,7 +17,7 @@ namespace WINGS.Models
   }
   public class PacketInfo
   {
-    public string ApId { get; set; }
+    public string TlmApid { get; set; }
     public string Id { get; set; }
     public string CompoName { get; set; }
     public string Name { get; set; }

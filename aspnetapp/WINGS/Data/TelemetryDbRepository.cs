@@ -82,7 +82,7 @@ namespace WINGS.Data
         packetName = packetName.Substring(packetName.IndexOf("_TLM_DB_") + 8);
       }
       var packetInfo = new PacketInfo(){
-        ApId = tlmConfig.ApId,
+        TlmApid = tlmConfig.TlmApid,
         Id = packetId,
         CompoName = tlmConfig.CompoName,
         Name = packetName,

@@ -14,14 +14,14 @@ namespace WINGS.Services
 
     public override async Task<bool> AnalyzePacketAsync(TmPacketData data, List<TelemetryPacket> prevTelemetry)
     {
-      var apId = GetApId(data.TmPacket);
+      var tlmApid = GetTlmApid(data.TmPacket);
       var packetId = GetPacketId(data.TmPacket);
       var isRealtimeData = true;
       UInt32 TI = 0;
-      return await SetTelemetryValuesAsync(data, apId, packetId, isRealtimeData, TI, prevTelemetry);
+      return await SetTelemetryValuesAsync(data, tlmApid, packetId, isRealtimeData, TI, prevTelemetry);
     }
 
-    private UInt16 CombiteBytes(byte[] bytes, int pos)
+    private UInt16 CombineBytes(byte[] bytes, int pos)
     {
       UInt16 byte1 = (UInt16)bytes[pos];
       UInt16 byte2 = (UInt16)bytes[pos + 1];
@@ -29,11 +29,11 @@ namespace WINGS.Services
       return (UInt16)(byte1s + byte2);
     }
 
-    private string GetApId(byte[] packet)
+    private string GetTlmApid(byte[] packet)
     {
       //packet : CCSDS Packet
       int pos = 0;
-      return string.Format("0x{0:x3}", CombiteBytes(packet, pos) & 0b_0000_0111_1111_1111);
+      return string.Format("0x{0:x3}", CombineBytes(packet, pos) & 0b_0000_0111_1111_1111);
     }
 
     public override byte GetCmdWindow()

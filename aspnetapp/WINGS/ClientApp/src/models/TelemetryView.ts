@@ -8,7 +8,7 @@ export type TelemetryViewIndex = FileIndex & {
   ylabelMin: string,
   ylabelMax: string,
   packetId: string,
-  apId: string,
+  tlmApid: string,
   compoName: string
 }
 

@@ -14,7 +14,7 @@ namespace WINGS.Models
 
   public class TlmConfigurationInfo
   {
-    public string ApId { get; set; }
+    public string TlmApid { get; set; }
     public string CompoName { get; set; }
   }
 

@@ -37,7 +37,7 @@ export type TelemetryValue = {
 
 export type TelemetryPacket = {
   packetInfo: {
-    apId: string,
+    tlmApid: string,
     id: string,
     compoName: string,
     name: string,
@@ -49,7 +49,7 @@ export type TelemetryPacket = {
 
 export type TelemetryPacketHistory = {
   packetInfo: {
-    apId: string
+    tlmApid: string
     id: string,
     compoName: string,
     name: string,
@@ -67,7 +67,7 @@ export type TelemetryState = {
     }
   },
   history: {
-    [apid: string]: {
+    [compoName: string]: {
       [packetName: string]: TelemetryHistory[]
     }
   }
