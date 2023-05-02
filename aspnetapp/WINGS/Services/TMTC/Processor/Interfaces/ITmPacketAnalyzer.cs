@@ -8,6 +8,8 @@ namespace WINGS.Services
   public interface ITmPacketAnalyzer
   {
     Task<bool> AnalyzePacketAsync(TmPacketData data, List<TelemetryPacket> prevTelemetry);
+    public byte GetCmdWindow();
+    public bool GetRetransmitFlag();
     void RemoveOperation(string opid);
   }
 }

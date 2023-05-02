@@ -15,7 +15,7 @@ namespace WINGS.Services
       command_count = 0;
     }
 
-    protected override byte[] GeneratePacket(Command command)
+    protected override byte[] GeneratePacket(Command command, byte cmdType, byte cmdWindow)
     {
       int paramsLen = GetParamsByteLength(command);
       var tcPktBdyLen = (UInt16)(TcPktCmdHdrLen + paramsLen);

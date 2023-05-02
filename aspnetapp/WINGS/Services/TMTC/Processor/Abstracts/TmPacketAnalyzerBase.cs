@@ -17,6 +17,8 @@ namespace WINGS.Services
     }
 
     public abstract Task<bool> AnalyzePacketAsync(TmPacketData data, List<TelemetryPacket> prevTelemetry);
+    public abstract byte GetCmdWindow();
+    public abstract bool GetRetransmitFlag();
     public virtual void RemoveOperation(string opid)
     {
     }

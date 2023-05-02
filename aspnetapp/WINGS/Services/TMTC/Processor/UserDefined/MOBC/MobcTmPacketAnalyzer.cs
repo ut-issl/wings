@@ -11,6 +11,8 @@ namespace WINGS.Services
   public class MobcTmPacketAnalyzer : TmPacketAnalyzerBase, ITmPacketAnalyzer
   {
     private static Dictionary<string,List<byte>> statictmPacket= new Dictionary<string,List<byte>>();
+    private static byte cmdWindow = 0x00;
+    private static bool retransmitFlag = false;
     
     public MobcTmPacketAnalyzer(ITelemetryLogRepository logRepository) : base(logRepository)
     {
@@ -27,6 +29,7 @@ namespace WINGS.Services
     private enum COPinEff { COP1 = 0b01 }
     private enum VCId { Default = 0b000000 }
     private enum Spare { Fixed = 0b00 }
+    private enum Retransmit {Flag = 0b1000}
 
     public override async Task<bool> AnalyzePacketAsync(TmPacketData data, List<TelemetryPacket> prevTelemetry)
     {
@@ -157,6 +160,17 @@ namespace WINGS.Services
       return await SetTelemetryListValuesAsync(ccsdsdataList, packetIdList, realtimeFlagList, TIList, prevTelemetry);
     }
 
+    public override byte GetCmdWindow()
+    {
+      return cmdWindow;
+    }
+
+    public override bool GetRetransmitFlag()
+    {
+      return retransmitFlag;
+    }
+
+
     private void AddTelemetryList(string opid, byte[] ccsdstmPacket, List<TmPacketData> ccsdsdataList, List<string> packetIdList, List<bool> realtimeFlagList, List<UInt32> TIList)
     {
       ccsdsdataList.Add(new TmPacketData{ Opid = opid, TmPacket = ccsdstmPacket });
@@ -225,6 +239,8 @@ namespace WINGS.Services
       if (!ChkCOPinEff(ETX, COPinEff.COP1)) { return false; }
       if (!ChkVCId(ETX, VCId.Default)) { return false; }
       if (!ChkSpare(ETX, Spare.Fixed)) { return false; }
+      retransmitFlag = SetRetransmitFlag(ETX, Retransmit.Flag);
+      cmdWindow = SetCmdWindow(ETX);
       return true;
     }
 
@@ -287,7 +303,19 @@ namespace WINGS.Services
       return (ETX[pos] & mask) == val;
     }
 
+    private bool SetRetransmitFlag(byte[] ETX, Retransmit flag)
+    {
+      int pos = 2;
+      byte mask = 0b_0000_1000;
+      byte val = (byte) ((byte)flag);
+      return (ETX[pos] & mask) == val;
+    }
 
+    private byte SetCmdWindow(byte[] ETX)
+    {
+      int pos = 3;
+      return ETX[pos];
+    }
 
     public override void RemoveOperation(string opid)
     {

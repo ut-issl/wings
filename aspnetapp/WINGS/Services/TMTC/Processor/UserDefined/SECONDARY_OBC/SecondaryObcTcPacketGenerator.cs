@@ -37,7 +37,7 @@ namespace WINGS.Services
     private enum TcpSeqCnt { Default = 0 }
     private enum TcpFmtId { Control = 1, User = 2, Memory = 3 }
 
-    protected override byte[] GeneratePacket(Command command)
+    protected override byte[] GeneratePacket(Command command, byte cmdType, byte cmdWindow)
     {
       int paramsLen = GetParamsByteLength(command);
       var tcpPktLen = (UInt16)(TcPktSecHdrLen + UserDataHdrLen + paramsLen);

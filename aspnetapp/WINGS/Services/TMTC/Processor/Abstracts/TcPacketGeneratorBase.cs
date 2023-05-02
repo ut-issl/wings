@@ -9,11 +9,11 @@ namespace WINGS.Services
 {
   public abstract class TcPacketGeneratorBase
   {
-    protected abstract byte[] GeneratePacket(Command command);
+    protected abstract byte[] GeneratePacket(Command command, byte cmdType, byte cmdWindow);
 
-    public TcPacketData GetTcPacketData(string opid, Command command)
+    public TcPacketData GetTcPacketData(string opid, Command command, byte cmdType, byte cmdWindow)
     {
-      var packet = GeneratePacket(command);
+      var packet = GeneratePacket(command, cmdType, cmdWindow);
       return new TcPacketData(){
         Opid = opid,
         TcPacket = packet

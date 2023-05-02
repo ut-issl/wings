@@ -8,6 +8,7 @@ using System.Globalization;
 using WINGS.Data;
 using WINGS.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace WINGS.Services
 {
@@ -19,11 +20,25 @@ namespace WINGS.Services
     private readonly IDbRepository<Command> _dbRepository;
     private readonly ICommandFileRepository _fileRepository;
     private readonly ICommandFileLogRepository _filelogRepository;
+    private readonly ILogger<ICommandService> _logger;
     private static Dictionary<string, List<CommandFileIndex>> _indexesDict;
+    private static Dictionary<int, Command> _sendCmdDict;
+    private static bool _sendCommandFlag;
+    private int periodMilliSeconds = 200; // 200 ms
+    private static int _nextCmdWindow;
+    private static int _cacheCmdWindow;
+    private static readonly int _cmdWindowSize;
+    protected enum CmdType { TypeA = 0b0, TypeB = 0b1 };
+    
 
     static CommandService()
     {
       _indexesDict = new Dictionary<string, List<CommandFileIndex>>();
+      _sendCmdDict = new Dictionary<int, Command>();
+      _sendCommandFlag = false;
+      _nextCmdWindow = 0x00;
+      _cacheCmdWindow = 0x00;
+      _cmdWindowSize = 256;
     }
     
     public CommandService(ApplicationDbContext dbContext,
@@ -31,7 +46,8 @@ namespace WINGS.Services
                           ITcPacketManager tcPacketManager,
                           IDbRepository<Command> dbRepository,
                           ICommandFileRepository fileRepository,
-                          ICommandFileLogRepository filelogRepository)
+                          ICommandFileLogRepository filelogRepository,
+                          ILogger<ICommandService> logger)
     {
       _dbContext = dbContext;
       _tmtcHandlerFactory = tmtcHandlerFactory;
@@ -39,6 +55,7 @@ namespace WINGS.Services
       _dbRepository = dbRepository;
       _fileRepository = fileRepository;
       _filelogRepository = filelogRepository;
+      _logger = logger;
     }
 
     public IEnumerable<Command> GetAllCommand(string opid)
@@ -53,7 +70,7 @@ namespace WINGS.Services
 
       try
       {
-        _tcPacketManager.RegisterCommand(opid, command);
+        _tcPacketManager.RegisterCommand(opid, command, (byte)CmdType.TypeB, 0x00);
 
         var commandLog = CommandToLog(opid, command);
         _dbContext.CommandLogs.Add(commandLog);
@@ -66,6 +83,55 @@ namespace WINGS.Services
         Console.WriteLine(ex.Message);
         return false;
       }
+    }
+
+    public async Task<bool> SendTypeACommandAsync(string opid, Command command, string commanderId, int cmdWindow)
+    {
+      var commandDb = new List<Command>(_tcPacketManager.GetCommandDb(opid));
+      if (!IsParamsTypeCheckOk(command, commandDb)) return false;
+
+      try
+      {
+        int reqCmdWindow = (int) _tmtcHandlerFactory.GetTmPacketAnalyzer(opid).GetCmdWindow();
+        _tcPacketManager.RegisterCommand(opid, command, (byte)CmdType.TypeA, (byte)cmdWindow);
+
+        var commandLog = CommandToLog(opid, command);
+        _dbContext.CommandLogs.Add(commandLog);
+        _sendCmdDict.Add(cmdWindow, command);
+
+        for (int i = _cacheCmdWindow; i < ((_cacheCmdWindow>reqCmdWindow) ? (reqCmdWindow+_cmdWindowSize) : reqCmdWindow); i++)
+        {
+          _sendCmdDict.Remove(i%_cmdWindowSize);
+          _cacheCmdWindow = (i+1) % _cmdWindowSize;
+        }
+
+        await _dbContext.SaveChangesAsync();
+
+        return true;
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine(ex.Message);
+        return false;
+      }
+    }
+
+    public bool InitializeTypeAStatus(string opid) {
+      try
+      {
+        _sendCmdDict.Clear();
+        return true;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError(ex, $"Error initializing Type-A status. {ex.ToString()}");
+        return false;
+      }
+    }
+
+    public int UpdateCmdWindow(int window)
+    {
+      return (window == 0xff)?0x00:window+1;
     }
 
     public void SendRawCommand(string opid, byte[] packet)
