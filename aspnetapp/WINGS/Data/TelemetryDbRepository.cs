@@ -221,7 +221,7 @@ namespace WINGS.Data
       {
         case TlmCmdFileLocation.Local:
           Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-          return Task.FromResult(new StreamReader(filePath, Encoding.GetEncoding("shift-jis")));
+          return Task.FromResult(new StreamReader(filePath, Encoding.GetEncoding("utf-8")));
         default:
           throw new ArgumentException("Undefined file location");
       }

@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { useSelector, useDispatch } from 'react-redux';
 import { Telemetry, TelemetryViewIndex } from '../../../models';
 import { RootState } from '../../../redux/store/RootState';
-import { getLatestTelemetries } from '../../../redux/telemetries/selectors';
+import { getTelemetryColor, getLatestTelemetries } from '../../../redux/telemetries/selectors';
 import Toolbar from '@material-ui/core/Toolbar';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -37,11 +37,39 @@ const useStyles = makeStyles((theme: Theme) =>
       paddingInlineStart: 0,
       margin: 0
     },
-    tlmli: {
+    tlmLayer: {
       fontSize: 'xx-small',
       display: 'block',
+      color: '#ffff00',
+      paddingTop: "5px"
+    },
+    tlmLayerOther: {
+      fontSize: 'xx-small',
+      display: 'block',
+      paddingTop: "5px"
+    },
+    tlmli: {
+      fontSize: 'xx-small',
+      display: 'block'
+    },
+    tlmNormal: {
       "& span" : {
         color: theme.palette.success.main
+      }
+    },
+    tlmColorRed: {
+      "& span": {
+        color: theme.palette.error.main
+      }
+    },
+    tlmColorBlue: {
+      "& span": {
+        color: theme.palette.success.dark
+      }
+    },
+    tlmColorGreen: {
+      "& span": {
+        color: theme.palette.success.contrastText
       }
     },
     dataTypeField: {
@@ -51,6 +79,22 @@ const useStyles = makeStyles((theme: Theme) =>
     dialogPaper: {
       width: '80%',
       maxHeight: 435,
+    },
+    packetId: {
+      color: 'white',
+      fontSize: 12,
+      paddingRight: 20
+    },
+    packetIdTitle: {
+      color: '#ffff00'
+    },
+    tabName: {
+      color: 'white',
+      fontSize: 12,
+      paddingRight: 20
+    },
+    tabNameTitle: {
+      color: '#ffff00'
     }
 }));
 
@@ -66,11 +110,12 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   const dispatch = useDispatch();
   const tlms = getLatestTelemetries(selector)[tab.name];
   const selectedTelemetries = tab.selectedTelemetries;
-  const tlmClassList :[string[]] = [[tab.name]];
+  const tlmClassList: string[] = [tab.name];
+  const tlmColor = getTelemetryColor(selector);
 
   let tlmsDisplayed:Telemetry[] = [];
   tlms.forEach(tlm => {
-    if (selectedTelemetries.indexOf(tlm.telemetryInfo.name)>=0){
+    if (selectedTelemetries.indexOf(tlm.telemetryInfo.name) >= 0){
       tlmsDisplayed.push(tlm);
     }
   })
@@ -95,40 +140,60 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
     setDialogOpen(false);
   };
 
+  const setTlmTagColor = (i: number) => {
+    if (i <= 2) {
+      return classes.tlmLayer;
+    } else {
+      return classes.tlmLayerOther;
+    }
+  }
+
+  const setClassName = (dataType: string, value: string) => {
+    if (dataType == "Raw") {
+      return `${classes.tlmli} ${classes.tlmNormal}`;
+    } else if (tlmColor.red.includes(value)) {
+      return `${classes.tlmli} ${classes.tlmColorRed}`;
+    } else if (tlmColor.green.includes(value)) {
+      return `${classes.tlmli} ${classes.tlmColorGreen}`;
+    } else if (tlmColor.blue.includes(value)) {
+      return `${classes.tlmli} ${classes.tlmColorBlue}`;
+    } else {
+      return `${classes.tlmli} ${classes.tlmNormal}`;
+    }
+  }
+
   const showTlmData = (tlm: Telemetry) => {
     const tlmClasses = tlm.telemetryInfo.name.split('.');
     const tlmClassesDisplayed: JSX.Element[] = [];
     if (tlmClasses.length == 1){
       tlmClassesDisplayed.push(
-        <li key={tlm.telemetryInfo.name} className={classes.tlmli}>
+        <li key={tlm.telemetryInfo.name} className={setClassName(tab.dataType, tlm.telemetryValue.value)}>
           {tlm.telemetryInfo.name} : <span>{(tab.dataType != "Raw")? tlm.telemetryValue.value: tlm.telemetryValue.rawValue}</span>
         </li>
       )
-      tlmClassList.push([tlm.telemetryInfo.name]);
-    }
-    else {
+      tlmClassList.push(tlm.telemetryInfo.name);
+    } else {
       const thisTlmClasses:string[] = [];
       tlmClasses.forEach((tlmName, i) => {
         let tlmClassesTmp = (i == 0)? tlmName :tlmClasses.slice(0,i+1).join(".");
-        if (i == tlmClasses.length-1) {
+        if (i == tlmClasses.length - 1) {
           tlmClassesDisplayed.push(
-            <li key={tlm.telemetryInfo.name} className={classes.tlmli}>
+            <li key={tlm.telemetryInfo.name} className={setClassName(tab.dataType, tlm.telemetryValue.value)}>
               {<span style={{marginRight: `${10*i}px`}}></span>}
               {tlmName} : <span>{(tab.dataType != "Raw")? tlm.telemetryValue.value: tlm.telemetryValue.rawValue}</span>
             </li>
           )
-        }
-        else if (tlmClassList[tlmClassList.length-1].indexOf(tlmClassesTmp) == -1) {
+        } else if (!tlmClassList.includes(tlmClassesTmp)) {
           tlmClassesDisplayed.push(
-            <li key={tlm.telemetryInfo.name} className={classes.tlmli}>
-              {<span style={{marginRight: `${10*i}px`}}></span>}
+            <li key={tlm.telemetryInfo.name} className={setTlmTagColor(i)}>
+              {<span style={{ marginRight: `${10 * i}px` }}></span>}
               {tlmName}
             </li>
           )
         }
         thisTlmClasses.push(tlmClassesTmp);
       })
-      tlmClassList.push(thisTlmClasses);
+      thisTlmClasses.forEach(thisTlmClass => { if (!tlmClassList.includes(thisTlmClass)) tlmClassList.push(thisTlmClass) });
     }
     return (
       <>
@@ -141,14 +206,22 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
     <div className={classes.root}>
       <Toolbar>
         <FormControl component="fieldset">
-          <FormLabel component="legend" className={classes.dataTypeField}>Data Type</FormLabel>
-          <RadioGroup aria-label="data-type" name="data-type" value={dataType} onChange={handleChange}>
-            <Toolbar>
-              <FormControlLabel value="Default" control={<Radio />} label="Default" />
-              <FormControlLabel value="Raw" control={<Radio />} label="Raw" />
-            </Toolbar>
-          </RadioGroup>
+          <Toolbar>
+            <FormLabel component="legend" className={classes.dataTypeField}>Data Type</FormLabel>
+            <RadioGroup aria-label="data-type" name="data-type" value={dataType} onChange={handleChange}>
+              <Toolbar>
+                <FormControlLabel value="Default" control={<Radio />} label="Default" />
+                <FormControlLabel value="Raw" control={<Radio />} label="Raw" />
+              </Toolbar>
+            </RadioGroup>
+          </Toolbar>
         </FormControl>
+        <div className={classes.tabName}>
+          <span className={classes.tabNameTitle}>Name : </span>{tab.name}
+        </div>
+        <div className={classes.packetId}>
+          <span className={classes.packetIdTitle}>Packet Id : </span> 0x{Number(tab.packetId).toString(16)}
+        </div>
         <Button onClick={handleOk} color="primary">
           SET
         </Button>
@@ -169,19 +242,19 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
         spacing={2}
       >
         <Grid item className={classes.item}>
-          {tlmsDisplayed.filter((tlm,i) => i < num/3)
+          {tlmsDisplayed.filter((tlm, i) => i < num / 3)
           .map(tlm => (
             showTlmData(tlm)
           ))}
         </Grid>
         <Grid item className={classes.item}>
-          {tlmsDisplayed.filter((tlm,i) => i >= num/3 && i < 2*num/3)
-          .map(tlm => (
+          {tlmsDisplayed.filter((tlm, i) => i >= num / 3 && i < 2 * num / 3)
+          .map((tlm => (
             showTlmData(tlm)
-          ))}
+          )))}
         </Grid>
         <Grid item className={classes.item}>
-          {tlmsDisplayed.filter((tlm,i) => i >= 2*num/3 && i < num)
+          {tlmsDisplayed.filter((tlm, i) => i >= 2 * num / 3)
           .map(tlm => (
             showTlmData(tlm)
           ))}

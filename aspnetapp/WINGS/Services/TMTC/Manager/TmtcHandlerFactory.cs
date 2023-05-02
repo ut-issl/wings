@@ -31,6 +31,9 @@ namespace WINGS.Services
         case "OBC":
           return _serviceProvider.GetService<MobcTmPacketAnalyzer>();
         
+        case "SECONDARY_OBC":
+          return _serviceProvider.GetService<SecondaryObcTmPacketAnalyzer>();
+
         case "ISSL_COMMON":
           return _serviceProvider.GetService<IsslCommonTmPacketAnalyzer>();
 
@@ -49,7 +52,10 @@ namespace WINGS.Services
       {
         case "OBC":
           return _serviceProvider.GetService<MobcTcPacketGenerator>();
-        
+
+        case "SECONDARY_OBC":
+          return _serviceProvider.GetService<SecondaryObcTcPacketGenerator>();
+
         case "ISSL_COMMON":
           return _serviceProvider.GetService<IsslCommonTcPacketGenerator>();
 

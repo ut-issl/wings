@@ -3,6 +3,7 @@ import * as OperationActions from '../operations/actions';
 import initialState from '../store/initialState';
 
 type Actions = 
+  | ReturnType<typeof Actions.updateTelemetryColorAction>
   | ReturnType<typeof Actions.updateLatestTelemetriesAction>
   | ReturnType<typeof Actions.updateTelemetryHistoriesAction>
   | ReturnType<typeof Actions.addTelemetryHistoriesAction>
@@ -11,6 +12,12 @@ type Actions =
 
 export const TelemetriesReducer = (state = initialState.tlms, action: Actions) => {
   switch (action.type) {
+    case Actions.UPDATE_TELEMETRY_COLOR:
+      return {
+        ...state,
+        tlmColor: action.payload 
+      }
+
     case Actions.UPDATE_LATEST_TELEMETRY:
       const tlmPackets = action.payload;
       var tlms = state.latest;
@@ -33,7 +40,7 @@ export const TelemetriesReducer = (state = initialState.tlms, action: Actions) =
     case Actions.ADD_TELEMETRY_HISTORY:
       const latestTlms = action.payload;
       let tlmHstrs = state.history;
-      if (latestTlms != []){
+      if (latestTlms.length != 0){
         latestTlms.forEach(tlmPacket => {
           if(tlmPacket.telemetries[0].telemetryValue.time != null) {
             tlmHstrs[tlmPacket.packetInfo.name].forEach((element, index) => {

@@ -21,5 +21,7 @@ namespace WINGS.Services
     Stream GetCommandLogStream(string opid);
     IEnumerable<CommandFileLineLogs> GetCmdLogHistory (string opid);
     Stream GetCommandFileLogStream(string opid);
+    Task<string> GetCommandRowAsync(string opid, int cmdFileInfoIndex, int fileId, int row);
+    Task<CommandFileLine> LoadCommandRowAsync(string opid, int cmdFileInfoIndex, int fileId, int row, string line);
   }
 }

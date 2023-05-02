@@ -6,7 +6,9 @@ export const theme = createMuiTheme({
     primary: blueGrey,
     secondary: pink,
     success: {
-      main: cyan["A200"]
+      main: cyan["A200"],
+      dark: "#008AF2",
+      contrastText: "#52ff33"
     },
     info: {
       main: purple["A100"]

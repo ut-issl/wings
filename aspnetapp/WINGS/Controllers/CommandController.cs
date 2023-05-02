@@ -139,7 +139,7 @@ namespace WINGS.Controllers
     }
 
     // GET: api/operations/f364../cmd_plans/0/5
-    [HttpGet("cmd_plans/{cmd_file_info_index}/{file_id}")]
+    [HttpGet("cmd_plans/{cmdFileInfoIndex}/{fileId}")]
     public async Task<IActionResult> GetCommandFile(string id, int cmdFileInfoIndex, int fileId)
     {
       if (fileId < 0)
@@ -150,6 +150,45 @@ namespace WINGS.Controllers
       {
         var file = await _commandService.GetCommandFileAsync(id, cmdFileInfoIndex, fileId);
         return StatusCode(Status200OK, new { data = file });
+      }
+      catch (ResourceNotFoundException ex)
+      {
+        return StatusCode(Status404NotFound, new { message = ex.Message });
+      }
+    }
+
+    // GET: api/operations/f364../cmd_plans/0/5/10
+    [HttpGet("cmd_plans/{cmdFileInfoIndex}/{fileId}/{row}")]
+    public async Task<IActionResult> GetCommandRow(string id, int cmdFileInfoIndex, int fileId, int row)
+    {
+      if (fileId < 0)
+      {
+        return StatusCode(Status400BadRequest, new { message = "The file id must be an integer greater than or equal to 0" });
+      }
+      try
+      {
+        var line = await _commandService.GetCommandRowAsync(id, cmdFileInfoIndex, fileId, row);
+        return StatusCode(Status200OK, new { data = line });
+      }
+      catch (ResourceNotFoundException ex)
+      {
+        return StatusCode(Status404NotFound, new { message = ex.Message });
+      }
+    }
+
+    // PUT: api/operations/f364../cmd_plans/0/5/10/###
+    [HttpPut("cmd_plans/{cmdFileInfoIndex}/{fileId}/{row}")]
+    public async Task<IActionResult> LoadCommandRow(string id, int cmdFileInfoIndex, int fileId, int row, [FromBody] JsonElement json)
+    {
+      string text = json.GetProperty("text").GetString();
+      if (fileId < 0)
+      {
+        return StatusCode(Status400BadRequest, new { message = "The file id must be an integer greater than or equal to 0" });
+      }
+      try
+      {
+        var commandFileLine = await _commandService.LoadCommandRowAsync(id, cmdFileInfoIndex, fileId, row, text);
+        return StatusCode(Status200OK, new { data = commandFileLine });
       }
       catch (ResourceNotFoundException ex)
       {
