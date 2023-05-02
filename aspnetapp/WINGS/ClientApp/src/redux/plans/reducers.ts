@@ -18,6 +18,11 @@ type Actions =
   | ReturnType<typeof Actions.selectedTargetEditAction>
   | ReturnType<typeof Actions.selectedCommandEditAction>
   | ReturnType<typeof Actions.selectedCommandCommitAction>
+  | ReturnType<typeof Actions.deleteUnplannedCommandAction>
+  | ReturnType<typeof Actions.moveUpUnplannedCommandAction>
+  | ReturnType<typeof Actions.moveDownUnplannedCommandAction>
+  | ReturnType<typeof Actions.finishEditCommandLineAction>
+  | ReturnType<typeof Actions.cancelEditCommandLineAction>
   | ReturnType<typeof OperationActions.leaveOperationAction>
 ;
 
@@ -43,7 +48,11 @@ export const PlansReducer = (state = initialState.plans, action: Actions) => {
             success: false,
             error: false
           },
-          request: request
+          request: request,
+          edit: {
+            status: false,
+            text: ""
+          }
         } as CommandPlanLine)
       )
       return {
@@ -218,6 +227,107 @@ export const PlansReducer = (state = initialState.plans, action: Actions) => {
       }
     }
 
+    case Actions.DELETE_UNPLANNED_COMMAND: {
+      const row = action.payload;
+      return {
+        ...state,
+        selectedRow: row,
+        contents: {
+          ...state.contents,
+          [UNPLANNED_ID]: [
+            ...state.contents[UNPLANNED_ID].slice(0,row),
+            ...state.contents[UNPLANNED_ID].slice(row+1)
+          ]
+        }
+      }
+    }
+
+    case Actions.MOVE_UP_UNPLANNED_COMMAND: {
+      const row = action.payload;
+      if (row==0){
+        return state;
+      }
+      else{
+        return {
+          ...state,
+          selectedRow: row,
+          contents: {
+            ...state.contents,
+            [UNPLANNED_ID]: [
+              ...state.contents[UNPLANNED_ID].slice(0,row-1),
+              ...state.contents[UNPLANNED_ID].slice(row,row+1),
+              ...state.contents[UNPLANNED_ID].slice(row-1,row),
+              ...state.contents[UNPLANNED_ID].slice(row+1)
+            ]
+          }
+        }
+      }
+    }
+
+    case Actions.MOVE_DOWN_UNPLANNED_COMMAND: {
+      const row = action.payload;
+      if (row==-1){
+        return state;
+      }
+      else{
+        return {
+          ...state,
+          selectedRow: row,
+          contents: {
+            ...state.contents,
+            [UNPLANNED_ID]: [
+              ...state.contents[UNPLANNED_ID].slice(0,row),
+              ...state.contents[UNPLANNED_ID].slice(row+1,row+2),
+              ...state.contents[UNPLANNED_ID].slice(row,row+1),
+              ...state.contents[UNPLANNED_ID].slice(row+2)
+            ]
+          }
+        }
+      }
+    }
+
+    case Actions.FINISH_EDIT_COMMAND_LINE: {
+      const activeId = state.activeId;
+      const row = action.payload.row;
+      const commandFileLine = action.payload.commandFileLine;
+      return {
+        ...state,
+        contents: {
+          ...state.contents,
+          [activeId]: [
+            ...state.contents[activeId].slice(0,row),
+            {
+              ...state.contents[activeId][row],
+              request: commandFileLine
+            },
+            ...state.contents[activeId].slice(row+1)
+          ]
+        }
+      }
+    }
+
+    case Actions.CANCEL_EDIT_COMMAND_LINE: {
+      const row = action.payload;
+      const activeId = state.activeId;
+      return {
+        ...state,
+        contents: {
+          ...state.contents,
+          [activeId]: [
+            ...state.contents[activeId].slice(0,row),
+            {
+              ...state.contents[activeId][row],
+              edit: {
+                status: true,
+                text: ""
+              }
+            },
+            ...state.contents[activeId].slice(row+1)
+          ]
+        }
+      }
+    }
+      
     case OperationActions.LEAVE_OPERATION: {
       return initialState.plans;
     }

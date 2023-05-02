@@ -11,6 +11,8 @@ import { selectedCommandEditAction, selectedCommandCommitAction, selectedTargetE
 import { getSelectedCommand } from '../../../redux/plans/selectors';
 import { TARGET_ALL, COMPONENT_ALL } from '../../../constants';
 import SetParamTable from './SetParamTable';
+import Select from 'react-select';
+import { SingleValue, ActionMeta } from 'react-select/dist/declarations/src';
 
 const useStyles = makeStyles(
   createStyles({
@@ -20,6 +22,10 @@ const useStyles = makeStyles(
     },
     button: {
       width: 120
+    },
+    commandName: {
+      fontSize: '9pt',
+      color: 'rgba(255, 255, 255, 0.7)'
     }
 }));
 
@@ -35,27 +41,27 @@ const CommandSelectionArea = () => {
   const components = getComponents(selector);
   const { component, target, command } = getSelectedCommand(selector);
   
-  const initIndexNum = commands.map(cmd => cmd.code).indexOf(command.code);
-  const initIndex = initIndexNum < 0 ? "" : String(initIndexNum);
-  const [commandIndex, setCommandIndex] = useState(initIndex);
+  interface OptionType {
+    label: string,
+    value: string
+  };
 
-  const [commandOptions, setCommandOptions] = useState<SelectOption[]>([]);
+  const [commandOptions, setCommandOptions] = useState<OptionType[]>([]);
 
   const targetOptions: SelectOption[] = targets.map(target => ({ id: target, name: target }));
 
   const componentOptions: SelectOption[] = components.map(component => ({ id: component, name: component }));
 
   useEffect(() => {
-    let options: SelectOption[] = [];
+    let options: OptionType[] = [];
     commands.map((command, i) => {
       (target === TARGET_ALL || command.target === target) && (component === COMPONENT_ALL || command.component === component) &&
-      options.push({id: String(i), name: command.name})
+      options.push({label: command.name, value: String(i)})
     });
     setCommandOptions(options);
   }, [component, target]);
 
   const handleComponentChange = (component: string) => {
-    setCommandIndex("");
     dispatch(selectedComponentEditAction(component));
   }
 
@@ -77,21 +83,44 @@ const CommandSelectionArea = () => {
   };
 
   const handleTargetChange = (target: string) => {
-    setCommandIndex("");
     dispatch(selectedTargetEditAction(target));
   }
 
-  const handleCommandIndexChange = (commandIndex: string) => {
-    setCommandIndex(commandIndex);
-    const index: number = +commandIndex;
-    const newSelectedCommand = {
-      ...commands[index],
-      execType: command.execType,
-      execTime: command.execTime,
-      isViaMobc: command.isViaMobc
+  const handleCommandChange = (newValue: SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => {
+    if (newValue != null && actionMeta.action == 'select-option') {
+      const index: number = +newValue.value;
+      const newSelectedCommand = {
+        ...commands[index],
+        execType: command.execType,
+        execTime: command.execTime,
+        isViaMobc: command.isViaMobc
+      }
+      dispatch(selectedCommandEditAction(newSelectedCommand));
     }
-    dispatch(selectedCommandEditAction(newSelectedCommand));
   }
+
+  const customStyles = {
+    control: (base: any) => ({
+      ...base,
+      background: '#A8A8A8',
+      borderColor: '#424242',
+      boxShadow: null,
+    }),
+    menu: (base: any) => ({
+      ...base,
+      borderRadius: 0,
+      marginTop: 0
+    }),
+    menuList: (base: any) => ({
+      ...base,
+      padding: 0,
+      background: 'rgba(255, 255, 255, 0.7)',
+      color: '#424242',
+      // "&:hover": {
+      //   background: '#000000'
+      // }
+    })
+  };
 
   const addUnplannedCommand = () => {
     if (command.name === "") return;
@@ -124,9 +153,11 @@ const CommandSelectionArea = () => {
           select={handleTargetChange} value={target}
         />
         <div className="module-spacer--extra-extra-small"/>
-        <SelectBox
-          label="Command Name" options={commandOptions}
-          select={handleCommandIndexChange} value={commandIndex}
+        <div className={classes.commandName}>Command Name</div>
+        <Select
+          styles={customStyles}
+          onChange={handleCommandChange}
+          options={commandOptions}
         />
         <div className="module-spacer--extra-extra-small"/>
         <Typography>

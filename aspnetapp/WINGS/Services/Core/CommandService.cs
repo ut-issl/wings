@@ -116,6 +116,38 @@ namespace WINGS.Services
       var file = await _fileRepository.LoadCommandFileAsync(config, index, commandDb);
       return file;
     }
+    public async Task<string> GetCommandRowAsync(string opid, int cmdFileInfoIndex, int fileId, int row)
+    {
+      if (!_indexesDict.TryGetValue(opid, out var indexes))
+      {
+        throw new ResourceNotFoundException("The operation is not running");
+      }
+      var index = indexes.FirstOrDefault(index => index.CmdFileInfoIndex == cmdFileInfoIndex && index.FileId == fileId);
+      if (index == null)
+      {
+        throw new ResourceNotFoundException("The command file is not found");
+      }
+      var config = await new TlmCmdFileConfigBuilder(_dbContext).Build(opid);
+      var line = await _fileRepository.GetCommandRowAsync(config, index, row);
+      return line;
+    }
+
+    public async Task<CommandFileLine> LoadCommandRowAsync(string opid, int cmdFileInfoIndex, int fileId, int row, string text)
+    {
+      if (!_indexesDict.TryGetValue(opid, out var indexes))
+      {
+        throw new ResourceNotFoundException("The operation is not running");
+      }
+      var index = indexes.FirstOrDefault(index => index.CmdFileInfoIndex == cmdFileInfoIndex && index.FileId == fileId);
+      if (index == null)
+      {
+        throw new ResourceNotFoundException("The command file is not found");
+      }
+      var config = await new TlmCmdFileConfigBuilder(_dbContext).Build(opid);
+      var commandDb = _tcPacketManager.GetCommandDb(opid);
+      var commandFileLine = await _fileRepository.LoadCommandRowAsync(config, index, commandDb, row, text);
+      return commandFileLine;
+    }
 
     public async Task<bool> ConfigureCommandDbAsync(Operation operation, TlmCmdFileConfig config)
     {

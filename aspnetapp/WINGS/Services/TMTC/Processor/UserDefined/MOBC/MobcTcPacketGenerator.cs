@@ -49,7 +49,7 @@ namespace WINGS.Services
     private enum TctfBypsFlag { TypeA = 0b0, TypeB = 0b1 }
     private enum TctfCtlCmdFlag { Dmode = 0b0, Cmode = 0b1 }
     private enum TctfSpare { Fixed = 0b00 }
-    private enum TctfScId { Default = 0x35C }
+    private enum TctfScId { Default = 0x157 }
     private enum TctfVirChId { Default = 0b000000}
     private enum TctfSeq { TypeB = 0x00 }
 

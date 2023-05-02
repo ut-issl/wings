@@ -1,4 +1,4 @@
-import { Command, FileIndex, Request } from "../../models";
+import { Command, CommandPlanLine, FileIndex, Request } from "../../models";
 
 export const FETCH_PLAN_INDEXES = 'FETCH_PLAN_INDEXES' as const;
 export const OPEN_PLAN = 'OPEN_PLAN' as const;
@@ -13,6 +13,11 @@ export const SELECTED_COMPONENT_EDIT = 'SELECTED_COMPONENT_EDIT' as const;
 export const SELECTED_TARGET_EDIT = 'SELECTED_TARGET_EDIT' as const;
 export const SELECTED_COMMAND_EDIT = 'SELECTED_COMMAND_EDIT' as const;
 export const SELECTED_COMMAND_COMMIT = 'SELECTED_COMMAND_COMMIT' as const;
+export const DELETE_UNPLANNED_COMMAND = 'DELETE_UNPLANNED_COMMAND' as const;
+export const MOVE_UP_UNPLANNED_COMMAND = 'MOVE_UP_UNPLANNED_COMMAND' as const;
+export const MOVE_DOWN_UNPLANNED_COMMAND = 'MOVE_DOWN_UNPLANNED_COMMAND' as const;
+export const FINISH_EDIT_COMMAND_LINE = 'FINISH_EDIT_COMMAND_LINE' as const;
+export const CANCEL_EDIT_COMMAND_LINE = 'CANCEL_EDIT_COMMAND_LINE' as const;
 
 export const fetchPlanIndexesAction = (indexes: FileIndex[]) => {
   return {
@@ -102,5 +107,43 @@ export const selectedCommandEditAction = (command: Command) => {
 export const selectedCommandCommitAction = () => {
   return {
     type: SELECTED_COMMAND_COMMIT
+  }
+};
+
+export const deleteUnplannedCommandAction = (row: number) => {
+  return {
+    type: DELETE_UNPLANNED_COMMAND,
+    payload: row
+  }
+};
+
+export const moveUpUnplannedCommandAction = (row: number) => {
+  return {
+    type: MOVE_UP_UNPLANNED_COMMAND,
+    payload: row
+  }
+};
+
+export const moveDownUnplannedCommandAction = (row: number) => {
+  return {
+    type: MOVE_DOWN_UNPLANNED_COMMAND,
+    payload: row
+  }
+};
+
+export const finishEditCommandLineAction = (row: number, CommandFileLine: CommandPlanLine) => {
+  return {
+    type: FINISH_EDIT_COMMAND_LINE,
+    payload: {
+      row: row,
+      commandFileLine: CommandFileLine
+    }
+  }
+};
+
+export const cancelEditCommandLineAction = (row: number) => {
+  return {
+    type: CANCEL_EDIT_COMMAND_LINE,
+    payload: row
   }
 };
