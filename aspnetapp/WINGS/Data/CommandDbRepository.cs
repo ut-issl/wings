@@ -86,7 +86,8 @@ namespace WINGS.Data
           {
             Component = ComponentName,
             ExecType = CmdExecType.RT,
-            ExecTime = 0,
+            ExecTimeInt = 0,
+            ExecTimeDouble = 0,
             Name = cols[1],
             Code = cols[3],
             Target = cols[2],

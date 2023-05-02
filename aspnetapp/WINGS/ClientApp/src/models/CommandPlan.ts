@@ -28,6 +28,7 @@ export type CommandPlanLine = {
 
 export type CommandPlanState = {
   allIndexes: CommandPlanIndex[],
+  cmdFileVariables: CmdFileVariable[];
   openedIds: string[],
   activeId: string,
   selectedRow: number,
@@ -40,4 +41,9 @@ export type CommandPlanState = {
     command: Command
   },
   inExecution: boolean
+}
+
+export type CmdFileVariable = {
+  variable: string,
+  value: string | number
 }

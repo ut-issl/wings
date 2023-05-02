@@ -47,7 +47,6 @@ namespace WINGS.Services
 
       var channelId = GetChannelId(command);
       var exeType = GetExeType(command);
-      var ti = GetTi(command);
 
       // ISSL Format Header
       // STX
@@ -70,7 +69,7 @@ namespace WINGS.Services
       SetUdCmdType(packet, UdCmdType.Sm);
       SetUdChannelId(packet, channelId);
       SetUdExeType(packet, exeType);
-      SetUdTi(packet, ti, exeType);
+      SetUdTi(packet, exeType, command);
       SetParams(packet, command.Params, UserDataPos + UserDataHdrLen);
 
       // CRC
@@ -120,7 +119,11 @@ namespace WINGS.Services
     }
     private uint GetTi(Command command)
     {
-      return command.ExecTime;
+      return command.ExecTimeInt;
+    }
+    private double GetUnixTi(Command command)
+    {
+      return command.ExecTimeDouble;
     }
 
     private void SetTcpVerNum(byte[] packet, TcpVer ver)
@@ -207,16 +210,17 @@ namespace WINGS.Services
       int pos = UserDataPos + 3;
       packet[pos] = (byte)type;
     }
-    private void SetUdTi(byte[] packet, uint ti, UdExeType type)
+    private void SetUdTi(byte[] packet, UdExeType type, Command command)
     {
       int pos = UserDataPos + 4;
       if(type == UdExeType.UnixTimeline)
       {
-        uint epoch_unix_time = 1577836800; // UNIX TIME of 2020/1/1 00:00:00(UTC)
+        double epoch_unix_time = 1577836800; // UNIX TIME of 2020/1/1 00:00:00(UTC)
         uint converted_unix_time = 0;
-        if (ti - epoch_unix_time > 0)
+        double unixTi = GetUnixTi(command);
+        if (unixTi - epoch_unix_time > 0)
         {
-          converted_unix_time = (ti - epoch_unix_time)*10;
+          converted_unix_time = (uint) Math.Round((unixTi - epoch_unix_time)*10);
         }
         byte val = (byte)(converted_unix_time >> 24);
         packet[pos] = val;
@@ -229,6 +233,7 @@ namespace WINGS.Services
       }
       else
       {
+        uint ti = GetTi(command);
         byte val = (byte)(ti >> 24);
         packet[pos] = val;
         val = (byte)(ti >> 16 & 0xff);

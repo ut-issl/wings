@@ -30,8 +30,11 @@ namespace WINGS.Migrations
                     b.Property<string>("CmdName")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<uint>("ExecTime")
+                    b.Property<uint>("ExecTimeInt")
                         .HasColumnType("int unsigned");
+                    
+                    b.Property<double>("ExecTimeDouble")
+                        .HasColumnType("double");
 
                     b.Property<string>("ExecType")
                         .IsRequired()

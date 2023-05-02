@@ -34,6 +34,11 @@ export const getSelectedRow = createSelector(
   state => state.selectedRow
 );
 
+export const getCommandFileVariables = createSelector(
+  [plansSelector],
+  state => state.cmdFileVariables
+)
+
 export const getSelectedCommand = createSelector(
   [plansSelector],
   state => state.selectedCommand

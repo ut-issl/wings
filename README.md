@@ -50,3 +50,46 @@ The application listed below is required:
 
 ### Command Logs
 - Command logs are shown in "CmdLog" page.
+
+### Functions available to use for *.ops file
+- Command
+	+ Four types of Command are available for OBC: `RT`, `TL`, `UTL`, `BL`
+- Comment
+	+ Comment function is available by prefixing a line with `#`.
+- Other Functions
+	+ `call`: You can call other *.ops file.
+		+ ex.) `call TEST.ops`．
+	+ `wait_sec`: You can specify how many seconds to wait before moving to the next file line.
+		+ ex.) `wait_sec 2`
+	+ `let`: You can define internal variables.
+		+ The right-hand side of the `let` function can perform four arithmetic operations and other operations (*1).
+		+ The current telemetry value or an already defined variable using `let` function can be assigned by enclosing it in braces `{}`.
+		+ ex.1)`let testA = 10 + 60 * 10`
+        + ex.2) `let testB = {testA} + 10 * Math.sin(Math.PI)`
+    + `get`: You can get the current value of the telemerty or the defined variable.
+		+ ex.) `get testA`
+	+ `check_value`: You can check whether a specific value fulfills the requirement.
+		+ `check_value` function is basically used as follows:
+            + `check_value A == B`
+            + `check_value A >= B`
+		+ Currently, `A` is limited to telemetry names and variables defined by `let` function.
+		+ `B` can be any value, the names of telemetry, or variables already defined using `let` function.
+            + The names of telemetry, or variables already defined must be enclosed in braces {}.
+	+ `wait_until`: 条件式が成立するまで待機する機能．
+		+ `wait_until` function is basically used as follows:
+            + `wait_until A == B`
+            + `wait_until A >= B`
+		+ Currently, `A` is limited to telemetry names and variables defined by `let` function.
+		+ `B` can be any value, the names of telemetry, or variables already defined using `let` function.
+            + The names of telemetry, or variables already defined must be enclosed in braces {}.
+
+- Annotation(*1)：About other operations
+    + The following is a list of operations that can be used in addition to the four basic arithmetic operations:
+    + [Math Object](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Math)
+        + Javascript provides built-in objects that allow the following operations:
+        + ex.)
+            + `Math.PI`
+            + `Math.abs(x)`
+            + `Math.asin(x)`
+            + `Math.acos(x)`
+            + `Math.hypot(x, y, z, ...)`

@@ -58,6 +58,7 @@ const initialState: RootState = {
       filePath: "",
       cmdFileInfoIndex: ""
     }],
+    cmdFileVariables: [],
     openedIds: [UNPLANNED_ID],
     activeId: UNPLANNED_ID,
     selectedRow: -1,
@@ -70,7 +71,9 @@ const initialState: RootState = {
       command: {
         component: "",
         execType: "RT",
-        execTime: 0,
+        execTimeInt: 0,
+        execTimeDouble: 0,
+        execTimeStr: "",
         name: "",
         code: "",
         target: "",
