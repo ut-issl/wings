@@ -42,13 +42,13 @@ const useStyles = makeStyles(
       textAlign:"center"
     },
     activeTab: {
-      height: 900,
+      height: 700,
       zIndex: 99,
       position: "absolute",
       backgroundColor: "#212121"
     },
     inactiveTab: {
-      height: 900,
+      height: 700,
       zIndex: 1,
       position: "absolute",
       backgroundColor: "#212121"
