@@ -22,12 +22,6 @@ import DialogActions from '@material-ui/core/DialogActions';
 import { Dialog } from '@material-ui/core';
 import { getOpid } from '../../../redux/operations/selectors';
 import { finishEditCommandLineAction } from '../../../redux/plans/actions';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Toolbar from '@material-ui/core/Toolbar';
 
 const useStyles = makeStyles(
   createStyles({
@@ -48,13 +42,13 @@ const useStyles = makeStyles(
       textAlign:"center"
     },
     activeTab: {
-      height: 700,
+      height: 900,
       zIndex: 99,
       position: "absolute",
       backgroundColor: "#212121"
     },
     inactiveTab: {
-      height: 700,
+      height: 900,
       zIndex: 1,
       position: "absolute",
       backgroundColor: "#212121"
@@ -67,11 +61,12 @@ export interface PlanTabPanelProps {
   value: number,
   index: number,
   name: string,
-  content: CommandPlanLine[]
+  content: CommandPlanLine[],
+  cmdType: string
 }
 
 const PlanTabPanel = (props: PlanTabPanelProps) => {
-  const {value, index, name, content } = props;
+  const {value, index, name, content, cmdType } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
   const selector = useSelector((state: RootState) => state);
@@ -80,7 +75,6 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
 
   const opid = getOpid(selector);
   const activePlanId = getActivePlanId(selector);
-  const [cmdType, setCmdType] = React.useState("Type-B");
 
   const [showModal, setShowModal] = React.useState(false);
   const [text, setText] = React.useState("");
@@ -136,10 +130,6 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         container.scrollTop -= trHeight;
       }     
     }
-  };
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCmdType((event.target as HTMLInputElement).value);
   };
 
   const handleTableClick = () => {
@@ -534,17 +524,6 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
   return (
     <>
       <div className={(value !== index) ? classes.inactiveTab : classes.activeTab}>
-        <FormControl component="fieldset">
-          <Toolbar>
-            <FormLabel component="legend" className={classes.cmdTypeField}>Data Type</FormLabel>
-            <RadioGroup aria-label="data-type" name="data-type" value={cmdType} onChange={handleChange}>
-                <Toolbar>
-                  <FormControlLabel value="Type-A" control={<Radio />} label="Type-A" />
-                  <FormControlLabel value="Type-B" control={<Radio />} label="Type-B" />
-                </Toolbar>
-            </RadioGroup>
-          </Toolbar>
-        </FormControl>
         <div
           role="tabpanel"
           id={`vertical-tabpanel-${index}`}

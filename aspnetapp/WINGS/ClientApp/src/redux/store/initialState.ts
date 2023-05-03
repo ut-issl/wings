@@ -59,6 +59,7 @@ const initialState: RootState = {
       cmdFileInfoIndex: ""
     }],
     cmdFileVariables: [],
+    cmdType: "Type-B",
     openedIds: [UNPLANNED_ID],
     activeId: UNPLANNED_ID,
     selectedRow: -1,
