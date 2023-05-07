@@ -49,3 +49,7 @@ export const getInExecution = createSelector(
   state => state.inExecution
 );
 
+export const getCmdType = createSelector(
+  [plansSelector],
+  state => state.cmdType
+);

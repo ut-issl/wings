@@ -4,6 +4,6 @@ namespace WINGS.Services
 {
   public interface ITcPacketGenerator
   {
-    TcPacketData GetTcPacketData(string opid, Command command);
+    TcPacketData GetTcPacketData(string opid, Command command, byte cmdType, byte cmdWindow);
   }
 }

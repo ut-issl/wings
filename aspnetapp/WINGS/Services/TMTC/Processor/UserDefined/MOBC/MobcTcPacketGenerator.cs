@@ -46,16 +46,16 @@ namespace WINGS.Services
 
     // TC Transfer Frame
     private enum TctfVer { Ver1 = 0b00 }
-    private enum TctfBypsFlag { TypeA = 0b0, TypeB = 0b1 }
+    // private enum TctfBypsFlag { TypeA = 0b0, TypeB = 0b1 }
     private enum TctfCtlCmdFlag { Dmode = 0b0, Cmode = 0b1 }
     private enum TctfSpare { Fixed = 0b00 }
     private enum TctfScId { Default = 0x157 }
     private enum TctfVirChId { Default = 0b000000}
-    private enum TctfSeq { TypeB = 0x00 }
+    // private enum TctfSeq { TypeB = 0x00 }
 
 
 
-    protected override byte[] GeneratePacket(Command command)
+    protected override byte[] GeneratePacket(Command command, byte cmdType, byte cmdWindow)
     {
       int paramsLen = GetParamsByteLength(command);
       var tctfPktLen = (UInt16)(TcTrsFrmPriHdrLen + TcSgmHdrLen + TcPktPriHdrLen + TcPktSecHdrLen + UserDataHdrLen + paramsLen + CrcLen);
@@ -68,13 +68,13 @@ namespace WINGS.Services
 
       //TC Transfer Frame (except CRC)
       SetTctfVer(packet, TctfVer.Ver1);
-      SetTctfBypsFlag(packet, TctfBypsFlag.TypeB);
+      SetTctfBypsFlag(packet, cmdType);
       SetTctfCtlCmdFlag(packet, TctfCtlCmdFlag.Dmode);
       SetTctfSpare(packet, TctfSpare.Fixed);
       SetTctfScId(packet, TctfScId.Default);
       SetTctfVirChId(packet, TctfVirChId.Default);
       SetTctfLen(packet, tctfPktLen);
-      SetTctfSeq(packet, TctfSeq.TypeB);
+      SetTctfSeq(packet, cmdWindow);
 
       //TC Segment
       SetTcsgmSeqFlag(packet, TcsgmSeqFlag.No);
@@ -221,11 +221,11 @@ namespace WINGS.Services
       packet[pos] |= val;
     }
 
-    private void SetTctfBypsFlag(byte[] packet, TctfBypsFlag flag)
+    private void SetTctfBypsFlag(byte[] packet, byte cmdType)
     {
       int pos = TcTrsFrmPos;
       byte mask = 0b_0010_0000;
-      byte val = (byte)((byte)flag << 5);
+      byte val = (byte)(cmdType << 5);
       packet[pos] &= (byte)(~mask);
       packet[pos] |= val;
     }
@@ -279,10 +279,10 @@ namespace WINGS.Services
       packet[pos+1] = val;
     }
 
-    private void SetTctfSeq(byte[] packet, TctfSeq seq)
+    private void SetTctfSeq(byte[] packet, byte cmdWindow)
     {
       int pos = TcTrsFrmPos + 4;
-      packet[pos] = (byte)seq;
+      packet[pos] = cmdWindow;
     }
 
     private void SetTctfCrc(byte[] packet, UInt16 tctfPktLen)

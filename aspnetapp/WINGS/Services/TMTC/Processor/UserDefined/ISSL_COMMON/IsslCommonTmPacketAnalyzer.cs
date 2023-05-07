@@ -20,6 +20,16 @@ namespace WINGS.Services
       return await SetTelemetryValuesAsync(data, packetId, isRealtimeData, TI, prevTelemetry);
     }
 
+    public override byte GetCmdWindow()
+    {
+      return 0x00;
+    }
+
+    public override bool GetRetransmitFlag()
+    {
+      return false;
+    }
+
     private string GetPacketId(byte[] packet)
     {
       int pos = 6;

@@ -24,7 +24,7 @@ export const openPlan = (id: string) => {
   }
 };
 
-export const postCommand = (row: number, req: Request, paramsValue: string[], ret: boolean[]) => {
+export const postCommand = (row: number, cmdType: string, req: Request, paramsValue: string[], ret: boolean[]) => {
   return async (dispatch: Dispatch, getState: () => RootState) => {
     const opid = getState().operation.id;
     var body = JSON.parse(JSON.stringify(req.body));
@@ -33,7 +33,15 @@ export const postCommand = (row: number, req: Request, paramsValue: string[], re
         body.params[i].value = paramsValue[i];
       }
     }
-    const res = await fetch(`/api/operations/${opid}/cmd`,{
+    let cmd_uri :string;
+    if (cmdType == "Type-A")
+    {
+      cmd_uri = "cmd_typeA";
+    }
+    else {
+      cmd_uri = "cmd";
+    }
+    const res = await fetch(`/api/operations/${opid}/${cmd_uri}`,{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

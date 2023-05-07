@@ -37,6 +37,10 @@ const useStyles = makeStyles(
     button: {
       width: 120
     },
+    cmdTypeField: {
+      fontSize: "10pt",
+      textAlign:"center"
+    },
     activeTab: {
       height: 700,
       zIndex: 99,
@@ -57,11 +61,12 @@ export interface PlanTabPanelProps {
   value: number,
   index: number,
   name: string,
-  content: CommandPlanLine[]
+  content: CommandPlanLine[],
+  cmdType: string
 }
 
 const PlanTabPanel = (props: PlanTabPanelProps) => {
-  const {value, index, name, content } = props;
+  const {value, index, name, content, cmdType } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
   const selector = useSelector((state: RootState) => state);
@@ -216,7 +221,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
   const executeMultipleRequests = async () => {
     let row = selectedRow;
     do {
-      const exeret = await executeRequest(row);
+      const exeret = await executeRequest(row, cmdType);
       await sendCmdFileLine(row, exeret);
       if (content[row].request.method == "call") {
         break;
@@ -316,7 +321,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
     }
   }
 
-  const executeRequest = async (row: number): Promise<boolean> => {
+  const executeRequest = async (row: number, cmdType: string): Promise<boolean> => {
     const req = content[row].request;
     let exeret = false;
     switch (req.type) {
@@ -372,7 +377,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             }
           }
         }
-        await dispatch(postCommand(row, req, paramsValue, commandret));
+        await dispatch(postCommand(row, cmdType, req, paramsValue, commandret));
         exeret = commandret[0];
         break;
 

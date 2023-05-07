@@ -8,6 +8,6 @@ namespace WINGS.Services
     void SetCommandDb(string opid, List<Command> commandDb);
     void RemoveOperation(string opid);
     List<Command> GetCommandDb(string opid);
-    void RegisterCommand(string opid, Command command);
+    void RegisterCommand(string opid, Command command, byte cmdType, byte cmdWindow);
   }
 }

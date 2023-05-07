@@ -33,9 +33,9 @@ namespace WINGS.Services
       return commandDb;
     }
 
-    public void RegisterCommand(string opid, Command command)
+    public void RegisterCommand(string opid, Command command, byte cmdType, byte cmdWindow)
     {
-      var data = _tmtcHandlerFactory.GetTcPacketGenerator(opid).GetTcPacketData(opid, command);
+      var data = _tmtcHandlerFactory.GetTcPacketGenerator(opid).GetTcPacketData(opid, command, cmdType, cmdWindow);
       _tmtcHandlerFactory.GetTmtcPacketService(opid).Send(data);
     }
   }
