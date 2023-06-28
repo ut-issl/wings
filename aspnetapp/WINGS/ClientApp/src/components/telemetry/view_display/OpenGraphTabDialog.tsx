@@ -38,7 +38,7 @@ const OpenGraphTabDialog = (props: OpenGraphTabDialogProps) => {
   const dispatch = useDispatch();
   const formGroupRef = React.useRef<HTMLElement>(null);
   
-  const telemetryHistories = getTelemetryHistories(selector)[tab.name];
+  const telemetryHistories = getTelemetryHistories(selector)[tab.compoName][tab.name];
   const telemetryOptions: SelectOption[] = telemetryHistories.map(telemetryHistory => ({ id: telemetryHistory.telemetryInfo.name, name: telemetryHistory.telemetryInfo.name }));
 
 

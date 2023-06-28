@@ -7,7 +7,9 @@ export type TelemetryViewIndex = FileIndex & {
   dataLength: string,
   ylabelMin: string,
   ylabelMax: string,
-  packetId: string
+  packetId: string,
+  tlmApid: string,
+  compoName: string
 }
 
 export type ViewBlockInfo = {

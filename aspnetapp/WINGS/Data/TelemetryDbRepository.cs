@@ -44,7 +44,7 @@ namespace WINGS.Data
           await sem.WaitAsync();
           try
           {
-            return await LoadFileAsync(config.Location, c, filePath);
+            return await LoadFileAsync(config.Location, c, filePath, config.TlmConfigInfo);
           }
           finally
           {
@@ -64,7 +64,7 @@ namespace WINGS.Data
       return telemetryDb;
     }
 
-    private async Task<TelemetryPacket> LoadFileAsync(TlmCmdFileLocation location, TlmCmdFileLocationInfo tlmDBInfo, string filePath)
+    private async Task<TelemetryPacket> LoadFileAsync(TlmCmdFileLocation location, TlmCmdFileLocationInfo tlmDBInfo, string filePath, List<TlmConfigurationInfo> tlmConfigInfo)
     {
       string[] cols;
       var reader = await GetDbFileReaderAsync(location, tlmDBInfo, filePath);
@@ -76,12 +76,15 @@ namespace WINGS.Data
       cols = reader.ReadLine().Split(",");
       var packetId = cols[2];
       var packetName = Path.GetFileNameWithoutExtension(filePath);
+      var tlmConfig = tlmConfigInfo.Find(tlmConfig => packetName.Contains(tlmConfig.CompoName));
       if (packetName.IndexOf("_TLM_DB_") != -1)
       {
         packetName = packetName.Substring(packetName.IndexOf("_TLM_DB_") + 8);
       }
       var packetInfo = new PacketInfo(){
+        TlmApid = tlmConfig.TlmApid,
         Id = packetId,
+        CompoName = tlmConfig.CompoName,
         Name = packetName,
         IsRealtimeData = true, // add packet only for realtime tlm (record tlms are registered when SetTelemetryValuesAsync() in TmPacketAnalyzerBase.cs is called)
         IsRestricted = false

@@ -9,6 +9,7 @@ using WINGS.Data;
 using WINGS.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Hosting;
 
 namespace WINGS.Services
 {
@@ -21,6 +22,7 @@ namespace WINGS.Services
     private readonly ICommandFileRepository _fileRepository;
     private readonly ICommandFileLogRepository _filelogRepository;
     private readonly ILogger<ICommandService> _logger;
+    private readonly IWebHostEnvironment _env;
     private static Dictionary<string, List<CommandFileIndex>> _indexesDict;
     private static Dictionary<int, Command> _sendCmdDict;
     private static bool _sendCommandFlag;
@@ -47,7 +49,8 @@ namespace WINGS.Services
                           IDbRepository<Command> dbRepository,
                           ICommandFileRepository fileRepository,
                           ICommandFileLogRepository filelogRepository,
-                          ILogger<ICommandService> logger)
+                          ILogger<ICommandService> logger,
+                          IWebHostEnvironment env)
     {
       _dbContext = dbContext;
       _tmtcHandlerFactory = tmtcHandlerFactory;
@@ -56,6 +59,7 @@ namespace WINGS.Services
       _fileRepository = fileRepository;
       _filelogRepository = filelogRepository;
       _logger = logger;
+      _env = env;
     }
 
     public IEnumerable<Command> GetAllCommand(string opid)
@@ -177,7 +181,7 @@ namespace WINGS.Services
       {
         throw new ResourceNotFoundException("The command file is not found");
       }
-      var config = await new TlmCmdFileConfigBuilder(_dbContext).Build(opid);
+      var config = await new TlmCmdFileConfigBuilder(_dbContext, _env).Build(opid);
       var commandDb = _tcPacketManager.GetCommandDb(opid);
       var file = await _fileRepository.LoadCommandFileAsync(config, index, commandDb);
       return file;
@@ -193,7 +197,7 @@ namespace WINGS.Services
       {
         throw new ResourceNotFoundException("The command file is not found");
       }
-      var config = await new TlmCmdFileConfigBuilder(_dbContext).Build(opid);
+      var config = await new TlmCmdFileConfigBuilder(_dbContext, _env).Build(opid);
       var line = await _fileRepository.GetCommandRowAsync(config, index, row);
       return line;
     }
@@ -209,7 +213,7 @@ namespace WINGS.Services
       {
         throw new ResourceNotFoundException("The command file is not found");
       }
-      var config = await new TlmCmdFileConfigBuilder(_dbContext).Build(opid);
+      var config = await new TlmCmdFileConfigBuilder(_dbContext, _env).Build(opid);
       var commandDb = _tcPacketManager.GetCommandDb(opid);
       var commandFileLine = await _fileRepository.LoadCommandRowAsync(config, index, commandDb, row, text);
       return commandFileLine;
@@ -253,7 +257,7 @@ namespace WINGS.Services
         throw new ResourceNotFoundException("The operation is not running");
       }
       _indexesDict.Remove(opid);
-      var config = await new TlmCmdFileConfigBuilder(_dbContext).Build(opid);
+      var config = await new TlmCmdFileConfigBuilder(_dbContext, _env).Build(opid);
       var indexes = await _fileRepository.LoadCommandFileIndexesAsync(config);
       _indexesDict.Add(opid, indexes);
     }

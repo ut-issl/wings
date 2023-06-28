@@ -77,7 +77,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
         }
         if (type === "packet"){
           let telemetryShowed :string[] = [];
-          let tlms = getLatestTelemetries(selector)[element.name];
+          let tlms = getLatestTelemetries(selector)[element.compoName][element.name];
           tlms.forEach(tlm => {
             telemetryShowed.push(tlm.telemetryInfo.name);
           })

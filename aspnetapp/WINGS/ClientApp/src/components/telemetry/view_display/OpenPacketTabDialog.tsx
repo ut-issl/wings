@@ -39,7 +39,7 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
 
   const formGroupRef = React.useRef<HTMLElement>(null);
   
-  const latestTelemetries = getLatestTelemetries(selector)[tab.name];
+  const latestTelemetries = getLatestTelemetries(selector)[tab.compoName][tab.name];
   const telemetryOptions: SelectOption[] = latestTelemetries.map(latestTelemetry => ({id:latestTelemetry.telemetryInfo.name, name:latestTelemetry.telemetryInfo.name}));
 
 

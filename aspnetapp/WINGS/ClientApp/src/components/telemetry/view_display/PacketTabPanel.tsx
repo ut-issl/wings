@@ -80,21 +80,18 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '80%',
       maxHeight: 435,
     },
-    packetId: {
+    title: {
+      color: '#ffff00'
+    },
+    titleWithSpace: {
       color: 'white',
       fontSize: 12,
       paddingRight: 20
     },
-    packetIdTitle: {
-      color: '#ffff00'
-    },
-    tabName: {
+    titleWithOutSpace: {
       color: 'white',
       fontSize: 12,
       paddingRight: 20
-    },
-    tabNameTitle: {
-      color: '#ffff00'
     }
 }));
 
@@ -108,7 +105,7 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   const selector = useSelector((state: RootState) => state);
   const classes = useStyles();
   const dispatch = useDispatch();
-  const tlms = getLatestTelemetries(selector)[tab.name];
+  const tlms = getLatestTelemetries(selector)[tab.compoName][tab.name];
   const selectedTelemetries = tab.selectedTelemetries;
   const tlmClassList: string[] = [tab.name];
   const tlmColor = getTelemetryColor(selector);
@@ -216,11 +213,14 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
             </RadioGroup>
           </Toolbar>
         </FormControl>
-        <div className={classes.tabName}>
-          <span className={classes.tabNameTitle}>Name : </span>{tab.name}
+        <div className={classes.titleWithSpace}>
+          <span className={classes.title}>Name : </span>{tab.name}
         </div>
-        <div className={classes.packetId}>
-          <span className={classes.packetIdTitle}>Packet Id : </span> 0x{Number(tab.packetId).toString(16)}
+        <div className={classes.titleWithSpace}>
+          <span className={classes.title}>Apid : </span> 0x{Number(tab.tlmApid).toString(16)}
+        </div>
+        <div className={classes.titleWithOutSpace}>
+          <span className={classes.title}>Packet Id : </span> 0x{Number(tab.packetId).toString(16)}
         </div>
         <Button onClick={handleOk} color="primary">
           SET
