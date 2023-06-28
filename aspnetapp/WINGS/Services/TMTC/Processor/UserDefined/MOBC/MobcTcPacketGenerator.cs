@@ -28,7 +28,7 @@ namespace WINGS.Services
 
     // enum
     // User Data
-    private enum UdCmdType { Dc = 1, Sm = 2 }
+    private enum UdCmdType { Unknown = 0, Dc = 1, Sm = 2 }
     private enum UdExeType { Realtime = 0x00, Timeline = 0x01, Macro = 0x02, UnixTimeline = 0x04, MobcRealtime = 0x10, MobcTimeline = 0x11, MobcMacro = 0x12, MobcUnixTimeline = 0x14, AobcRealtime = 0x20, AobcTimeline = 0x21, AobcMacro = 0x22, AobcUnixTimeline = 0x24, TobcRealtime = 0x30, TobcTimeline = 0x31, TobcMacro = 0x32, TobcUnixTimeline = 0x34}
 
     // TC Packet
@@ -38,7 +38,7 @@ namespace WINGS.Services
     private enum TcpApid { MobcCmd = 0x210, AobcCmd = 0x211, TobcCmd = 0x212 }
     private enum TcpSeqFlag { Cont = 0, First = 1, Last = 2, Single = 3 }
     private enum TcpSeqCnt { Default = 0 }
-    private enum TcpFmtId { Control = 1, User = 2, Memory = 3 }
+    private enum TcpSecondaryHeaderVer { Unknown = 0, Version1 = 1 }
     
     // TC Segment
     private enum TcsgmSeqFlag { First = 0b01, Continuing = 0b00, Last = 0b10, No = 0b11 }
@@ -88,10 +88,10 @@ namespace WINGS.Services
       SetTcpSeqFlag(packet, TcpSeqFlag.Single);
       SetTcpSeqCnt(packet, TcpSeqCnt.Default);
       SetTcpPktLen(packet, tcpPktLen);
-      SetTcpFmtId(packet, TcpFmtId.Control);
+      SetTcpSecondaryHeaderVer(packet, TcpSecondaryHeaderVer.Version1);
 
       // User Data
-      SetUdCmdType(packet, UdCmdType.Sm);
+      SetUdCmdType(packet, UdCmdType.Unknown);
       SetUdChannelId(packet, channelId);
       SetUdExeType(packet, exeType);
       SetUdTi(packet, exeType, command);
@@ -372,7 +372,7 @@ namespace WINGS.Services
       val = (byte)(z_origin & 0xff);
       packet[pos+1] = val;
     }
-    private void SetTcpFmtId(byte[] packet, TcpFmtId id)
+    private void SetTcpSecondaryHeaderVer(byte[] packet, TcpSecondaryHeaderVer id)
     {
       int pos = TcPktPos + 6;
       packet[pos] = (byte)id;
