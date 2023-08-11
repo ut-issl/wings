@@ -61,7 +61,7 @@ namespace WINGS.Services
       switch (config.Location)
       {
         case TlmCmdFileLocation.Local:
-          string tlmConfigDirPath = Path.Combine(_env.ContentRootPath, operation.Component.LocalDirPath, "tlmdb/config.json");
+          string tlmConfigDirPath = Path.Combine(_env.ContentRootPath, operation.Component.LocalDirPath, "config.json");
 
           config.CmdDBInfo.Add(new TlmCmdFileLocationInfo() { DirPath = operation.Component.LocalDirPath });
           config.TlmDBInfo.Add(new TlmCmdFileLocationInfo() { DirPath = operation.Component.LocalDirPath });

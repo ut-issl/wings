@@ -1,0 +1,67 @@
+{
+  "highlight.regexFlags": "gm",
+  "highlight.maxMatches": 1000,
+  "highlight.regexes": {
+    "(^.*\\r\\n)": {
+      "filterFileRegex": ".*\\.ops",
+      // "decorations": [
+      //     {"backgroundColor" : "#FF000030"}
+      // ]
+    },
+    "(#.*$)": {
+      "filterFileRegex": ".*\\.ops",
+      "decorations": [
+        {"color" : "#6A9955"}
+      ]
+    },
+    "(^\\d{4})": {
+      "filterFileRegex": ".*\\.ops",
+      "decorations": [
+        {"color" : "#858585"}
+      ]
+    },
+    "((MOBC_BL.AOBC_RT|MOBC_BL.TOBC_RT|MOBC_BL|AOBC_BL|TOBC_BL)\\.\\w*)": {
+      "filterFileRegex": ".*\\.ops",
+      "decorations": [
+        {"color" : "#00bfff"}
+      ]
+    },
+    "((MOBC_TL.AOBC_RT|MOBC_TL.TOBC_RT|MOBC_TL|AOBC_TL|TOBC_TL|MOBC_TL_MIS)\\.\\w*)": {
+      "filterFileRegex": ".*\\.ops",
+      "decorations": [
+        {"color" : "#ffa500"}
+      ]
+    },
+    "((MOBC_UTL.AOBC_RT|MOBC_UTL.TOBC_RT|MOBC_UTL|MOBC_UTL_MIS)\\.\\w*)": {
+      "filterFileRegex": ".*\\.ops",
+      "decorations": [
+        {"color" : "#ff7f50"}
+      ]
+    },
+    "((MOBC_RT|AOBC_RT|TOBC_RT)\\.\\w*)": {
+      "filterFileRegex": ".*\\.ops",
+      "decorations": [
+        {"color" : "#1e90ff"}
+      ]
+    },
+    "(\\W)(let|check_value|wait_sec|wait_until|call)(\\W)": {
+      "filterFileRegex": ".*\\.ops",
+      "decorations": [
+        {},
+        {
+            "color": "#C586C0"
+        },
+        {}
+      ]
+    },
+    "(\\W)(sin|cos|tan|asin|acos|atan|atan2|sinh|cosh|tanh|asinh|acosh|atanh|log|log10|exp|sqrt|abs|floor|ceil|rint|max|min)(\\W)": {
+      "filterFileRegex": ".*\\.ops",
+      "decorations": [
+        {},
+        {"color" : "#DCDCAA"},
+        {}
+      ]
+    }
+  }
+}
+
