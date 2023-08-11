@@ -33,7 +33,8 @@ const initialState: RootState = {
     },
     createdAt: "",
     satelliteId: null,
-    planId: null
+    planId: null,
+    tlmCmdConfig: []
   },
   cmds: {
     list: [],

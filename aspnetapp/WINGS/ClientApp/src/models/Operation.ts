@@ -1,5 +1,11 @@
 import { Component } from './Component';
 
+export type TlmCmdConfigurationInfo = {
+  tlmApid: string,
+  cmdApid: string,
+  compoName: string
+};
+
 export type Operation = {
   id: string,
   pathNumber: string,
@@ -18,5 +24,6 @@ export type Operation = {
   component: Component,
   createdAt: string,
   satelliteId: string | null,
-  planId: string | null
+  planId: string | null,
+  tlmCmdConfig: TlmCmdConfigurationInfo[]
 }

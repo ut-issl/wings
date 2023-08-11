@@ -14,5 +14,6 @@ namespace WINGS.Services
     Task StopOperationAsync(string opid);
     Task UpdateOperationHistoryAsync(Operation operation);
     Task DeleteOperationHistoryAsync(string opid);
+    Task<List<TlmCmdConfigurationInfo>> GetTlmCmdConfigAsync(string opid);
   }
 }

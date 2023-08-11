@@ -12,3 +12,8 @@ export const getCurrentOperation = createSelector(
   [operationsSelector],
   state => state
 );
+
+export const getTlmCmdConfig = createSelector(
+  [operationsSelector],
+  state => state.tlmCmdConfig
+);
