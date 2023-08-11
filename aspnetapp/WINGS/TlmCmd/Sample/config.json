@@ -1,3 +1,3 @@
 [
-  {"tlmApid": "0x123", "compoName": "Sample"}
+  {"tlmApid": "0x123", "cmdApid": "0x456","compoName": "Sample"}
 ]

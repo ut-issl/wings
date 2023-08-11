@@ -44,7 +44,7 @@ namespace WINGS.Data
           await sem.WaitAsync();
           try
           {
-            return await LoadFileAsync(config.Location, c, filePath, config.TlmConfigInfo);
+            return await LoadFileAsync(config.Location, c, filePath, config.TlmCmdConfigInfo);
           }
           finally
           {
@@ -64,7 +64,7 @@ namespace WINGS.Data
       return telemetryDb;
     }
 
-    private async Task<TelemetryPacket> LoadFileAsync(TlmCmdFileLocation location, TlmCmdFileLocationInfo tlmDBInfo, string filePath, List<TlmConfigurationInfo> tlmConfigInfo)
+    private async Task<TelemetryPacket> LoadFileAsync(TlmCmdFileLocation location, TlmCmdFileLocationInfo tlmDBInfo, string filePath, List<TlmCmdConfigurationInfo> tlmCmdConfigInfo)
     {
       string[] cols;
       var reader = await GetDbFileReaderAsync(location, tlmDBInfo, filePath);
@@ -76,7 +76,7 @@ namespace WINGS.Data
       cols = reader.ReadLine().Split(",");
       var packetId = cols[2];
       var packetName = Path.GetFileNameWithoutExtension(filePath);
-      var tlmConfig = tlmConfigInfo.Find(tlmConfig => packetName.Contains(tlmConfig.CompoName));
+      var tlmConfig = tlmCmdConfigInfo.Find(tlmConfig => packetName.Contains(tlmConfig.CompoName));
       if (packetName.IndexOf("_TLM_DB_") != -1)
       {
         packetName = packetName.Substring(packetName.IndexOf("_TLM_DB_") + 8);

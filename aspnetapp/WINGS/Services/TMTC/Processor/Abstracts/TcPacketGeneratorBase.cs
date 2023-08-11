@@ -11,7 +11,7 @@ namespace WINGS.Services
   {
     protected abstract byte[] GeneratePacket(Command command, byte cmdType, byte cmdWindow);
 
-    public TcPacketData GetTcPacketData(string opid, Command command, byte cmdType, byte cmdWindow)
+    public TcPacketData GetTcPacketData(string opid, Command command, byte cmdType, byte cmdWindow, List<TlmCmdConfigurationInfo> tlmCmdConfigInfo)
     {
       var packet = GeneratePacket(command, cmdType, cmdWindow);
       return new TcPacketData(){

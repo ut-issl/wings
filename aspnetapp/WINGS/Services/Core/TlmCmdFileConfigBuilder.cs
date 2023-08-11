@@ -41,16 +41,16 @@ namespace WINGS.Services
         TlmDBInfo = new List<TlmCmdFileLocationInfo>(),
         CmdFileInfo = new List<TlmCmdFileLocationInfo>(),
         LayoutInfo = new TlmCmdFileLocationInfo(),
-        TlmConfigInfo = new List<TlmConfigurationInfo>()
+        TlmCmdConfigInfo = new List<TlmCmdConfigurationInfo>()
       };
 
-      static List<TlmConfigurationInfo> CreateConfigInfo(string filePath, string encodingName)
+      static List<TlmCmdConfigurationInfo> CreateConfigInfo(string filePath, string encodingName)
       {
           StreamReader sr = new StreamReader(filePath, Encoding.GetEncoding(encodingName));
           string configStr = sr.ReadToEnd();
           sr.Close();
 
-          List<TlmConfigurationInfo> configJson = JsonSerializer.Deserialize<List<TlmConfigurationInfo>>(configStr, new JsonSerializerOptions{
+          List<TlmCmdConfigurationInfo> configJson = JsonSerializer.Deserialize<List<TlmCmdConfigurationInfo>>(configStr, new JsonSerializerOptions{
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             Converters = { new JsonStringEnumConverter() }
           });
@@ -67,7 +67,7 @@ namespace WINGS.Services
           config.TlmDBInfo.Add(new TlmCmdFileLocationInfo() { DirPath = operation.Component.LocalDirPath });
           config.CmdFileInfo.Add(new TlmCmdFileLocationInfo() { DirPath = operation.Component.LocalDirPath });
           config.LayoutInfo = new TlmCmdFileLocationInfo() { DirPath = operation.Component.LocalDirPath };
-          config.TlmConfigInfo = CreateConfigInfo(tlmConfigDirPath, "utf-8");
+          config.TlmCmdConfigInfo = CreateConfigInfo(tlmConfigDirPath, "utf-8");
           break;
         
         default:

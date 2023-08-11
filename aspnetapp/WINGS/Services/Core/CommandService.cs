@@ -74,7 +74,8 @@ namespace WINGS.Services
 
       try
       {
-        _tcPacketManager.RegisterCommand(opid, command, (byte)CmdType.TypeB, 0x00);
+        var config = await new TlmCmdFileConfigBuilder(_dbContext, _env).Build(opid);
+        _tcPacketManager.RegisterCommand(opid, command, (byte)CmdType.TypeB, 0x00, config.TlmCmdConfigInfo);
 
         var commandLog = CommandToLog(opid, command);
         _dbContext.CommandLogs.Add(commandLog);
@@ -93,11 +94,12 @@ namespace WINGS.Services
     {
       var commandDb = new List<Command>(_tcPacketManager.GetCommandDb(opid));
       if (!IsParamsTypeCheckOk(command, commandDb)) return false;
+      var config = await new TlmCmdFileConfigBuilder(_dbContext, _env).Build(opid);
 
       try
       {
         int reqCmdWindow = (int) _tmtcHandlerFactory.GetTmPacketAnalyzer(opid).GetCmdWindow();
-        _tcPacketManager.RegisterCommand(opid, command, (byte)CmdType.TypeA, (byte)cmdWindow);
+        _tcPacketManager.RegisterCommand(opid, command, (byte)CmdType.TypeA, (byte)cmdWindow, config.TlmCmdConfigInfo);
 
         var commandLog = CommandToLog(opid, command);
         _dbContext.CommandLogs.Add(commandLog);
