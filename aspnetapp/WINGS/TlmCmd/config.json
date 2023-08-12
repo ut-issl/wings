@@ -1,0 +1,4 @@
+[
+  {"tlmApid": "0x123", "cmdApid": "0x456", "compoName": "ISSL_OBC"},
+  {"tlmApid": "0x456", "cmdApid": "0x123", "compoName": "ISSL_SECONDARY_OBC"}
+]

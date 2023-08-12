@@ -35,7 +35,6 @@ namespace WINGS.Services
     private enum TcpVer { Ver1 = 0 }
     private enum TcpType { Tlm = 0, Cmd = 1 }
     private enum TcpSecHdrFlag { Absent = 0, Present = 1 }
-    private enum TcpApid { MobcCmd = 0x210, AobcCmd = 0x211, TobcCmd = 0x212 }
     private enum TcpSeqFlag { Cont = 0, First = 1, Last = 2, Single = 3 }
     private enum TcpSeqCnt { Default = 0 }
     private enum TcpSecondaryHeaderVer { Unknown = 0, Version1 = 1 }
@@ -55,7 +54,7 @@ namespace WINGS.Services
 
 
 
-    protected override byte[] GeneratePacket(Command command, byte cmdType, byte cmdWindow)
+    protected override byte[] GeneratePacket(Command command, byte cmdType, byte cmdWindow, List<TlmCmdConfigurationInfo> tlmCmdConfigInfo)
     {
       int paramsLen = GetParamsByteLength(command);
       var tctfPktLen = (UInt16)(TcTrsFrmPriHdrLen + TcSgmHdrLen + TcPktPriHdrLen + TcPktSecHdrLen + UserDataHdrLen + paramsLen + CrcLen);
@@ -64,7 +63,7 @@ namespace WINGS.Services
       var tcpPktLen = (UInt16)(TcPktSecHdrLen + UserDataHdrLen + paramsLen); // "PACKET FIELD" Length
       var channelId = GetChannelId(command);
       var exeType = GetExeType(command);
-      var apid = GetApid(command);
+      var apid = GetApid(command, tlmCmdConfigInfo);
 
       //TC Transfer Frame (except CRC)
       SetTctfVer(packet, TctfVer.Ver1);
@@ -188,19 +187,10 @@ namespace WINGS.Services
         }
       }
     }
-    private TcpApid GetApid(Command command)
+    private UInt16 GetApid(Command command, List<TlmCmdConfigurationInfo> tlmCmdConfigInfo)
     {
-      switch (command.Component)
-      {
-        case "MOBC":
-          return TcpApid.MobcCmd;
-        case "AOBC":
-          return TcpApid.AobcCmd;
-        case "TOBC":
-          return TcpApid.TobcCmd;
-        default:
-          return TcpApid.MobcCmd;
-      }
+      var cmdTcpApid = tlmCmdConfigInfo.Find(tlmCmdConfig => tlmCmdConfig.CompoName.Contains(command.Component)).CmdApid;
+      return UInt16.Parse(cmdTcpApid.Replace("0x", ""), System.Globalization.NumberStyles.HexNumber);
     }
     protected uint GetTi(Command command)
     {
@@ -335,7 +325,7 @@ namespace WINGS.Services
       packet[pos] &= (byte)(~mask);
       packet[pos] |= val;
     }
-    private void SetTcpApid(byte[] packet, TcpApid apid)
+    private void SetTcpApid(byte[] packet, UInt16 apid)
     {
       int pos = TcPktPos;
       byte mask = 0b_0000_0111;
