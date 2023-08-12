@@ -206,6 +206,12 @@ namespace WINGS.Services
       DeleteLogFiles(opid);
     }
 
+    public async Task<List<TlmCmdConfigurationInfo>> GetTlmCmdConfigAsync(string opid)
+    {
+      var config = await new TlmCmdFileConfigBuilder(_dbContext, _env).Build(opid);
+      return config.TlmCmdConfigInfo;
+    }
+
     private bool OperationExists(string opid) =>
       _dbContext.Operations.Any(o => o.Id == opid);
 

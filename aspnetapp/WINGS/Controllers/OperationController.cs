@@ -100,5 +100,20 @@ namespace WINGS.Controllers
         return StatusCode(Status404NotFound, new { message = ex.Message });
       }
     }
+
+    // GET: api/operations/tlm_cmd_config
+    [HttpGet("{id}/tlm_cmd_config")]
+    public async Task<IActionResult> GetTlmCmdConfig(string id)
+    {
+      try
+      {
+        var tlmCmdConfig = await _operationService.GetTlmCmdConfigAsync(id);
+        return StatusCode(Status200OK, new { data = tlmCmdConfig });
+      }
+      catch (ResourceNotFoundException ex)
+      {
+        return StatusCode(Status404NotFound, new { message = ex.Message });
+      }
+    }
   }
 }

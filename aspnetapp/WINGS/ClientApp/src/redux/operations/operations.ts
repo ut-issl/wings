@@ -1,6 +1,6 @@
 import { Dispatch } from "redux";
-import { Operation, Command, CommandPlanIndex, TelemetryPacket, TelemetryPacketHistory, Layout, TelemetryViewIndex, CommandFileLineLogs, TelemetryColor } from "../../models";
-import { joinOperationAction, leaveOperationAction } from './actions';
+import { Operation, Command, CommandPlanIndex, TelemetryPacket, TelemetryPacketHistory, Layout, TelemetryViewIndex, CommandFileLineLogs, TelemetryColor, TlmCmdConfigurationInfo } from "../../models";
+import { joinOperationAction, leaveOperationAction, fetchTlmCmdConfigAction } from './actions';
 import { fetchCommandsAction } from '../commands/actions';
 import { fetchPlanIndexesAction } from '../plans/actions';
 import { fetchViewIndexesAction } from '../views/actions';
@@ -72,6 +72,15 @@ export const joinOperation = (operation: Operation) => {
       const jsonLyts = await resLyts.json();
       const lyts = jsonLyts.data as Layout[];
       dispatch(fetchLayoutsAction(lyts));
+    }
+
+    const resTlmCmdConfig = await fetch(`/api/operations/${opid}/tlm_cmd_config`, {
+      method: 'GET'
+    });
+    if (resTlmCmdConfig.status == 200) {
+      const jsonTlmCmdConfig = await resTlmCmdConfig.json();
+      const tlmCmdConfig = jsonTlmCmdConfig.data as TlmCmdConfigurationInfo[];
+      dispatch(fetchTlmCmdConfigAction(tlmCmdConfig));
     }
   }
 }

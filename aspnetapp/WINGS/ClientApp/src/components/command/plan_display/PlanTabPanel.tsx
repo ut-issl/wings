@@ -7,7 +7,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { CommandPlanLine, RequestStatus, CmdFileVariable } from '../../../models';
+import { CommandPlanLine, RequestStatus, CmdFileVariable, Telemetry, TlmCmdConfigurationInfo } from '../../../models';
 import RequestTableRow from './RequestTableRow';
 import { selectedPlanRowAction, execRequestSuccessAction, execRequestErrorAction, execRequestsStartAction, execRequestsEndAction, cmdFileVariableEditAction } from '../../../redux/plans/actions';
 import { getActivePlanId, getAllIndexes, getInExecution, getPlanContents, getSelectedRow, getCommandFileVariables } from '../../../redux/plans/selectors';
@@ -22,6 +22,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import { Dialog } from '@material-ui/core';
 import { getOpid } from '../../../redux/operations/selectors';
 import { finishEditCommandLineAction } from '../../../redux/plans/actions';
+import { getTlmCmdConfig } from '../../../redux/operations/selectors';
 
 const useStyles = makeStyles(
   createStyles({
@@ -75,6 +76,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
 
   const opid = getOpid(selector);
   const activePlanId = getActivePlanId(selector);
+  const tlmCmdConfig = getTlmCmdConfig(selector);
 
   const [showModal, setShowModal] = React.useState(false);
   const [text, setText] = React.useState("");
@@ -245,7 +247,20 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       outcome.value = cmdFileVariables[variableIndex].value;
       outcome.isSuccess = true;
     } else if (variableName.indexOf('.') > -1) {
-      var tlms = getLatestTelemetries(selector)[variableName.split('.')[0]][variableName.split('.')[1]];
+      let tlms: Telemetry[] = []; 
+      let latestTelemetries = getLatestTelemetries(selector);
+      let variableNameSplitList = variableName.split('.');
+      let tlmCmdConfigIndex = 0;
+      try {
+        tlms = latestTelemetries[variableNameSplitList[0]][variableNameSplitList[1]];
+      } catch (e) {
+        tlmCmdConfigIndex = tlmCmdConfig.findIndex(index => index.compoName.includes(variableNameSplitList[0]));
+        if (tlmCmdConfigIndex != -1) {
+          tlms = latestTelemetries[tlmCmdConfig[tlmCmdConfigIndex].compoName][variableNameSplitList[0]];
+        } else {
+          tlms = latestTelemetries["MOBC"][variableNameSplitList[0]];
+        }
+      }
       if (tlms.findIndex(index => index.telemetryInfo.name === variableName) >= 0) {
         variableIndex = tlms.findIndex(index => index.telemetryInfo.name === variableName);
       } else if (tlms.findIndex(index => index.telemetryInfo.name === variableName.split('.').slice(1).join('.')) >= 0) {
