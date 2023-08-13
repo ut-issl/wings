@@ -254,7 +254,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       try {
         tlms = latestTelemetries[variableNameSplitList[0]][variableNameSplitList[1]];
       } catch (e) {
-        tlmCmdConfigIndex = tlmCmdConfig.findIndex(index => index.compoName.includes(variableNameSplitList[0]));
+        tlmCmdConfigIndex = tlmCmdConfig.findIndex(index => (latestTelemetries[index.compoName] != undefined && latestTelemetries[index.compoName][variableNameSplitList[0]] != undefined));
         if (tlmCmdConfigIndex != -1) {
           tlms = latestTelemetries[tlmCmdConfig[tlmCmdConfigIndex].compoName][variableNameSplitList[0]];
         } else {
