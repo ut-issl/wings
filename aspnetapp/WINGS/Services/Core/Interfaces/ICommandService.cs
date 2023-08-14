@@ -9,6 +9,8 @@ namespace WINGS.Services
   {
     IEnumerable<Command> GetAllCommand(string opid);
     Task<bool> SendCommandAsync(string opid, Command command, string commanderId);
+    Task<bool> SendTypeACommandAsync(string opid, Command command, string commanderId, int cmdWindow);
+    public bool InitializeTypeAStatus(string opid);
     void SendRawCommand(string opid, byte[] packet);
     Task<bool> AddCmdFileLineLog(string opid, CommandFileLineLog command_file_line_log, string commanderId);
     IEnumerable<CommandFileIndex> GetCommandFileIndexes(string opid);

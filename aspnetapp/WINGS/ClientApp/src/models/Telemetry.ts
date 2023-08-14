@@ -37,7 +37,9 @@ export type TelemetryValue = {
 
 export type TelemetryPacket = {
   packetInfo: {
+    tlmApid: string,
     id: string,
+    compoName: string,
     name: string,
     isRealtimeData: boolean,
     isRestricted: boolean
@@ -47,7 +49,9 @@ export type TelemetryPacket = {
 
 export type TelemetryPacketHistory = {
   packetInfo: {
+    tlmApid: string
     id: string,
+    compoName: string,
     name: string,
     isRealtimeData: boolean,
     isRestricted: boolean
@@ -58,9 +62,13 @@ export type TelemetryPacketHistory = {
 export type TelemetryState = {
   tlmColor: TelemetryColor,
   latest: {
-    [packetName: string]: Telemetry[]
+    [compoName: string]: {
+      [packetName: string]: Telemetry[]
+    }
   },
   history: {
-    [packetName: string]: TelemetryHistory[]
+    [compoName: string]: {
+      [packetName: string]: TelemetryHistory[]
+    }
   }
 }

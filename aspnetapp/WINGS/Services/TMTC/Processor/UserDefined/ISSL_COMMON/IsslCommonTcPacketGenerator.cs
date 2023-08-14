@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using WINGS.Models;
 
 namespace WINGS.Services
@@ -15,7 +16,7 @@ namespace WINGS.Services
       command_count = 0;
     }
 
-    protected override byte[] GeneratePacket(Command command)
+    protected override byte[] GeneratePacket(Command command, byte cmdType, byte cmdWindow, List<TlmCmdConfigurationInfo> tlmCmdConfigInfo)
     {
       int paramsLen = GetParamsByteLength(command);
       var tcPktBdyLen = (UInt16)(TcPktCmdHdrLen + paramsLen);

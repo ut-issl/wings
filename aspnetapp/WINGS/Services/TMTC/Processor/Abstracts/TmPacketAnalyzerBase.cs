@@ -17,29 +17,33 @@ namespace WINGS.Services
     }
 
     public abstract Task<bool> AnalyzePacketAsync(TmPacketData data, List<TelemetryPacket> prevTelemetry);
+    public abstract byte GetCmdWindow();
+    public abstract bool GetRetransmitFlag();
     public virtual void RemoveOperation(string opid)
     {
     }
 
-    protected async Task<bool> SetTelemetryListValuesAsync(List<TmPacketData> dataList, List<string> packetIdList, List<bool> realtimeFlagList, List<UInt32> TIList, List<TelemetryPacket> prevTelemetry)
+    protected async Task<bool> SetTelemetryListValuesAsync(List<TmPacketData> dataList, List<string> tlmApidList, List<string> packetIdList, List<bool> realtimeFlagList, List<UInt32> TIList, List<TelemetryPacket> prevTelemetry)
     {
       for (int i = 0; i < dataList.Count(); i++)
       {
-        await SetTelemetryValuesAsync(dataList[i], packetIdList[i], realtimeFlagList[i], TIList[i], prevTelemetry);
+        await SetTelemetryValuesAsync(dataList[i], tlmApidList[i], packetIdList[i], realtimeFlagList[i], TIList[i], prevTelemetry);
       }
       return true;
     }
 
-    protected async Task<bool> SetTelemetryValuesAsync(TmPacketData data, string packetId, bool isRealtimeData, UInt32 TI, List<TelemetryPacket> prevTelemetry)
+    protected async Task<bool> SetTelemetryValuesAsync(TmPacketData data, string tlmApid, string packetId, bool isRealtimeData, UInt32 TI, List<TelemetryPacket> prevTelemetry)
     {
       var opid = data.Opid;
-      var target = prevTelemetry.FirstOrDefault(packet => (packet.PacketInfo.Id == packetId) && (packet.PacketInfo.IsRealtimeData == isRealtimeData));
+      var target = prevTelemetry.FirstOrDefault(packet => (packet.PacketInfo.TlmApid == tlmApid) && (packet.PacketInfo.Id == packetId) && (packet.PacketInfo.IsRealtimeData == isRealtimeData));
       if (target == null && isRealtimeData == false)  // case for the first time of recordtlm packet
       {
-        var targetRealtime = prevTelemetry.FirstOrDefault(packet => (packet.PacketInfo.Id == packetId) && (packet.PacketInfo.IsRealtimeData == true));
+        var targetRealtime = prevTelemetry.FirstOrDefault(packet => (packet.PacketInfo.TlmApid == tlmApid) && (packet.PacketInfo.Id == packetId) && (packet.PacketInfo.IsRealtimeData == true));
 
         var packetInfo = new PacketInfo(){
+          TlmApid = targetRealtime.PacketInfo.TlmApid,
           Id = targetRealtime.PacketInfo.Id,
+          CompoName = targetRealtime.PacketInfo.CompoName,
           Name = targetRealtime.PacketInfo.Name,
           IsRealtimeData = false
         };

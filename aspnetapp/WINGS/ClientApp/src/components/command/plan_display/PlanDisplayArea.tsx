@@ -14,6 +14,14 @@ import OpenPlanDialog from './OpenPlanDialog';
 import PlanTabPanel from './PlanTabPanel';
 import IconButtonInTabs from '../../common/IconButtonInTabs';
 import { UNPLANNED_ID } from '../../../constants';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import Toolbar from '@material-ui/core/Toolbar';
+import { getCmdType } from '../../../redux/plans/selectors';
+import { setCmdTypeAction } from '../../../redux/plans/actions';
 
 const useStyles = makeStyles(
   createStyles({
@@ -46,6 +54,10 @@ const useStyles = makeStyles(
       width: '80%',
       maxHeight: 435,
     },
+    cmdTypeField: {
+      fontSize: "10pt",
+      textAlign:"center"
+    },
     planTab: {
       width: 700
     }
@@ -71,6 +83,7 @@ const PlanDisplayArea = () => {
   const planContents = getPlanContents(selector);
   const inExecution = getInExecution(selector);
   const value = openedIds.indexOf(activePlanId);
+  const [cmdType, setCmdType] = React.useState(getCmdType(selector));
 
   const handleDialogOpen = () => {
     if (!inExecution) {
@@ -87,6 +100,12 @@ const PlanDisplayArea = () => {
     if (!inExecution) {
       dispatch(activatePlanAction(openedIds[value]));
     }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    let cmdType = (event.target as HTMLInputElement).value
+    setCmdType(cmdType);
+    dispatch(setCmdTypeAction(cmdType));
   };
 
   const closePlan = (id: string) => {
@@ -135,9 +154,20 @@ const PlanDisplayArea = () => {
           </IconButtonInTabs>
         </Tabs>
         <div className={classes.planTab} >
+          <FormControl component="fieldset">
+            <Toolbar>
+              <FormLabel component="legend" className={classes.cmdTypeField}>Data Type</FormLabel>
+              <RadioGroup aria-label="data-type" name="data-type" value={cmdType} onChange={handleChange}>
+                  <Toolbar>
+                    <FormControlLabel value="Type-A" control={<Radio />} label="Type-A" />
+                    <FormControlLabel value="Type-B" control={<Radio />} label="Type-B" />
+                  </Toolbar>
+              </RadioGroup>
+            </Toolbar>
+          </FormControl>
           {planIndexes.length > 0 && (
             planIndexes.map((index,i) => (
-              <PlanTabPanel key={index.id} value={value} index={i} name={index.name} content={planContents[index.id]} />
+              <PlanTabPanel key={index.id} value={value} index={i} name={index.name} content={planContents[index.id]} cmdType={cmdType} />
             ))
           )}
         </div>
@@ -182,9 +212,20 @@ const PlanDisplayArea = () => {
           </IconButtonInTabs>
         </Tabs>
         <div className={classes.planTab} >
+          <FormControl component="fieldset">
+            <Toolbar>
+              <FormLabel component="legend" className={classes.cmdTypeField}>Data Type</FormLabel>
+              <RadioGroup aria-label="data-type" name="data-type" value={cmdType} onChange={handleChange}>
+                  <Toolbar>
+                    <FormControlLabel value="Type-A" control={<Radio />} label="Type-A" />
+                    <FormControlLabel value="Type-B" control={<Radio />} label="Type-B" />
+                  </Toolbar>
+              </RadioGroup>
+            </Toolbar>
+          </FormControl>
           {planIndexes.length > 0 && (
             planIndexes.map((index,i) => (
-              <PlanTabPanel key={index.id} value={value} index={i} name={index.name} content={planContents[index.id]} />
+              <PlanTabPanel key={index.id} value={value} index={i} name={index.name} content={planContents[index.id]} cmdType={cmdType} />
             ))
           )}
         </div>

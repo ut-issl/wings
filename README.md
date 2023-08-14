@@ -31,11 +31,12 @@ The application listed below is required:
     docker-compose down
     ```
 ### Operation
-1. Fulfill comment and select a component in the main page.
-2. Click the operation start button.
-3. Connect WINGS_TMTC_IF to the the operation.
-4. Click the operation join button.
-5. You can show telemetries and send commands while joining the operation.
+1. Add the component name you want to communicate with, along with the Command APID and Telemetry APID, to the config.json file.
+2. Fulfill comment and select a component in the main page.
+3. Click the operation start button.
+4. Connect WINGS_TMTC_IF to the the operation.
+5. Click the operation join button.
+6. You can show telemetries and send commands while joining the operation.
 
 ### Command
 - You can send commands by clicking command line and pushing `"Shift" + "Return"` keys.

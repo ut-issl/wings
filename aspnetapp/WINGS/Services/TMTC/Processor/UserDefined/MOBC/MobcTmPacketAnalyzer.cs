@@ -11,6 +11,8 @@ namespace WINGS.Services
   public class MobcTmPacketAnalyzer : TmPacketAnalyzerBase, ITmPacketAnalyzer
   {
     private static Dictionary<string,List<byte>> statictmPacket= new Dictionary<string,List<byte>>();
+    private static byte cmdWindow = 0x00;
+    private static bool retransmitFlag = false;
     
     public MobcTmPacketAnalyzer(ITelemetryLogRepository logRepository) : base(logRepository)
     {
@@ -27,6 +29,7 @@ namespace WINGS.Services
     private enum COPinEff { COP1 = 0b01 }
     private enum VCId { Default = 0b000000 }
     private enum Spare { Fixed = 0b00 }
+    private enum Retransmit {Flag = 0b1000}
 
     public override async Task<bool> AnalyzePacketAsync(TmPacketData data, List<TelemetryPacket> prevTelemetry)
     {
@@ -46,6 +49,7 @@ namespace WINGS.Services
       UInt16 userdataLen = 0; //ccsdsSecHeaderLen + ADULen
       byte[] ccsdsTmPacketbuf = default;
       var ccsdsdataList = new List<TmPacketData>();
+      var tlmApidList = new List<string>();
       var packetIdList = new List<string>();
       var realtimeFlagList = new List<bool>();
       var TIList = new List<UInt32>();
@@ -66,7 +70,7 @@ namespace WINGS.Services
           {
             statictmPacket.Add(data.Opid, new List<byte>());
           }
-          var ccsdsPriHeaderPointer = CombiteBytes(data.TmPacket, tfPriHeaderLen) & 0b_0000_0111_1111_1111;
+          var ccsdsPriHeaderPointer = CombineBytes(data.TmPacket, tfPriHeaderLen) & 0b_0000_0111_1111_1111;
           if (ccsdsPriHeaderPointer == 0b_0111_1111_1111)
           {
             //No CCSDS Packet starts in this Transferframe
@@ -75,10 +79,10 @@ namespace WINGS.Services
               statictmPacket[data.Opid].Add(data.TmPacket[i]);
             }
             ccsdsTmPacketbuf = statictmPacket[data.Opid].ToArray();
-            userdataLen = CombiteBytesGetLen(ccsdsTmPacketbuf, 4);
+            userdataLen = CombineBytesGetLen(ccsdsTmPacketbuf, 4);
             if (ccsdsTmPacketbuf.Length == ccsdsPriHeaderLen + userdataLen)
             {
-              AddTelemetryList(data.Opid, ccsdsTmPacketbuf, ccsdsdataList, packetIdList, realtimeFlagList, TIList);
+              AddTelemetryList(data.Opid, ccsdsTmPacketbuf, ccsdsdataList, tlmApidList, packetIdList, realtimeFlagList, TIList);
               statictmPacket[data.Opid].Clear();
             }
           }
@@ -97,10 +101,10 @@ namespace WINGS.Services
                 statictmPacket[data.Opid].Add(data.TmPacket[i]);
               }
               ccsdsTmPacketbuf = statictmPacket[data.Opid].ToArray();
-              userdataLen = CombiteBytesGetLen(ccsdsTmPacketbuf, 4);
+              userdataLen = CombineBytesGetLen(ccsdsTmPacketbuf, 4);
               if (ccsdsTmPacketbuf.Length == ccsdsPriHeaderLen + userdataLen)
               {
-                AddTelemetryList(data.Opid, ccsdsTmPacketbuf, ccsdsdataList, packetIdList, realtimeFlagList, TIList);
+                AddTelemetryList(data.Opid, ccsdsTmPacketbuf, ccsdsdataList, tlmApidList, packetIdList, realtimeFlagList, TIList);
                 statictmPacket[data.Opid].Clear();
               }
               else
@@ -124,7 +128,7 @@ namespace WINGS.Services
               }
               else
               {
-                userdataLen = CombiteBytesGetLen(data.TmPacket, readPointer + 4);
+                userdataLen = CombineBytesGetLen(data.TmPacket, readPointer + 4);
                 if (tfPriHeaderLen + mpduPriHeaderLen + mpduPacketZone - readPointer < ccsdsPriHeaderLen + userdataLen)
                 {
                   for (int i = readPointer; i < tfPriHeaderLen + mpduPriHeaderLen + mpduPacketZone; i++)
@@ -145,7 +149,7 @@ namespace WINGS.Services
                   {
                     statictmPacket[data.Opid].Add(data.TmPacket[i]);
                   }
-                  AddTelemetryList(data.Opid, statictmPacket[data.Opid].ToArray(), ccsdsdataList, packetIdList, realtimeFlagList, TIList);
+                  AddTelemetryList(data.Opid, statictmPacket[data.Opid].ToArray(), ccsdsdataList, tlmApidList, packetIdList, realtimeFlagList, TIList);
                   statictmPacket[data.Opid].Clear();
                   readPointer += ccsdsPriHeaderLen + userdataLen;
                 }
@@ -154,30 +158,49 @@ namespace WINGS.Services
           }
         }
       }
-      return await SetTelemetryListValuesAsync(ccsdsdataList, packetIdList, realtimeFlagList, TIList, prevTelemetry);
+      return await SetTelemetryListValuesAsync(ccsdsdataList, tlmApidList, packetIdList, realtimeFlagList, TIList, prevTelemetry);
     }
 
-    private void AddTelemetryList(string opid, byte[] ccsdstmPacket, List<TmPacketData> ccsdsdataList, List<string> packetIdList, List<bool> realtimeFlagList, List<UInt32> TIList)
+    public override byte GetCmdWindow()
+    {
+      return cmdWindow;
+    }
+
+    public override bool GetRetransmitFlag()
+    {
+      return retransmitFlag;
+    }
+
+
+    private void AddTelemetryList(string opid, byte[] ccsdstmPacket, List<TmPacketData> ccsdsdataList, List<string> tlmApidList, List<string> packetIdList, List<bool> realtimeFlagList, List<UInt32> TIList)
     {
       ccsdsdataList.Add(new TmPacketData{ Opid = opid, TmPacket = ccsdstmPacket });
+      tlmApidList.Add(GetTlmApid(ccsdstmPacket));
       packetIdList.Add(GetPacketId(ccsdstmPacket));
       realtimeFlagList.Add(GetRealTimeFlag(ccsdstmPacket));
       TIList.Add(GetTI(ccsdstmPacket));
     }
 
-    private UInt16 CombiteBytes(byte[] bytes, int pos)
+    private UInt16 CombineBytes(byte[] bytes, int pos)
     {
       UInt16 byte1 = (UInt16)bytes[pos];
       UInt16 byte2 = (UInt16)bytes[pos + 1];
       UInt16 byte1s = (UInt16)(byte1 << 8);
       return (UInt16)(byte1s + byte2);
     }
-    private UInt16 CombiteBytesGetLen(byte[] bytes, int pos)
+    private UInt16 CombineBytesGetLen(byte[] bytes, int pos)
     {
       UInt16 byte1 = (UInt16)bytes[pos];
       UInt16 byte2 = (UInt16)bytes[pos + 1];
       UInt16 byte1s = (UInt16)(byte1 << 8);
       return (UInt16)(byte1s + byte2 + 1); //起算
+    }
+
+    private string GetTlmApid(byte[] packet)
+    {
+      //packet : CCSDS Packet
+      int pos = 0;
+      return string.Format("0x{0:x3}", CombineBytes(packet, pos) & 0b_0000_0111_1111_1111);
     }
 
     private string GetPacketId(byte[] packet)
@@ -225,6 +248,8 @@ namespace WINGS.Services
       if (!ChkCOPinEff(ETX, COPinEff.COP1)) { return false; }
       if (!ChkVCId(ETX, VCId.Default)) { return false; }
       if (!ChkSpare(ETX, Spare.Fixed)) { return false; }
+      retransmitFlag = SetRetransmitFlag(ETX, Retransmit.Flag);
+      cmdWindow = SetCmdWindow(ETX);
       return true;
     }
 
@@ -287,7 +312,19 @@ namespace WINGS.Services
       return (ETX[pos] & mask) == val;
     }
 
+    private bool SetRetransmitFlag(byte[] ETX, Retransmit flag)
+    {
+      int pos = 2;
+      byte mask = 0b_0000_1000;
+      byte val = (byte) ((byte)flag);
+      return (ETX[pos] & mask) == val;
+    }
 
+    private byte SetCmdWindow(byte[] ETX)
+    {
+      int pos = 3;
+      return ETX[pos];
+    }
 
     public override void RemoveOperation(string opid)
     {

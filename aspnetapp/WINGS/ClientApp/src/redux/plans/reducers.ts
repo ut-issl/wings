@@ -24,6 +24,7 @@ type Actions =
   | ReturnType<typeof Actions.moveDownUnplannedCommandAction>
   | ReturnType<typeof Actions.finishEditCommandLineAction>
   | ReturnType<typeof Actions.cancelEditCommandLineAction>
+  | ReturnType<typeof Actions.setCmdTypeAction>
   | ReturnType<typeof OperationActions.leaveOperationAction>
 ;
 
@@ -333,6 +334,13 @@ export const PlansReducer = (state = initialState.plans, action: Actions) => {
             ...state.contents[activeId].slice(row+1)
           ]
         }
+      }
+    }
+      
+    case Actions.SET_COMMAND_TYPE: {
+      return {
+        ...state,
+        cmdType: action.payload
       }
     }
       

@@ -1,6 +1,6 @@
 import { Dispatch } from "redux";
-import { Operation, Command, CommandPlanIndex, TelemetryPacket, TelemetryPacketHistory, Layout, TelemetryViewIndex, CommandFileLineLogs, TelemetryColor } from "../../models";
-import { joinOperationAction, leaveOperationAction } from './actions';
+import { Operation, Command, CommandPlanIndex, TelemetryPacket, TelemetryPacketHistory, Layout, TelemetryViewIndex, CommandFileLineLogs, TelemetryColor, TlmCmdConfigurationInfo } from "../../models";
+import { joinOperationAction, leaveOperationAction, fetchTlmCmdConfigAction } from './actions';
 import { fetchCommandsAction } from '../commands/actions';
 import { fetchPlanIndexesAction } from '../plans/actions';
 import { fetchViewIndexesAction } from '../views/actions';
@@ -50,8 +50,8 @@ export const joinOperation = (operation: Operation) => {
     if (resTlms.status == 200) {
       const jsonTlms = await resTlms.json();
       const tlmPackets = jsonTlms.data as TelemetryPacket[];
-      const packetIndexes: TelemetryViewIndex[] = tlmPackets.map(packet => ({ id: packet.packetInfo.name + "_packet", name: packet.packetInfo.name, filePath: "", packetId: packet.packetInfo.id, type: "packet", selectedTelemetries: [], dataType: "Default", dataLength: "500", ylabelMin: "", ylabelMax: "" }));
-      const graphIndexes: TelemetryViewIndex[] = tlmPackets.map(packet => ({ id: packet.packetInfo.name + "_graph", name: packet.packetInfo.name, filePath: "", packetId: packet.packetInfo.id, type: "graph", selectedTelemetries: [], dataType: "Default", dataLength: "500", ylabelMin: "", ylabelMax: "" }));
+      const packetIndexes: TelemetryViewIndex[] = tlmPackets.map(packet => ({ id: packet.packetInfo.name + "_packet", name: packet.packetInfo.name, filePath: "", tlmApid: packet.packetInfo.tlmApid, packetId: packet.packetInfo.id, compoName: packet.packetInfo.compoName, type: "packet", selectedTelemetries: [], dataType: "Default", dataLength: "500", ylabelMin: "", ylabelMax: "" }));
+      const graphIndexes: TelemetryViewIndex[] = tlmPackets.map(packet => ({ id: packet.packetInfo.name + "_graph", name: packet.packetInfo.name, filePath: "", tlmApid: packet.packetInfo.tlmApid, packetId: packet.packetInfo.id, compoName: packet.packetInfo.compoName, type: "graph", selectedTelemetries: [], dataType: "Default", dataLength: "500", ylabelMin: "", ylabelMax: "" }));
       const viewIndexes = [...packetIndexes, ...graphIndexes];
       dispatch(fetchViewIndexesAction(viewIndexes));
 
@@ -72,6 +72,15 @@ export const joinOperation = (operation: Operation) => {
       const jsonLyts = await resLyts.json();
       const lyts = jsonLyts.data as Layout[];
       dispatch(fetchLayoutsAction(lyts));
+    }
+
+    const resTlmCmdConfig = await fetch(`/api/operations/${opid}/tlm_cmd_config`, {
+      method: 'GET'
+    });
+    if (resTlmCmdConfig.status == 200) {
+      const jsonTlmCmdConfig = await resTlmCmdConfig.json();
+      const tlmCmdConfig = jsonTlmCmdConfig.data as TlmCmdConfigurationInfo[];
+      dispatch(fetchTlmCmdConfigAction(tlmCmdConfig));
     }
   }
 }

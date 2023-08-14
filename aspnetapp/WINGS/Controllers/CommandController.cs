@@ -14,10 +14,15 @@ namespace WINGS.Controllers
   public class CommandController : ControllerBase
   {
     private readonly ICommandService _commandService;
+    private readonly ITmtcHandlerFactory _tmtcHandlerFactory;
+    private static int _cmdWindow;
+    private static bool _getCmdWindowFromTlm;
     
-    public CommandController(ICommandService commandService)
+    public CommandController(ICommandService commandService,
+                             ITmtcHandlerFactory tmtcHandlerFactory)
     {
       _commandService = commandService;
+      _tmtcHandlerFactory = tmtcHandlerFactory;
     }
     
     // GET: api/operations/f364../cmd
@@ -27,6 +32,9 @@ namespace WINGS.Controllers
       try
       {
         var commands = _commandService.GetAllCommand(id);
+        _cmdWindow = _tmtcHandlerFactory.GetTmPacketAnalyzer(id).GetCmdWindow();
+        _getCmdWindowFromTlm = false;
+        _commandService.InitializeTypeAStatus(id);
 
         return StatusCode(Status200OK, new { data = commands });
       }
@@ -49,6 +57,34 @@ namespace WINGS.Controllers
       var commanderId = "";
 
       var ack = await _commandService.SendCommandAsync(id, command, commanderId);
+      return StatusCode(Status200OK, new { ack = ack });
+    }
+
+    // POST: api/operations/f364../cmd_typeA
+    [HttpPost("cmd_typeA")]
+    public async Task<IActionResult> SendTypeA(string id, [FromBody]JsonElement json)
+    {
+      var cmdStr = json.GetProperty("command").ToString();
+      var command = JsonSerializer.Deserialize<Command>(cmdStr, new JsonSerializerOptions{
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new JsonStringEnumConverter() }
+      });
+      var commanderId = "";
+
+      var channelId = UInt16.Parse(command.Code.Remove(0,2), System.Globalization.NumberStyles.HexNumber);
+
+      bool ack;
+      
+      if (!_getCmdWindowFromTlm)
+      {
+        _cmdWindow = (int)_tmtcHandlerFactory.GetTmPacketAnalyzer(id).GetCmdWindow();
+        _getCmdWindowFromTlm = true;
+      }
+
+      var sendTypeATask = _commandService.SendTypeACommandAsync(id, command, commanderId, _cmdWindow);
+      _cmdWindow = (_cmdWindow + 1) & 0xff;
+      ack = await sendTypeATask;
+      
       return StatusCode(Status200OK, new { ack = ack });
     }
     

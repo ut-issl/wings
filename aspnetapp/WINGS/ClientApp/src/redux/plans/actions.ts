@@ -19,6 +19,7 @@ export const MOVE_UP_UNPLANNED_COMMAND = 'MOVE_UP_UNPLANNED_COMMAND' as const;
 export const MOVE_DOWN_UNPLANNED_COMMAND = 'MOVE_DOWN_UNPLANNED_COMMAND' as const;
 export const FINISH_EDIT_COMMAND_LINE = 'FINISH_EDIT_COMMAND_LINE' as const;
 export const CANCEL_EDIT_COMMAND_LINE = 'CANCEL_EDIT_COMMAND_LINE' as const;
+export const SET_COMMAND_TYPE = 'SET_COMMAND_TYPE' as const;
 
 export const fetchPlanIndexesAction = (indexes: FileIndex[]) => {
   return {
@@ -153,5 +154,12 @@ export const cancelEditCommandLineAction = (row: number) => {
   return {
     type: CANCEL_EDIT_COMMAND_LINE,
     payload: row
+  }
+};
+
+export const setCmdTypeAction = (cmdType: string) => {
+  return {
+    type: SET_COMMAND_TYPE,
+    payload: cmdType
   }
 };

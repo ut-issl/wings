@@ -28,17 +28,16 @@ namespace WINGS.Services
 
     // enum
     // User Data
-    private enum UdCmdType { Dc = 1, Sm = 2 }
+    private enum UdCmdType { Unknown = 0, Dc = 1, Sm = 2 }
     private enum UdExeType { Realtime = 0x00, Timeline = 0x01, Macro = 0x02, UnixTimeline = 0x04, MobcRealtime = 0x10, MobcTimeline = 0x11, MobcMacro = 0x12, MobcUnixTimeline = 0x14, AobcRealtime = 0x20, AobcTimeline = 0x21, AobcMacro = 0x22, AobcUnixTimeline = 0x24, TobcRealtime = 0x30, TobcTimeline = 0x31, TobcMacro = 0x32, TobcUnixTimeline = 0x34}
 
     // TC Packet
     private enum TcpVer { Ver1 = 0 }
     private enum TcpType { Tlm = 0, Cmd = 1 }
     private enum TcpSecHdrFlag { Absent = 0, Present = 1 }
-    private enum TcpApid { MobcCmd = 0x210, AobcCmd = 0x211, TobcCmd = 0x212 }
     private enum TcpSeqFlag { Cont = 0, First = 1, Last = 2, Single = 3 }
     private enum TcpSeqCnt { Default = 0 }
-    private enum TcpFmtId { Control = 1, User = 2, Memory = 3 }
+    private enum TcpSecondaryHeaderVer { Unknown = 0, Version1 = 1 }
     
     // TC Segment
     private enum TcsgmSeqFlag { First = 0b01, Continuing = 0b00, Last = 0b10, No = 0b11 }
@@ -46,16 +45,16 @@ namespace WINGS.Services
 
     // TC Transfer Frame
     private enum TctfVer { Ver1 = 0b00 }
-    private enum TctfBypsFlag { TypeA = 0b0, TypeB = 0b1 }
+    // private enum TctfBypsFlag { TypeA = 0b0, TypeB = 0b1 }
     private enum TctfCtlCmdFlag { Dmode = 0b0, Cmode = 0b1 }
     private enum TctfSpare { Fixed = 0b00 }
     private enum TctfScId { Default = 0x157 }
     private enum TctfVirChId { Default = 0b000000}
-    private enum TctfSeq { TypeB = 0x00 }
+    // private enum TctfSeq { TypeB = 0x00 }
 
 
 
-    protected override byte[] GeneratePacket(Command command)
+    protected override byte[] GeneratePacket(Command command, byte cmdType, byte cmdWindow, List<TlmCmdConfigurationInfo> tlmCmdConfigInfo)
     {
       int paramsLen = GetParamsByteLength(command);
       var tctfPktLen = (UInt16)(TcTrsFrmPriHdrLen + TcSgmHdrLen + TcPktPriHdrLen + TcPktSecHdrLen + UserDataHdrLen + paramsLen + CrcLen);
@@ -64,17 +63,17 @@ namespace WINGS.Services
       var tcpPktLen = (UInt16)(TcPktSecHdrLen + UserDataHdrLen + paramsLen); // "PACKET FIELD" Length
       var channelId = GetChannelId(command);
       var exeType = GetExeType(command);
-      var apid = GetApid(command);
+      var apid = GetApid(command, tlmCmdConfigInfo);
 
       //TC Transfer Frame (except CRC)
       SetTctfVer(packet, TctfVer.Ver1);
-      SetTctfBypsFlag(packet, TctfBypsFlag.TypeB);
+      SetTctfBypsFlag(packet, cmdType);
       SetTctfCtlCmdFlag(packet, TctfCtlCmdFlag.Dmode);
       SetTctfSpare(packet, TctfSpare.Fixed);
       SetTctfScId(packet, TctfScId.Default);
       SetTctfVirChId(packet, TctfVirChId.Default);
       SetTctfLen(packet, tctfPktLen);
-      SetTctfSeq(packet, TctfSeq.TypeB);
+      SetTctfSeq(packet, cmdWindow);
 
       //TC Segment
       SetTcsgmSeqFlag(packet, TcsgmSeqFlag.No);
@@ -88,10 +87,10 @@ namespace WINGS.Services
       SetTcpSeqFlag(packet, TcpSeqFlag.Single);
       SetTcpSeqCnt(packet, TcpSeqCnt.Default);
       SetTcpPktLen(packet, tcpPktLen);
-      SetTcpFmtId(packet, TcpFmtId.Control);
+      SetTcpSecondaryHeaderVer(packet, TcpSecondaryHeaderVer.Version1);
 
       // User Data
-      SetUdCmdType(packet, UdCmdType.Sm);
+      SetUdCmdType(packet, UdCmdType.Unknown);
       SetUdChannelId(packet, channelId);
       SetUdExeType(packet, exeType);
       SetUdTi(packet, exeType, command);
@@ -188,19 +187,10 @@ namespace WINGS.Services
         }
       }
     }
-    private TcpApid GetApid(Command command)
+    private UInt16 GetApid(Command command, List<TlmCmdConfigurationInfo> tlmCmdConfigInfo)
     {
-      switch (command.Component)
-      {
-        case "MOBC":
-          return TcpApid.MobcCmd;
-        case "AOBC":
-          return TcpApid.AobcCmd;
-        case "TOBC":
-          return TcpApid.TobcCmd;
-        default:
-          return TcpApid.MobcCmd;
-      }
+      var cmdTcpApid = tlmCmdConfigInfo.Find(tlmCmdConfig => tlmCmdConfig.CompoName.Contains(command.Component)).CmdApid;
+      return UInt16.Parse(cmdTcpApid.Replace("0x", ""), System.Globalization.NumberStyles.HexNumber);
     }
     protected uint GetTi(Command command)
     {
@@ -221,11 +211,11 @@ namespace WINGS.Services
       packet[pos] |= val;
     }
 
-    private void SetTctfBypsFlag(byte[] packet, TctfBypsFlag flag)
+    private void SetTctfBypsFlag(byte[] packet, byte cmdType)
     {
       int pos = TcTrsFrmPos;
       byte mask = 0b_0010_0000;
-      byte val = (byte)((byte)flag << 5);
+      byte val = (byte)(cmdType << 5);
       packet[pos] &= (byte)(~mask);
       packet[pos] |= val;
     }
@@ -279,10 +269,10 @@ namespace WINGS.Services
       packet[pos+1] = val;
     }
 
-    private void SetTctfSeq(byte[] packet, TctfSeq seq)
+    private void SetTctfSeq(byte[] packet, byte cmdWindow)
     {
       int pos = TcTrsFrmPos + 4;
-      packet[pos] = (byte)seq;
+      packet[pos] = cmdWindow;
     }
 
     private void SetTctfCrc(byte[] packet, UInt16 tctfPktLen)
@@ -335,7 +325,7 @@ namespace WINGS.Services
       packet[pos] &= (byte)(~mask);
       packet[pos] |= val;
     }
-    private void SetTcpApid(byte[] packet, TcpApid apid)
+    private void SetTcpApid(byte[] packet, UInt16 apid)
     {
       int pos = TcPktPos;
       byte mask = 0b_0000_0111;
@@ -372,7 +362,7 @@ namespace WINGS.Services
       val = (byte)(z_origin & 0xff);
       packet[pos+1] = val;
     }
-    private void SetTcpFmtId(byte[] packet, TcpFmtId id)
+    private void SetTcpSecondaryHeaderVer(byte[] packet, TcpSecondaryHeaderVer id)
     {
       int pos = TcPktPos + 6;
       packet[pos] = (byte)id;

@@ -7,7 +7,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { CommandPlanLine, RequestStatus, CmdFileVariable } from '../../../models';
+import { CommandPlanLine, RequestStatus, CmdFileVariable, Telemetry, TlmCmdConfigurationInfo } from '../../../models';
 import RequestTableRow from './RequestTableRow';
 import { selectedPlanRowAction, execRequestSuccessAction, execRequestErrorAction, execRequestsStartAction, execRequestsEndAction, cmdFileVariableEditAction } from '../../../redux/plans/actions';
 import { getActivePlanId, getAllIndexes, getInExecution, getPlanContents, getSelectedRow, getCommandFileVariables } from '../../../redux/plans/selectors';
@@ -22,6 +22,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import { Dialog } from '@material-ui/core';
 import { getOpid } from '../../../redux/operations/selectors';
 import { finishEditCommandLineAction } from '../../../redux/plans/actions';
+import { getTlmCmdConfig } from '../../../redux/operations/selectors';
 
 const useStyles = makeStyles(
   createStyles({
@@ -36,6 +37,10 @@ const useStyles = makeStyles(
     },
     button: {
       width: 120
+    },
+    cmdTypeField: {
+      fontSize: "10pt",
+      textAlign:"center"
     },
     activeTab: {
       height: 700,
@@ -57,11 +62,12 @@ export interface PlanTabPanelProps {
   value: number,
   index: number,
   name: string,
-  content: CommandPlanLine[]
+  content: CommandPlanLine[],
+  cmdType: string
 }
 
 const PlanTabPanel = (props: PlanTabPanelProps) => {
-  const {value, index, name, content } = props;
+  const {value, index, name, content, cmdType } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
   const selector = useSelector((state: RootState) => state);
@@ -70,6 +76,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
 
   const opid = getOpid(selector);
   const activePlanId = getActivePlanId(selector);
+  const tlmCmdConfig = getTlmCmdConfig(selector);
 
   const [showModal, setShowModal] = React.useState(false);
   const [text, setText] = React.useState("");
@@ -216,7 +223,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
   const executeMultipleRequests = async () => {
     let row = selectedRow;
     do {
-      const exeret = await executeRequest(row);
+      const exeret = await executeRequest(row, cmdType);
       await sendCmdFileLine(row, exeret);
       if (content[row].request.method == "call") {
         break;
@@ -240,7 +247,20 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       outcome.value = cmdFileVariables[variableIndex].value;
       outcome.isSuccess = true;
     } else if (variableName.indexOf('.') > -1) {
-      var tlms = getLatestTelemetries(selector)[variableName.split('.')[0]];
+      let tlms: Telemetry[] = []; 
+      let latestTelemetries = getLatestTelemetries(selector);
+      let variableNameSplitList = variableName.split('.');
+      let tlmCmdConfigIndex = 0;
+      try {
+        tlms = latestTelemetries[variableNameSplitList[0]][variableNameSplitList[1]];
+      } catch (e) {
+        tlmCmdConfigIndex = tlmCmdConfig.findIndex(index => (latestTelemetries[index.compoName] != undefined && latestTelemetries[index.compoName][variableNameSplitList[0]] != undefined));
+        if (tlmCmdConfigIndex != -1) {
+          tlms = latestTelemetries[tlmCmdConfig[tlmCmdConfigIndex].compoName][variableNameSplitList[0]];
+        } else {
+          tlms = latestTelemetries["MOBC"][variableNameSplitList[0]];
+        }
+      }
       if (tlms.findIndex(index => index.telemetryInfo.name === variableName) >= 0) {
         variableIndex = tlms.findIndex(index => index.telemetryInfo.name === variableName);
       } else if (tlms.findIndex(index => index.telemetryInfo.name === variableName.split('.').slice(1).join('.')) >= 0) {
@@ -316,7 +336,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
     }
   }
 
-  const executeRequest = async (row: number): Promise<boolean> => {
+  const executeRequest = async (row: number, cmdType: string): Promise<boolean> => {
     const req = content[row].request;
     let exeret = false;
     switch (req.type) {
@@ -372,7 +392,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             }
           }
         }
-        await dispatch(postCommand(row, req, paramsValue, commandret));
+        await dispatch(postCommand(row, cmdType, req, paramsValue, commandret));
         exeret = commandret[0];
         break;
 
