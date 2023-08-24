@@ -94,3 +94,31 @@ The application listed below is required:
             + `Math.asin(x)`
             + `Math.acos(x)`
             + `Math.hypot(x, y, z, ...)`
+
+### API List
+- `HttpGet`
+    + `api/operations`
+        + Get current operations
+    + `api/operations/{id}/cmd`
+        + Get all commands
+    + `api/operations/{id}/cmd_fileline/log`
+        + Get commmand fileline logs
+    + `api/operations/history`
+        + Get a list of operations finished
+    + `api/operations/{id}/history/cmd_logs`
+        + Get a list of opeartion command logs
+    + `api/operations/{id}/history/cmdfile_logs`
+        + Get a list of opeartion command file logs
+    + `api/operations/{id}/history/tlm_logs`
+        + Get a list of opeartion telemetry logs
+    + `api/operations/{id}/lyt`
+        + Get a list of telemetry display layouts
+- `HttpPost`
+    + `api/operations`
+        + create a new operation
+    + `api/operations/{id}/cmd/raw`
+        + post command data to TMTC-IF
+    + `api/operations/{id}/cmd_fileline_logs`
+        + post command file line
+    + `api/operations/{id}/lyt`
+        + Create a new telemetry display layout
