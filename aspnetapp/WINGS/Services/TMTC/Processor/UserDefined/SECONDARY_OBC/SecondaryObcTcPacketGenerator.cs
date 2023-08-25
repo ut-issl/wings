@@ -73,7 +73,7 @@ namespace WINGS.Services
       SetParams(packet, command.Params, UserDataPos + UserDataHdrLen);
 
       // CRC
-      SetTctfCrc(packet, (UInt16)(IsslFormatHdrLen + isslUserPktLen)); 
+      SetTctfCrc(packet, IsslFormatHdrLen, isslUserPktLen);
       
       // EXT
       packet[isslPktLen-2] = 0xc5;
@@ -250,14 +250,12 @@ namespace WINGS.Services
       }
     }
 
-    private void SetTctfCrc(byte[] packet, UInt16 tctfPktLen)
+    private void SetTctfCrc(byte[] packet, int HdrLen, int PktLen)
     {
-      int pos = packet.Length - 4;
-      UInt16 crc_tmp = CRC.CRC16CCITTLeftCalc(packet[4..^4], 0xffff);
-      byte val = (byte)(crc_tmp >> 8);
-      packet[pos] = val;
-      val = (byte)(crc_tmp & 0xff);
-      packet[pos + 1] = val;
+      int pos = HdrLen + PktLen;
+      UInt16 crc_tmp = CRC.CRC16CCITTLeftCalc(packet[HdrLen..pos], 0xffff);
+      packet[pos] = (byte)((crc_tmp >> 8) & 0xff);
+      packet[pos + 1] = (byte)(crc_tmp & 0xff);
     }
   }
 }
