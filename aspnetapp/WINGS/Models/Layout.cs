@@ -21,6 +21,7 @@ namespace WINGS.Models
   {
     public string Id { get; set; }
     public string Name { get; set; }
+    public string CompoName { get; set; }
     public string FilePath { get; set; }
     public string Type { get; set; }
     public List<string> SelectedTelemetries { get; set; }
