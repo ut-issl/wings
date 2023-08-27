@@ -116,7 +116,7 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
         >
           {telemetryOptions.length > 0 && (
             telemetryOptions.map(telemetryOption => {
-              if (telemetryOption.name.includes(text)) {
+              if (telemetryOption.name.toUpperCase().includes(text.toUpperCase())) {
                 return <FormControlLabel key={telemetryOption.id} value={telemetryOption.id}
                   control={<Checkbox checked={checkboxState[telemetryOption.id]} />}
                   label={telemetryOption.name}

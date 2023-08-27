@@ -39,7 +39,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
   const dispatch = useDispatch();
 
   const formGroupRef = React.useRef<HTMLElement>(null);
-  const [type, setType] = React.useState("");
+  const [type, setType] = React.useState("packet");
   const indexes = getAllIndexes(selector);
   const [text, setText] = React.useState("");
   
@@ -131,7 +131,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
         >
         {indexes.length > 0 && (
             indexes.map(index => {
-              if (index.id.includes(type) && type != "" && index.id.includes(text)) {
+              if (index.id.toUpperCase().includes(type.toUpperCase()) && type != "" && index.id.toUpperCase().includes(text.toUpperCase())) {
                 return <FormControlLabel key={index.id} value={index.id}
                 control={<Checkbox checked={checkboxState[index.id]} />}
                 label={index.name}
