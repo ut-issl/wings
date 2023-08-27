@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import { Button, TextField } from '@material-ui/core';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -41,6 +41,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
   const formGroupRef = React.useRef<HTMLElement>(null);
   const [type, setType] = React.useState("");
   const indexes = getAllIndexes(selector);
+  const [text, setText] = React.useState("");
   
   interface CheckboxState {
     [id: string] : boolean;
@@ -93,6 +94,10 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
     setCheckboxState({...checkboxState, [(event.target as HTMLInputElement).value]:event.target.checked});
   };
 
+  const handleChangeText = (e: any) => {
+    setText(() => e.target.value)
+  }
+
   const typeOptions: SelectOption[] = ["packet", "character", "graph"].map(type => ({id: type, name: type}));
 
   return (
@@ -106,10 +111,17 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
       classes={{ paper: classes.paper }}
     >
       <DialogTitle id="open-plan-dialog-title">
-      <SelectBox
-          label="Type" options={typeOptions}
-          select={setType} value={type}
-        />
+        <div style={{ display: "flex" }}>
+          <SelectBox
+            label="Type" options={typeOptions}
+            select={setType} value={type}
+          />
+          <TextField
+            label="search" onChange={handleChangeText}
+            value={text} type="text"
+            style={{marginLeft: 20, width: "100%"}}
+          />
+        </div>
       </DialogTitle>
       <DialogContent dividers>
         <FormGroup
@@ -119,7 +131,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
         >
         {indexes.length > 0 && (
             indexes.map(index => {
-              if (index.type == type) {
+              if (index.id.includes(type) && type != "" && index.id.includes(text)) {
                 return <FormControlLabel key={index.id} value={index.id}
                 control={<Checkbox checked={checkboxState[index.id]} />}
                 label={index.name}
