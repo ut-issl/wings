@@ -89,7 +89,23 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
 
   const handleChangeText = (e: any) => {
     setText(() => e.target.value)
-  }
+  };
+
+  const handleSelectAll = () => {
+    let checkboxStateTemp: CheckboxState = {};
+    telemetryOptions.forEach(telemetryOption => {
+      checkboxStateTemp[telemetryOption.id] = true;
+    });
+    setCheckboxState(checkboxStateTemp);
+  };
+
+  const handleClearAll = () => {
+    let checkboxStateTemp: CheckboxState = {};
+    telemetryOptions.forEach(telemetryOption => {
+      checkboxStateTemp[telemetryOption.id] = false;
+    });
+    setCheckboxState(checkboxStateTemp);
+  };
 
   return (
     <Dialog
@@ -107,6 +123,14 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
           value={text} type="text"
           style={{ width: "100%" }}
         />
+        <DialogActions>
+          <Button autoFocus onClick={handleSelectAll} variant="contained" color="primary">
+            SELECT ALL
+          </Button>
+          <Button onClick={handleClearAll} variant="contained" color="primary">
+            CLEAR ALL
+          </Button>
+        </DialogActions>
       </DialogTitle>
       <DialogContent dividers>
         <FormGroup
