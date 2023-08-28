@@ -1,6 +1,7 @@
 import React from 'react';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import { Button, TextField } from '@material-ui/core';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
@@ -36,6 +37,7 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
   const classes = useStyles();
   const selector = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
+  const [text, setText] = React.useState("");
 
   const formGroupRef = React.useRef<HTMLElement>(null);
   
@@ -85,6 +87,26 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
     setCheckboxState({...checkboxState, [(event.target as HTMLInputElement).value]:event.target.checked});
   };
 
+  const handleChangeText = (e: any) => {
+    setText(() => e.target.value)
+  };
+
+  const handleSelectAll = () => {
+    let checkboxStateTemp: CheckboxState = {};
+    telemetryOptions.forEach(telemetryOption => {
+      checkboxStateTemp[telemetryOption.id] = true;
+    });
+    setCheckboxState(checkboxStateTemp);
+  };
+
+  const handleClearAll = () => {
+    let checkboxStateTemp: CheckboxState = {};
+    telemetryOptions.forEach(telemetryOption => {
+      checkboxStateTemp[telemetryOption.id] = false;
+    });
+    setCheckboxState(checkboxStateTemp);
+  };
+
   return (
     <Dialog
       disableBackdropClick
@@ -95,6 +117,21 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
       open={open}
       classes={{ paper: classes.paper }}
     >
+      <DialogTitle id="open-plan-dialog-title">
+        <TextField
+          label="search" onChange={handleChangeText}
+          value={text} type="text"
+          style={{ width: "100%" }}
+        />
+        <DialogActions>
+          <Button autoFocus onClick={handleSelectAll} variant="contained" color="primary">
+            SELECT ALL
+          </Button>
+          <Button onClick={handleClearAll} variant="contained" color="primary">
+            CLEAR ALL
+          </Button>
+        </DialogActions>
+      </DialogTitle>
       <DialogContent dividers>
         <FormGroup
           ref={formGroupRef}
@@ -103,10 +140,12 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
         >
           {telemetryOptions.length > 0 && (
             telemetryOptions.map(telemetryOption => {
-              return <FormControlLabel key={telemetryOption.id} value={telemetryOption.id}
-              control={<Checkbox checked={checkboxState[telemetryOption.id]} />}
-              label={telemetryOption.name}
-              />
+              if (telemetryOption.name.toUpperCase().includes(text.toUpperCase())) {
+                return <FormControlLabel key={telemetryOption.id} value={telemetryOption.id}
+                  control={<Checkbox checked={checkboxState[telemetryOption.id]} />}
+                  label={telemetryOption.name}
+                  /> 
+              }
             })
           )}
         </FormGroup>
