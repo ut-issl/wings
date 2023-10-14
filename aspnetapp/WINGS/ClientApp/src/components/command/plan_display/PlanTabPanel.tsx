@@ -261,7 +261,9 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
           tlms = latestTelemetries["MOBC"][variableNameSplitList[0]];
         }
       }
-      if (tlms.findIndex(index => index.telemetryInfo.name === variableName) >= 0) {
+      if (tlms == undefined) {
+        return outcome;
+      } else if (tlms.findIndex(index => index.telemetryInfo.name === variableName) >= 0) {
         variableIndex = tlms.findIndex(index => index.telemetryInfo.name === variableName);
       } else if (tlms.findIndex(index => index.telemetryInfo.name === variableName.split('.').slice(1).join('.')) >= 0) {
         variableIndex = tlms.findIndex(index => index.telemetryInfo.name === variableName.split('.').slice(1).join('.'));
@@ -436,6 +438,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         while (!reqret && timer < timeoutsec) {
           let latestTlmValue = getVariableValue(req.body.variable);
           if (!latestTlmValue.isSuccess) {
+            dispatch(execRequestErrorAction(row));
             break;
           }
 
@@ -456,6 +459,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       case "check_value":
         let tlmValue = getVariableValue(req.body.variable);
         if (!tlmValue.isSuccess) {
+          dispatch(execRequestErrorAction(row));
           break;
         }
 
@@ -502,10 +506,14 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         break;
       
       case "get":
-        let reqValue = getVariableValue(req.body.variable).value;
-        let newText = (req.stopFlag ? "." : " ") + `${req.method} ${req.body.variable} ${reqValue}`;
+        let reqValue = getVariableValue(req.body.variable);
+        let newText = (req.stopFlag ? "." : " ") + `${req.method} ${req.body.variable} ${reqValue.value}`;
         setCmdline(row, newText);
-        dispatch(execRequestSuccessAction(row));
+        if (!reqValue.isSuccess) {
+          dispatch(execRequestErrorAction(row));
+        } else {
+          dispatch(execRequestSuccessAction(row));
+        }
         reqret = true;
         break;
       
