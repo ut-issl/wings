@@ -14,7 +14,7 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
 import { setTelemetryTypePacketAction } from '../../../redux/views/actions';
 import CenterFocusStrongIcon from '@material-ui/icons/CenterFocusStrong';
-import { AlarmAddOutlined } from '@material-ui/icons';
+import { AlarmAddOutlined, ArrowLeft, ArrowRight } from '@material-ui/icons';
 import IconButtonInTabs from '../../common/IconButtonInTabs';
 import OpenPacketTabDialog from './OpenPacketTabDialog';
 import OpenPacketTimeHistoryTabDialog from './OpenPacketTimeHistoryTabDialog';
@@ -94,6 +94,13 @@ const useStyles = makeStyles((theme: Theme) =>
       color: 'white',
       fontSize: 12,
       paddingRight: 20
+    },
+    iconField: {
+      padding: 0
+    },
+    leftRightIconField: {
+      paddingTop: 2,
+      paddingBottom: 2
     }
 }));
 
@@ -158,6 +165,18 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   const handleTimeHistoryDialogClose = () => {
     setTimeHistoryDialogOpen(false);
   };
+
+  const handleTimeHistoryNext = () => {
+    if (Number(packetHistoryTimeId) != tlmHistory[0].telemetryValues.length - 1 ) {
+      setPacketHistoryTimeId(String(Number(packetHistoryTimeId) + 1));
+    }
+  }
+
+  const handleTimeHistoryBack = () => {
+    if (Number(packetHistoryTimeId) != 0) {
+      setPacketHistoryTimeId(String(Number(packetHistoryTimeId) - 1));
+    }
+  }
 
   const setTlmTagColor = (i: number) => {
     if (i <= 2) {
@@ -258,7 +277,7 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
         <FormControl component="fieldset" >
             <FormLabel component="legend" className={classes.dataTypeField}>Data Type</FormLabel>
             <RadioGroup aria-label="data-type" name="data-type" value={dataType} onChange={handleChangeDataType}>
-              <Toolbar>
+              <Toolbar style={{paddingLeft: 5, paddingRight:5}}>
                 <FormControlLabel value="Default" control={<Radio />} label="Default" />
                 <FormControlLabel value="Raw" control={<Radio />} label="Raw" />
               </Toolbar>
@@ -267,7 +286,7 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
         <FormControl component="fieldset" >
             <FormLabel component="legend" className={classes.dataTypeField}>Packet Type</FormLabel>
             <RadioGroup aria-label="data-type" name="data-type" value={packetType} onChange={handleChangePacketType}>
-              <Toolbar>
+              <Toolbar style={{paddingLeft: 5, paddingRight:5}}>
                 <FormControlLabel value="RealTime" control={<Radio />} label="RealTime" />
                 <FormControlLabel value="History" control={<Radio />} label="History" />
               </Toolbar>
@@ -277,9 +296,17 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
           SET
         </Button>
         {(packetType == "History") ?
-          <IconButtonInTabs onClick={handleTimeHistoryDialogOpen}>
-            <AlarmAddOutlined fontSize="small" />
-          </IconButtonInTabs> :
+          <div style={{textAlign: "center"}}>
+            <IconButtonInTabs onClick={handleTimeHistoryDialogOpen} className={classes.iconField} >
+              <AlarmAddOutlined fontSize="small" />
+            </IconButtonInTabs>
+              <IconButtonInTabs onClick={handleTimeHistoryBack} className={classes.leftRightIconField} >
+                <ArrowLeft fontSize="small" />
+              </IconButtonInTabs>
+              <IconButtonInTabs onClick={handleTimeHistoryNext} className={classes.leftRightIconField} >
+                <ArrowRight fontSize="small" />
+              </IconButtonInTabs>
+          </div> : 
           <></>
         }
         <IconButtonInTabs onClick={handleDialogOpen}>
