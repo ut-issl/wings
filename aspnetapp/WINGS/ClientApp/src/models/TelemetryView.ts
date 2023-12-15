@@ -4,6 +4,7 @@ export type TelemetryViewIndex = FileIndex & {
   type: "packet" | "character" | "graph" | "",
   selectedTelemetries: string[],
   dataType: string,
+  packetType?: string,
   dataLength: string,
   ylabelMin: string,
   ylabelMax: string,

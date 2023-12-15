@@ -151,7 +151,7 @@ export const ViewsReducer = (state = initialState.views, action: Actions) => {
     }
 
     case Actions.SET_TELEMETRY_TYPE_PACKET: {
-      const { block, dataType } = action.payload;
+      const { block, dataType, packetType } = action.payload;
       return {
         ...state,
         currentView:{
@@ -163,7 +163,8 @@ export const ViewsReducer = (state = initialState.views, action: Actions) => {
               tabs: [...state.currentView.blocks[block].tabs.slice(0, state.currentView.blocks[block].activeTab),
                 {
                   ...state.currentView.blocks[block].tabs[state.currentView.blocks[block].activeTab],
-                  dataType: dataType
+                  dataType: dataType,
+                  packetType: packetType
                 },
                 ...state.currentView.blocks[block].tabs.slice(state.currentView.blocks[block].activeTab+1)]
             },
