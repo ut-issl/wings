@@ -87,12 +87,13 @@ export const selectTelemetryAction = (block: number, tlmname:string[]) => {
   }
 };
 
-export const setTelemetryTypePacketAction = (block: number, dataType:string) => {
+export const setTelemetryTypePacketAction = (block: number, dataType:string, packetType:string|undefined) => {
   return {
     type: SET_TELEMETRY_TYPE_PACKET,
     payload: {
       block: block,
-      dataType: dataType
+      dataType: dataType,
+      packetType: packetType
     }
   }
 };
