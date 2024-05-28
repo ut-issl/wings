@@ -13,7 +13,6 @@ const useStyles = makeStyles(
     root: {
       height: 700,
       margin: '.3cm',
-      alignContent: 'center'
     },
     dialogPaper: {
       width: '80%',
