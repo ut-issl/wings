@@ -13,13 +13,12 @@ const useStyles = makeStyles(
     root: {
       height: 700,
       margin: '.3cm',
-      alignContent: 'center'
     },
     dialogPaper: {
       width: '80%',
       maxHeight: 435,
     },
-}));
+  }));
 
 const CmdLogDisplayArea = () => {
   const classes = useStyles();
@@ -37,7 +36,7 @@ const CmdLogDisplayArea = () => {
     const data = json.data;
     dispatch(updateCommandLogAction(data));
   };
-  
+
   return (
     <>
       <div className={classes.root}>
