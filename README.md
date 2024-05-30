@@ -76,7 +76,7 @@ The application listed below is required:
 		+ Currently, `A` is limited to telemetry names and variables defined by `let` function.
 		+ `B` can be any value, the names of telemetry, or variables already defined using `let` function.
             + The names of telemetry, or variables already defined must be enclosed in braces {}.
-	+ `wait_until`: Function to wait until the specific condition is satisfied
+	+ `wait_until`: Function to wait until the specific condition is satisfied.
 		+ `wait_until` function is basically used as follows:
             + `wait_until A == B`
             + `wait_until A >= B`
