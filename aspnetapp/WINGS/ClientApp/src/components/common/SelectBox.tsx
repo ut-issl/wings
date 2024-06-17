@@ -1,5 +1,8 @@
 import React from 'react';
-import { InputLabel, MenuItem, FormControl, Select } from "@mui/material"
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 export interface SelectOption {
   id: any,
@@ -25,7 +28,8 @@ const SelectBox = (props: SelectBoxProps) => {
       <InputLabel>{props.label}</InputLabel>
       <Select
         value={props.value}
-        onChange={(event) => { props.select(event.target.value) }}
+        label={props.label}
+        onChange={(event: SelectChangeEvent) => { props.select(event.target.value) }}
       >
         {props.options.map((option: SelectOption) => (
           <MenuItem key={option.id} value={option.id}>{option.name}</MenuItem>

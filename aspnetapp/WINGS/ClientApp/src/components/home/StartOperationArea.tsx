@@ -38,11 +38,11 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
     [fileLocation, setFileLocation] = useState("Local"),
     [tmtcTarget, setTmtcTarget] = useState("TmtcIf")
 
-  const inputPathNumber = useCallback((event) => {
+  const inputPathNumber = useCallback((event: any) => {
     setPathNumber(event.target.value)
   }, [setPathNumber]);
 
-  const inputComment = useCallback((event) => {
+  const inputComment = useCallback((event: any) => {
     setComment(event.target.value)
   }, [setComment]);
 
