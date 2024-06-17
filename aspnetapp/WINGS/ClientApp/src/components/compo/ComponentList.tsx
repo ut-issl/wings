@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import CheckIcon from '@material-ui/icons/Check';
-import ClearIcon from '@material-ui/icons/Clear';
-import AddIcon from '@material-ui/icons/Add';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
+import AddIcon from '@mui/icons-material/Add';
 import { Component } from '../../models';
 import { openErrorDialogAction } from '../../redux/ui/actions';
 import ConfirmationDialog from '../common/ConfirmationDialog';
@@ -30,14 +30,14 @@ const initialValues = {
 export interface ComponentListProps {
   compos: Component[],
   updateState: () => void
- }
+}
 
 const ComponentList = (props: ComponentListProps) => {
   const { compos, updateState } = props;
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
   const [deleteCompo, setDeleteCompo] = useState<Component | null>(null);
-  const [isEditModeArr, setIsEditModeArr ] = useState<boolean[]>([]);
+  const [isEditModeArr, setIsEditModeArr] = useState<boolean[]>([]);
   const [isAddMode, setIsAddMode] = useState(false);
   const [values, setValues] = useState(initialValues);
 
@@ -64,7 +64,7 @@ const ComponentList = (props: ComponentListProps) => {
 
   const toggleEditMode = (i: number) => {
     const newArr = Array(compos.length).fill(false);
-    newArr.splice(i,1,!isEditModeArr[i]);
+    newArr.splice(i, 1, !isEditModeArr[i]);
     setIsEditModeArr(newArr);
     setValues({
       name: compos[i].name,
@@ -76,7 +76,7 @@ const ComponentList = (props: ComponentListProps) => {
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     const { name, value } = event.target;
-    setValues({ ...values, [name]: value});
+    setValues({ ...values, [name]: value });
   };
 
   const updateComponent = async (i: number) => {
@@ -99,7 +99,7 @@ const ComponentList = (props: ComponentListProps) => {
       updateState();
     } else {
       const json = await res.json();
-      const message = `Status Code: ${res.status}\n${json.message ? json.message: "unknown error"}`;
+      const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
       dispatch(openErrorDialogAction(message));
     }
   };
@@ -109,7 +109,7 @@ const ComponentList = (props: ComponentListProps) => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-      },      body: JSON.stringify({
+      }, body: JSON.stringify({
         name: values.name,
         localDirPath: values.localDirPath,
         tcPacketKey: values.tcPacketKey,
@@ -121,7 +121,7 @@ const ComponentList = (props: ComponentListProps) => {
       updateState();
     } else {
       const json = await res.json();
-      const message = `Status Code: ${res.status}\n${json.message ? json.message: "unknown error"}`;
+      const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
       dispatch(openErrorDialogAction(message));
     }
   }
@@ -135,7 +135,7 @@ const ComponentList = (props: ComponentListProps) => {
   return (
     <>
       <div className="p-grid__row">
-        <h2 className="u-text__headline" style={{marginLeft: 0}}>Components List</h2>
+        <h2 className="u-text__headline" style={{ marginLeft: 0 }}>Components List</h2>
         <Tooltip title="Register">
           <IconButton onClick={toggleAddMode}>
             <AddIcon />
@@ -151,18 +151,18 @@ const ComponentList = (props: ComponentListProps) => {
                 <TableCell>LocalDirPath</TableCell>
                 <TableCell>TcPacketKey</TableCell>
                 <TableCell>TmPacketKey</TableCell>
-                <TableCell className="t-row-icon-cell"/>
-                <TableCell className="t-row-icon-cell"/>
+                <TableCell className="t-row-icon-cell" />
+                <TableCell className="t-row-icon-cell" />
               </TableRow>
             </TableHead>
             <TableBody>
               {compos.length > 0 && (
-                compos.map((compo,i) => (
+                compos.map((compo, i) => (
                   <TableRow key={compo.id}>
-                    <EditableInputTableCell isEditMode={isEditModeArr[i]} name="name" value={values.name} label={compo.name} onChange={handleChange}/>
-                    <EditableInputTableCell isEditMode={isEditModeArr[i]} name="localDirPath" value={values.localDirPath} label={compo.localDirPath} onChange={handleChange}/>
-                    <EditableInputTableCell isEditMode={isEditModeArr[i]} name="tcPacketKey" value={values.tcPacketKey} label={compo.tcPacketKey} onChange={handleChange}/>
-                    <EditableInputTableCell isEditMode={isEditModeArr[i]} name="tmPacketKey" value={values.tmPacketKey} label={compo.tmPacketKey} onChange={handleChange}/>
+                    <EditableInputTableCell isEditMode={isEditModeArr[i]} name="name" value={values.name} label={compo.name} onChange={handleChange} />
+                    <EditableInputTableCell isEditMode={isEditModeArr[i]} name="localDirPath" value={values.localDirPath} label={compo.localDirPath} onChange={handleChange} />
+                    <EditableInputTableCell isEditMode={isEditModeArr[i]} name="tcPacketKey" value={values.tcPacketKey} label={compo.tcPacketKey} onChange={handleChange} />
+                    <EditableInputTableCell isEditMode={isEditModeArr[i]} name="tmPacketKey" value={values.tmPacketKey} label={compo.tmPacketKey} onChange={handleChange} />
                     <TableCell>
                       {isEditModeArr[i] ? (
                         <>
@@ -197,10 +197,10 @@ const ComponentList = (props: ComponentListProps) => {
               )}
               {isAddMode && (
                 <TableRow>
-                  <EditableInputTableCell isEditMode={true} name="name" value={values.name} label="" onChange={handleChange}/>
-                  <EditableInputTableCell isEditMode={true} name="localDirPath" value={values.localDirPath} label="" onChange={handleChange}/>
-                  <EditableInputTableCell isEditMode={true} name="tcPacketKey" value={values.tcPacketKey} label="" onChange={handleChange}/>
-                  <EditableInputTableCell isEditMode={true} name="tmPacketKey" value={values.tmPacketKey} label="" onChange={handleChange}/>
+                  <EditableInputTableCell isEditMode={true} name="name" value={values.name} label="" onChange={handleChange} />
+                  <EditableInputTableCell isEditMode={true} name="localDirPath" value={values.localDirPath} label="" onChange={handleChange} />
+                  <EditableInputTableCell isEditMode={true} name="tcPacketKey" value={values.tcPacketKey} label="" onChange={handleChange} />
+                  <EditableInputTableCell isEditMode={true} name="tmPacketKey" value={values.tmPacketKey} label="" onChange={handleChange} />
                   <TableCell>
                     <Tooltip title="Save">
                       <IconButton className="t-row-icon-cell" onClick={createComponent}>
@@ -213,7 +213,7 @@ const ComponentList = (props: ComponentListProps) => {
                       </IconButton>
                     </Tooltip>
                   </TableCell>
-                  <TableCell className="t-row-icon-cell"/>
+                  <TableCell className="t-row-icon-cell" />
                 </TableRow>
               )}
             </TableBody>

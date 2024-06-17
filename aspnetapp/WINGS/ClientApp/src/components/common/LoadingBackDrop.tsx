@@ -1,7 +1,7 @@
 import React from 'react';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import { makeStyles, createStyles, Theme } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/RootState';
 import { getIsLoading } from '../../redux/ui/selectors';

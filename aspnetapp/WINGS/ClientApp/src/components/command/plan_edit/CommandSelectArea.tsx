@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import { createStyles, makeStyles } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store/RootState';
 import { getCommands, getTargets, getComponents } from '../../../redux/commands/selectors';
@@ -27,9 +27,9 @@ const useStyles = makeStyles(
       fontSize: '9pt',
       color: 'rgba(255, 255, 255, 0.7)'
     }
-}));
+  }));
 
-const execTypeOptions: SelectOption[] = ["RT","TL","BL","UTL"].map(type => ({id: type, name: type}));
+const execTypeOptions: SelectOption[] = ["RT", "TL", "BL", "UTL"].map(type => ({ id: type, name: type }));
 
 const CommandSelectionArea = () => {
   const classes = useStyles();
@@ -40,7 +40,7 @@ const CommandSelectionArea = () => {
   const targets = getTargets(selector);
   const components = getComponents(selector);
   const { component, target, command } = getSelectedCommand(selector);
-  
+
   interface OptionType {
     label: string,
     value: string
@@ -56,7 +56,7 @@ const CommandSelectionArea = () => {
     let options: OptionType[] = [];
     commands.map((command, i) => {
       (target === TARGET_ALL || command.target === target) && (component === COMPONENT_ALL || command.component === component) &&
-      options.push({label: command.name, value: String(i)})
+        options.push({ label: command.name, value: String(i) })
     });
     setCommandOptions(options);
   }, [component, target]);
@@ -130,7 +130,7 @@ const CommandSelectionArea = () => {
     if (command.name === "") return;
     if (command.params.map(param => param.value).every(value => value)) {
       dispatch(selectedCommandCommitAction());
-    } 
+    }
   }
 
   return (
@@ -151,25 +151,25 @@ const CommandSelectionArea = () => {
           label="Exec Type" options={execTypeOptions}
           select={handleExecTypeChange} value={command.execType}
         />
-        <div className="module-spacer--extra-extra-small"/>
+        <div className="module-spacer--extra-extra-small" />
         <SelectBox
           label="Target" options={targetOptions}
           select={handleTargetChange} value={target}
         />
-        <div className="module-spacer--extra-extra-small"/>
+        <div className="module-spacer--extra-extra-small" />
         <div className={classes.commandName}>Command Name</div>
         <Select
           styles={customStyles}
           onChange={handleCommandChange}
           options={commandOptions}
         />
-        <div className="module-spacer--extra-extra-small"/>
+        <div className="module-spacer--extra-extra-small" />
         <Typography>
           {command.description}
         </Typography>
-        <div className="module-spacer--extra-extra-small"/>
+        <div className="module-spacer--extra-extra-small" />
         <SetParamTable command={command} />
-        <div className="module-spacer--small"/>
+        <div className="module-spacer--small" />
         <Button
           variant="contained" color="primary" className={classes.button}
           onClick={addUnplannedCommand}

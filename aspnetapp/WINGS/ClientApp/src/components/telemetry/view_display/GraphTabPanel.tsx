@@ -1,29 +1,29 @@
 import React from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@mui/material/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { TelemetryViewIndex } from '../../../models';
 import { RootState } from '../../../redux/store/RootState';
 import { getTelemetryHistories } from '../../../redux/telemetries/selectors';
 import { Line } from 'react-chartjs-2';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import CenterFocusStrongIcon from '@material-ui/icons/CenterFocusStrong';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import CenterFocusStrongIcon from '@mui/icons-material/CenterFocusStrong';
 import IconButtonInTabs from '../../common/IconButtonInTabs';
 import OpenGraphTabDialog from './OpenGraphTabDialog';
-import Toolbar from '@material-ui/core/Toolbar';
-import { TextField } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+import Toolbar from '@mui/material/Toolbar';
+import { TextField } from '@mui/material';
+import Button from '@mui/material/Button';
 import { setTelemetryTypeGraphAction } from '../../../redux/views/actions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import { Dialog } from '@material-ui/core';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import { Dialog } from '@mui/material';
 
 
-const useStyles = makeStyles((theme: Theme) => 
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       padding: 10
@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme: Theme) =>
     tlmli: {
       fontSize: 'xx-small',
       display: 'block',
-      "& span" : {
+      "& span": {
         color: theme.palette.success.main
       }
     },
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     dataTypeField: {
       fontSize: "10pt",
-      textAlign:"center"
+      textAlign: "center"
     },
     inputData: {
       width: "3cm",
@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: 12,
       paddingRight: 20
     }
-}));
+  }));
 
 export interface GraphTabPanelProps {
   tab: TelemetryViewIndex,
@@ -100,96 +100,96 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDataType((event.target as HTMLInputElement).value);
   };
-  
+
   const [dialogOpen, setDialogOpen] = React.useState(false);
-  const graphColor : {backgroundColor: string; borderColor: string;}[] = [
-    {backgroundColor: "#008080", borderColor: "#7fffd4"},
-    {backgroundColor: "#1e90ff", borderColor: "#87cefa"},
-    {backgroundColor: "#b8860b", borderColor: "#ffd700"},
-    {backgroundColor: "#c71585", borderColor: "#ee82ee"},
-    {backgroundColor: "#483d8b", borderColor: "#8a2be2"},
-    {backgroundColor: "#800000", borderColor: "#b22222"},
-    {backgroundColor: "#f65200", borderColor: "#ff9966"},
-    {backgroundColor: "#808080", borderColor: "#dcdcdc"},
-    {backgroundColor: "#0000cd", borderColor: "#1e90ff"},
-    {backgroundColor: "#ff8989", borderColor: "#ff4343"},
+  const graphColor: { backgroundColor: string; borderColor: string; }[] = [
+    { backgroundColor: "#008080", borderColor: "#7fffd4" },
+    { backgroundColor: "#1e90ff", borderColor: "#87cefa" },
+    { backgroundColor: "#b8860b", borderColor: "#ffd700" },
+    { backgroundColor: "#c71585", borderColor: "#ee82ee" },
+    { backgroundColor: "#483d8b", borderColor: "#8a2be2" },
+    { backgroundColor: "#800000", borderColor: "#b22222" },
+    { backgroundColor: "#f65200", borderColor: "#ff9966" },
+    { backgroundColor: "#808080", borderColor: "#dcdcdc" },
+    { backgroundColor: "#0000cd", borderColor: "#1e90ff" },
+    { backgroundColor: "#ff8989", borderColor: "#ff4343" },
   ];
 
-  let tlmData: {[id: string] : number[]} = {};
-  let tlmLabels: {[id: string] : string[]} = {};
+  let tlmData: { [id: string]: number[] } = {};
+  let tlmLabels: { [id: string]: string[] } = {};
   const items: { label: string; backgroundColor: string; borderColor: string; pointBorderWidth: number; data: number[]; }[] = [];
 
   const inputDataLength = React.useCallback((event) => {
     setDataLength(event.target.value)
-  },[setDataLength]);
+  }, [setDataLength]);
 
   const inputYlabelMin = React.useCallback((event) => {
-    if (!isNaN(Number(event.target.value))){
+    if (!isNaN(Number(event.target.value))) {
       setYlabelMin(event.target.value);
     }
-    else{
+    else {
       setYlabelMin('');
     }
-  },[setYlabelMin]);
+  }, [setYlabelMin]);
 
   const inputYlabelMax = React.useCallback((event) => {
-    if (!isNaN(Number(event.target.value))){
+    if (!isNaN(Number(event.target.value))) {
       setYlabelMax(event.target.value);
     }
-    else{
+    else {
       setYlabelMax('');
     }
-  },[setYlabelMax]);
+  }, [setYlabelMax]);
 
-  let maxValue:number = 0;
-  let minValue:number = 0;
+  let maxValue: number = 0;
+  let minValue: number = 0;
   let isFirstValueSet = false;
 
-  tab.selectedTelemetries.forEach((telemetryName,index) =>{
+  tab.selectedTelemetries.forEach((telemetryName, index) => {
     const selectedTelemetryHistory = telemetryHistories[tab.compoName][tab.name].find(element => element.telemetryInfo.name == telemetryName);
     if (selectedTelemetryHistory != undefined) {
       let tlmDataTmp: number[] = [];
       let tlmLabelTmp: string[] = [];
       selectedTelemetryHistory.telemetryValues.forEach(tlm => {
-        if (tab.dataType != "Raw"){
+        if (tab.dataType != "Raw") {
           tlmDataTmp.push(Number(tlm.value));
         }
-        else{
+        else {
           tlmDataTmp.push(Number(tlm.rawValue));
         }
         tlmLabelTmp.push(tlm.time);
       })
 
-      if ((Number(tab.dataLength) !== 0 || NaN) && (tlmDataTmp.length >= Number(tab.dataLength)) ) {
-        tlmData[telemetryName] = tlmDataTmp.slice(tlmDataTmp.length-Number(tab.dataLength), tlmDataTmp.length);
-        tlmLabels[telemetryName] = tlmLabelTmp.slice(tlmDataTmp.length-Number(tab.dataLength),tlmDataTmp.length);
+      if ((Number(tab.dataLength) !== 0 || NaN) && (tlmDataTmp.length >= Number(tab.dataLength))) {
+        tlmData[telemetryName] = tlmDataTmp.slice(tlmDataTmp.length - Number(tab.dataLength), tlmDataTmp.length);
+        tlmLabels[telemetryName] = tlmLabelTmp.slice(tlmDataTmp.length - Number(tab.dataLength), tlmDataTmp.length);
       }
-      else{
+      else {
         tlmData[telemetryName] = tlmDataTmp;
         tlmLabels[telemetryName] = tlmLabelTmp;
       }
 
-      if(!isFirstValueSet && !isNaN(tlmData[telemetryName][0])){
+      if (!isFirstValueSet && !isNaN(tlmData[telemetryName][0])) {
         maxValue = tlmData[telemetryName].reduce((num1, num2) => Math.max(num1, num2));
         minValue = tlmData[telemetryName].reduce((num1, num2) => Math.min(num1, num2));
         isFirstValueSet = true;
       }
-      else if(!isNaN(tlmDataTmp[0])){
+      else if (!isNaN(tlmDataTmp[0])) {
         let tempMaxValue = tlmData[telemetryName].reduce((num1: number, num2: number) => Math.max(num1, num2));
         let tempMinValue = tlmData[telemetryName].reduce((num1: number, num2: number) => Math.min(num1, num2));
-        maxValue = Math.max(maxValue,tempMaxValue);
-        minValue = Math.min(minValue,tempMinValue);
+        maxValue = Math.max(maxValue, tempMaxValue);
+        minValue = Math.min(minValue, tempMinValue);
       }
     }
-    
+
     items.push(
-    {
-      label: telemetryName,
-      backgroundColor: graphColor[index%graphColor.length].backgroundColor,
-      borderColor: graphColor[index%graphColor.length].borderColor,
-      pointBorderWidth: 1,
-      data: tlmData[telemetryName]
-    })
+      {
+        label: telemetryName,
+        backgroundColor: graphColor[index % graphColor.length].backgroundColor,
+        borderColor: graphColor[index % graphColor.length].borderColor,
+        pointBorderWidth: 1,
+        data: tlmData[telemetryName]
+      })
   });
 
   const handleDialogOpen = () => {
@@ -209,27 +209,27 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
         && (
           (Number(ylabelMax) == 0 && Number(ylabelMin) >= maxValue)
           || (Number(ylabelMax) != 0 && Number(ylabelMin) >= Number(ylabelMax))
-          ) 
         )
+      )
       || (
         Number(ylabelMax) != 0
         && (Number(ylabelMin) == 0 && Number(ylabelMax) <= minValue)
-        )
-    ){
+      )
+    ) {
       setShowModal(true);
     }
-    else{
-      dispatch(setTelemetryTypeGraphAction(blockNum,dataType,dataLength,ylabelMin,ylabelMax));
+    else {
+      dispatch(setTelemetryTypeGraphAction(blockNum, dataType, dataLength, ylabelMin, ylabelMax));
     }
   };
 
   const data = {
     labels: tlmLabels[tab.selectedTelemetries[0]],
     datasets: items
-  } 
+  }
 
   const options = {
-    animation:false,
+    animation: false,
     scales: {
       xAxes: [{
         type: "time",
@@ -240,8 +240,8 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
         }
       }],
       yAxes: {
-        min: (tab.ylabelMin!='')?Number(tab.ylabelMin):null,
-        max: (tab.ylabelMax!='')?Number(tab.ylabelMax):null
+        min: (tab.ylabelMin != '') ? Number(tab.ylabelMin) : null,
+        max: (tab.ylabelMax != '') ? Number(tab.ylabelMax) : null
       }
     }
   }
@@ -249,7 +249,7 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
   return (
     <div className={classes.root}>
       <div className={classes.titleWithSpace}>
-          <span className={classes.title}>Name : </span>{tab.name}
+        <span className={classes.title}>Name : </span>{tab.name}
       </div>
       <div className={classes.titleWithSpace}>
         <span className={classes.title}>Apid : </span> 0x{Number(tab.tlmApid).toString(16)}
@@ -260,17 +260,17 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
       <Toolbar>
         <TextField
           label="Data Length" onChange={inputDataLength}
-          className = {classes.inputData}
+          className={classes.inputData}
           value={dataLength} type="text"
         />
-        <TextField 
+        <TextField
           label="y Label Min" onChange={inputYlabelMin}
-          className = {classes.inputData}
+          className={classes.inputData}
           value={ylabelMin} type="text"
         />
-        <TextField 
+        <TextField
           label="y Label Max" onChange={inputYlabelMax}
-          className = {classes.inputData}
+          className={classes.inputData}
           value={ylabelMax} type="text"
         />
         <FormControl component="fieldset">
@@ -286,7 +286,7 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
           SET
         </Button>
         <IconButtonInTabs onClick={handleDialogOpen}>
-          <CenterFocusStrongIcon fontSize="small"/>
+          <CenterFocusStrongIcon fontSize="small" />
         </IconButtonInTabs>
       </Toolbar>
       <OpenGraphTabDialog
@@ -299,16 +299,16 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
       />
       <Line
         type={Line}
-        data={data} 
-        options={options} 
+        data={data}
+        options={options}
       />
       <Dialog
-      disableBackdropClick
-      disableEscapeKeyDown
-      maxWidth="xs"
-      aria-labelledby="confirmation-ylabel"
-      open={showModal}
-      keepMounted={true}
+        disableBackdropClick
+        disableEscapeKeyDown
+        maxWidth="xs"
+        aria-labelledby="confirmation-ylabel"
+        open={showModal}
+        keepMounted={true}
       >
         <DialogTitle id="confirmation-ylabel">Error</DialogTitle>
         <DialogContent dividers>

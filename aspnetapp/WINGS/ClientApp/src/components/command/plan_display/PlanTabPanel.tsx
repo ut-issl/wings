@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { Button, TextField } from '@material-ui/core';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import { makeStyles, createStyles } from '@mui/material/styles';
+import { Button, TextField } from '@mui/material';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import { CommandPlanLine, RequestStatus, CmdFileVariable, Telemetry, TlmCmdConfigurationInfo } from '../../../models';
 import RequestTableRow from './RequestTableRow';
 import { selectedPlanRowAction, execRequestSuccessAction, execRequestErrorAction, execRequestsStartAction, execRequestsEndAction, cmdFileVariableEditAction } from '../../../redux/plans/actions';
@@ -16,10 +16,10 @@ import { openPlan, postCommand, postCommandFileLineLog } from '../../../redux/pl
 import { RootState } from '../../../redux/store/RootState';
 import { getLatestTelemetries } from '../../../redux/telemetries/selectors';
 import { openErrorDialogAction } from '../../../redux/ui/actions';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import { Dialog } from '@material-ui/core';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import { Dialog } from '@mui/material';
 import { getOpid } from '../../../redux/operations/selectors';
 import { finishEditCommandLineAction } from '../../../redux/plans/actions';
 import { getTlmCmdConfig } from '../../../redux/operations/selectors';
@@ -40,7 +40,7 @@ const useStyles = makeStyles(
     },
     cmdTypeField: {
       fontSize: "10pt",
-      textAlign:"center"
+      textAlign: "center"
     },
     activeTab: {
       height: 700,
@@ -54,7 +54,7 @@ const useStyles = makeStyles(
       position: "absolute",
       backgroundColor: "#212121"
     }
-}));
+  }));
 
 const _sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -67,7 +67,7 @@ export interface PlanTabPanelProps {
 }
 
 const PlanTabPanel = (props: PlanTabPanelProps) => {
-  const {value, index, name, content, cmdType } = props;
+  const { value, index, name, content, cmdType } = props;
   const classes = useStyles();
   const dispatch = useDispatch();
   const selector = useSelector((state: RootState) => state);
@@ -113,13 +113,13 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
   }
 
   const advanceSelectedRow = (nextRow: number) => {
-    selectedRow < content.length-1 && dispatch(selectedPlanRowAction(nextRow));
+    selectedRow < content.length - 1 && dispatch(selectedPlanRowAction(nextRow));
     if (container && tbody && tbody.getElementsByTagName('tr')[0] != undefined) {
       const trHeight = tbody.getElementsByTagName('tr')[0].clientHeight;
-      const top = Math.ceil(container.scrollTop/trHeight);
+      const top = Math.ceil(container.scrollTop / trHeight);
       if ((nextRow - top) > 15) {
         container.scrollTop += trHeight;
-      }     
+      }
     }
   };
 
@@ -127,10 +127,10 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
     selectedRow > 0 && dispatch(selectedPlanRowAction(nextRow));
     if (container && tbody && tbody.getElementsByTagName('tr')[0] != undefined) {
       const trHeight = tbody.getElementsByTagName('tr')[0].clientHeight;
-      const top = Math.ceil(container.scrollTop/trHeight);
+      const top = Math.ceil(container.scrollTop / trHeight);
       if ((nextRow - top) < 4) {
         container.scrollTop -= trHeight;
-      }     
+      }
     }
   };
 
@@ -146,9 +146,9 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
   const handleKeyDown = async (event: React.KeyboardEvent<HTMLDivElement>) => {
     if (inExecution) return;
     if (event.key === 'ArrowDown') {
-      advanceSelectedRow(selectedRow+1);
+      advanceSelectedRow(selectedRow + 1);
     } else if (event.key === 'ArrowUp') {
-      backSelectedRow(selectedRow-1);
+      backSelectedRow(selectedRow - 1);
     }
     if (event.key === 'Enter' && event.shiftKey) {
       dispatch(execRequestsStartAction());
@@ -174,28 +174,28 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       //dispatch(editCommandLineAction(num, data));
       setText(data);
     } else {
-      const message = `Status Code: ${res.status}\n${json.message ? json.message: "unknown error"}`;
+      const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
       dispatch(openErrorDialogAction(message));
     }
-    setNum(() => i+1);
+    setNum(() => i + 1);
     setShowModal(true);
   }
 
   const finishEditting = async () => {
     // do things like LoadCommandFileAsync
-    const res = await fetch(`/api/operations/${opid}/cmd_plans/0/${activePlanId}/${num-1}`, {
+    const res = await fetch(`/api/operations/${opid}/cmd_plans/0/${activePlanId}/${num - 1}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({text: text})
+      body: JSON.stringify({ text: text })
     });
     const json = await res.json();
     if (res.status === 200) {
       const commandFileLine = json.data;
-      dispatch(finishEditCommandLineAction(num-1, commandFileLine));
+      dispatch(finishEditCommandLineAction(num - 1, commandFileLine));
     } else {
-      const message = `Status Code: ${res.status}\n${json.message ? json.message: "unknown error"}`;
+      const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
       dispatch(openErrorDialogAction(message));
     }
     setShowModal(false);
@@ -208,14 +208,14 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({text: cmdlineText})
+      body: JSON.stringify({ text: cmdlineText })
     });
     const json = await res.json();
     if (res.status === 200) {
       const commandFileLine = json.data;
       dispatch(finishEditCommandLineAction(row, commandFileLine));
     } else {
-      const message = `Status Code: ${res.status}\n${json.message ? json.message: "unknown error"}`;
+      const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
       dispatch(openErrorDialogAction(message));
     }
   }
@@ -247,7 +247,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       outcome.value = cmdFileVariables[variableIndex].value;
       outcome.isSuccess = true;
     } else if (variableName.indexOf('.') > -1) {
-      let tlms: Telemetry[] = []; 
+      let tlms: Telemetry[] = [];
       let latestTelemetries = getLatestTelemetries(selector);
       let variableNameSplitList = variableName.split('.');
       let tlmCmdConfigIndex = 0;
@@ -278,8 +278,8 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
   }
 
   const compareValue = (compare: string, variable: GetVariable, refValue: string) => {
-    let comparedValue = (refValue.indexOf("{") == -1) ? refValue 
-                      : getVariableValue(refValue.substring(refValue.indexOf("{") + 1, refValue.indexOf("}"))).value.toString();
+    let comparedValue = (refValue.indexOf("{") == -1) ? refValue
+      : getVariableValue(refValue.substring(refValue.indexOf("{") + 1, refValue.indexOf("}"))).value.toString();
     switch (compare) {
       case "==":
         if (variable.value === parseTlmValue(comparedValue, variable.convType)) {
@@ -346,17 +346,17 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         await dispatch(execRequestSuccessAction(row));
         exeret = true;
         break;
-      
+
       case "command":
         let commandret = [false];
         let paramsValue = [];
-        
+
         if (req.body.execTimeStr == null) {
           req.body.execTimeStr = "";
         }
         else if (req.body.execTimeStr.indexOf("{") != -1) {
           let varTi = req.body.execTimeStr.substring(req.body.execTimeStr.indexOf("{") + 1,
-                                                     req.body.execTimeStr.indexOf("}"));
+            req.body.execTimeStr.indexOf("}"));
           let tiValue = getVariableValue(varTi);
 
           if (!tiValue.isSuccess) {
@@ -388,7 +388,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
               } else {
                 paramsValue.push(varValue.value.toString());
               }
-              
+
             } else {
               paramsValue.push(req.body.params[i].value);
             }
@@ -418,7 +418,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         dispatch(execRequestSuccessAction(row));
         reqret = true;
         break;
-      
+
       case "call":
         const fileName = req.body.fileName;
         const ret = allIndexes.findIndex(index => index.name === fileName);
@@ -442,7 +442,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             break;
           }
 
-          if(compareValue(req.body.compare, latestTlmValue, req.body.value)) {
+          if (compareValue(req.body.compare, latestTlmValue, req.body.value)) {
             reqret = true;
           } else {
             await _sleep(1000);
@@ -471,7 +471,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
           reqret = false;
         }
         break;
-      
+
       case "let":
         var equ = req.body.equation;
         // const innerVar = tlms[tlmidx];
@@ -498,13 +498,13 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
           var varIndex = cmdFileVariables.findIndex(index => index.variable === req.body.variable)
           cmdFileVariablesTemp[varIndex].value = equAns;
         } else {
-          cmdFileVariablesTemp.push({variable: req.body.variable, value: equAns});
+          cmdFileVariablesTemp.push({ variable: req.body.variable, value: equAns });
         }
         setCmdFileVariables(cmdFileVariablesTemp);
         dispatch(execRequestSuccessAction(row));
         dispatch(cmdFileVariableEditAction(cmdFileVariablesTemp));
         break;
-      
+
       case "get":
         let reqValue = getVariableValue(req.body.variable);
         let newText = (req.stopFlag ? "." : " ") + `${req.method} ${req.body.variable} ${reqValue.value}`;
@@ -516,7 +516,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         }
         reqret = true;
         break;
-      
+
       default:
         break;
     }
@@ -555,7 +555,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
           <input
             type="text"
             className={classes.tableEventShifter}
-            style={{backgroundColor: "red"}}
+            style={{ backgroundColor: "red" }}
             ref={textInput}
             onKeyDown={(event) => handleKeyDown(event)}
             readOnly
@@ -565,10 +565,10 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             <Table stickyHeader onClick={handleTableClick}>
               <TableHead>
                 <TableRow>
-                  <TableCell style={{width: "40px", padding: "0"}}/>
-                  <TableCell style={{width: "27px", padding: "0"}}/>
-                  <TableCell style={{fontWeight: "bold"}}>{name}</TableCell>
-                  <TableCell style={{width: "120px", padding: "0"}}/>
+                  <TableCell style={{ width: "40px", padding: "0" }} />
+                  <TableCell style={{ width: "27px", padding: "0" }} />
+                  <TableCell style={{ fontWeight: "bold" }}>{name}</TableCell>
+                  <TableCell style={{ width: "120px", padding: "0" }} />
                 </TableRow>
               </TableHead>
               <TableBody id="plan-table-body">
@@ -577,7 +577,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
                     <RequestTableRow
                       key={i} line={line} index={i} isSelected={i === selectedRow}
                       onClick={() => handleRowClick(i)}
-                      onDoubleClick={() => {editCmdline(i)}}
+                      onDoubleClick={() => { editCmdline(i) }}
                     />
                   ))
                 )}
@@ -599,22 +599,22 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             <DialogActions>
               <TextField
                 label="edit" onChange={handleChangeCmdLine}
-                value={text} type="text" style={{width: 940}}
+                value={text} type="text" style={{ width: 940 }}
               />
             </DialogActions>
             <DialogActions>
               <Button
                 variant="contained" color="primary" className={classes.button}
-                onClick={()=>{setShowModal(false)}}
+                onClick={() => { setShowModal(false) }}
               >
                 Cancel
-              </Button> 
+              </Button>
               <Button
                 variant="contained" color="primary" className={classes.button}
                 onClick={finishEditting}
               >
                 Update
-              </Button> 
+              </Button>
             </DialogActions>
           </Dialog>
         </div>

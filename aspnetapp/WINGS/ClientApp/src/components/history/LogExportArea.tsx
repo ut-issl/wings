@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import GetAppIcon from '@material-ui/icons/GetApp';
+import IconButton from '@mui/material/IconButton';
+import GetAppIcon from '@mui/icons-material/GetApp';
 import TransferList from '../common/TransferList';
 import { saveAs } from 'file-saver';
 
@@ -10,7 +10,7 @@ const extractFileName = (contentDispositionValue: any) => {
     var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
     var matches = filenameRegex.exec(contentDispositionValue);
     if (matches != null && matches[1]) {
-        filename = matches[1].replace(/['"]/g, '');
+      filename = matches[1].replace(/['"]/g, '');
     }
   }
   return filename;
@@ -64,7 +64,7 @@ const LogExportArea = (props: LogExportAreaProps) => {
       method: 'GET',
       headers: {
         'Accept': 'text/csv'
-      },      responseType: 'blob'
+      }, responseType: 'blob'
     };
     const response = await fetch(`/api/operations/${opid}/history/cmdfile_logs`, options);
     const contentDisposition = response.headers.get("content-disposition");
@@ -79,7 +79,7 @@ const LogExportArea = (props: LogExportAreaProps) => {
       method: 'GET',
       headers: {
         'Accept': 'application/zip'
-      },      responseType: 'blob'
+      }, responseType: 'blob'
     };
     const response = await fetch(`/api/operations/${opid}/history/tlm_logs?packet_name=${packetNames}`, options);
     const contentDisposition = response.headers.get("content-disposition");
@@ -119,30 +119,30 @@ const LogExportArea = (props: LogExportAreaProps) => {
           <IconButton onClick={downloadCommandLog}>
             <GetAppIcon />
           </IconButton>
-        Command Logs
+          Command Logs
         </div>
         <div>
           <IconButton onClick={downloadCommandFileLog}>
             <GetAppIcon />
           </IconButton>
-        Command File Logs
+          Command File Logs
         </div>
         <div>
           <IconButton onClick={downloadTelemetryLog}>
             <GetAppIcon />
           </IconButton>
-        Telemetry Logs
+          Telemetry Logs
         </div>
-        <div className="module-spacer--extra-extra-small"/>
+        <div className="module-spacer--extra-extra-small" />
         <TransferList data={packets} setSelected={setSelectedPackets} />
-        <div className="module-spacer--extra-extra-small"/>
+        <div className="module-spacer--extra-extra-small" />
         <div>
           <IconButton onClick={downloadRecordTelemetryLog}>
             <GetAppIcon />
           </IconButton>
-        DR Telemetry Logs
+          DR Telemetry Logs
         </div>
-        <div className="module-spacer--extra-extra-small"/>
+        <div className="module-spacer--extra-extra-small" />
         <TransferList data={recordPackets} setSelected={setSelectedRecordPackets} />
       </div>
     </>

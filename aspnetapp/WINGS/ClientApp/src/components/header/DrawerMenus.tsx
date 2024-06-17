@@ -1,19 +1,19 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core';
+import { createStyles, makeStyles } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
-import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
-import HomeIcon from '@material-ui/icons/Home';
-import HistoryIcon from '@material-ui/icons/History';
-import SettingsIcon from '@material-ui/icons/Settings';
-import ComputerIcon from '@material-ui/icons/Computer';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import HomeIcon from '@mui/icons-material/Home';
+import HistoryIcon from '@mui/icons-material/History';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ComputerIcon from '@mui/icons-material/Computer';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
 
 const useStyles = makeStyles(
   createStyles({
@@ -24,7 +24,7 @@ const useStyles = makeStyles(
     drawerPaper: {
       width: 256
     }
-}));
+  }));
 
 export interface DrawerMenusProps {
   open: boolean,
@@ -41,10 +41,10 @@ const DrawerMenus = (props: DrawerMenusProps) => {
   }
 
   const menus = [
-    {id: "home", label: "Home", icon: <HomeIcon />, value: "/"},
-    {id: "history", label: "Operation History", icon: <HistoryIcon />, value: "/history"},
-    {id: "compo", label: "Components", icon: <ComputerIcon />, value: "/settings/components"},
-    {id: "setting", label: "Settings", icon: <SettingsIcon />, value: "/settings"}
+    { id: "home", label: "Home", icon: <HomeIcon />, value: "/" },
+    { id: "history", label: "Operation History", icon: <HistoryIcon />, value: "/history" },
+    { id: "compo", label: "Components", icon: <ComputerIcon />, value: "/settings/components" },
+    { id: "setting", label: "Settings", icon: <SettingsIcon />, value: "/settings" }
   ];
 
   return (
@@ -54,22 +54,22 @@ const DrawerMenus = (props: DrawerMenusProps) => {
         anchor="left"
         open={props.open}
         onClose={(event) => props.onClose(event)}
-        classes={{paper: classes.drawerPaper}}
-        ModalProps={{keepMounted: true}}
+        classes={{ paper: classes.drawerPaper }}
+        ModalProps={{ keepMounted: true }}
       >
         <List>
           <ListItem>
-            <IconButton onClick={(event) => props.onClose(event)} style={{marginLeft: "auto"}}>
-              <ArrowBackIosIcon fontSize="small"/>
+            <IconButton onClick={(event) => props.onClose(event)} style={{ marginLeft: "auto" }}>
+              <ArrowBackIosIcon fontSize="small" />
             </IconButton>
           </ListItem>
-          <Divider　/>
+          <Divider />
           {menus.map(menu => (
             <ListItem button key={menu.id} onClick={(event) => selectMenu(event, menu.value)}>
               <ListItemIcon>
                 {menu.icon}
               </ListItemIcon>
-              <ListItemText primary={menu.label}/>
+              <ListItemText primary={menu.label} />
             </ListItem>
           ))}
         </List>

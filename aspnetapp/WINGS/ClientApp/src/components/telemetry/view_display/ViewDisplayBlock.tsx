@@ -1,19 +1,19 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { createStyles, makeStyles, Theme } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import AppBar from '@mui/material/AppBar';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import ViewTabPanel from './ViewTabPanel';
-import AddIcon from '@material-ui/icons/Add';
-import CloseIcon from '@material-ui/icons/Close';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import IconButtonInTabs from '../../common/IconButtonInTabs';
 import { ViewBlockInfo } from '../../../models';
 import { activateViewAction, closeViewAction } from '../../../redux/views/actions';
 import OpenViewDialog from './OpenViewDialog';
 
-const useStyles = makeStyles((theme: Theme) => 
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       [theme.breakpoints.down('lg')]: {
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '80%',
       maxHeight: 435,
     },
-}));
+  }));
 
 const a11yProps = (index: any) => {
   return {
@@ -110,19 +110,19 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
     <div className={classes.root}>
       <AppBar position="static">
         <Tabs value={value} onChange={handleValueChange}>
-          {blockInfo.tabs.map((tab,i) => (
+          {blockInfo.tabs.map((tab, i) => (
             <Tab
               key={i} label={tab.name} {...a11yProps(i)} className={classes.tab}
-              icon={<CloseIconInTab onClick={() => closeView(i)}/>}
+              icon={<CloseIconInTab onClick={() => closeView(i)} />}
             />
           ))}
           <IconButtonInTabs onClick={handleDialogOpen}>
-            <AddIcon fontSize="small"/>
+            <AddIcon fontSize="small" />
           </IconButtonInTabs>
         </Tabs>
       </AppBar>
       {blockInfo.tabs.length > 0 ? (
-        blockInfo.tabs.map((tab,i) => (
+        blockInfo.tabs.map((tab, i) => (
           <ViewTabPanel key={i} value={value} index={i} tab={tab} blockNum={blockNum} />
         ))
       ) : (

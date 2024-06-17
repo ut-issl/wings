@@ -1,5 +1,5 @@
 import React from 'react';
-import {InputLabel, MenuItem, FormControl, Select, makeStyles, createStyles} from "@material-ui/core"
+import { InputLabel, MenuItem, FormControl, Select, makeStyles, createStyles } from "@mui/material"
 
 const useStyles = makeStyles(createStyles({
   formControl: {
@@ -29,7 +29,7 @@ const SelectBox = (props: SelectBoxProps) => {
       <InputLabel>{props.label}</InputLabel>
       <Select
         value={props.value}
-        onChange={(event) => {props.select(event.target.value)}}
+        onChange={(event) => { props.select(event.target.value) }}
       >
         {props.options.map((option: SelectOption) => (
           <MenuItem key={option.id} value={option.id}>{option.name}</MenuItem>

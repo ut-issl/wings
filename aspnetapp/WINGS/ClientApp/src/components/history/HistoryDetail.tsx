@@ -1,11 +1,11 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableRow from '@material-ui/core/TableRow';
+import { createStyles, Theme, makeStyles } from '@mui/material/styles';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableRow from '@mui/material/TableRow';
 import { Operation, LocationState } from '../../models';
 import LogExportArea from './LogExportArea';
 
@@ -23,7 +23,7 @@ const HistoryDetail = () => {
   const classes = useStyles();
   const location = useLocation<LocationState<Operation>>();
   const operation = location.state.data;
- 
+
   return (
     <section className="c-section-container">
       <h2 className="u-text__headline">Details</h2>
@@ -59,8 +59,8 @@ const HistoryDetail = () => {
           </Table>
         </TableContainer>
       </div>
-      <div className="module-spacer--small"/>
-      <LogExportArea opid={operation.id}/>
+      <div className="module-spacer--small" />
+      <LogExportArea opid={operation.id} />
     </section>
   );
 };

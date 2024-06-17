@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'connected-react-router' ;
+import { ConnectedRouter } from 'connected-react-router';
 import * as History from 'history';
-import { MuiThemeProvider } from '@material-ui/core';
+import { MuiThemeProvider } from '@mui/material';
 import { theme } from './assets/theme';
 import App from './App';
 import createStore from './redux/store/store';

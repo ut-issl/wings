@@ -1,11 +1,11 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Tooltip from '@material-ui/core/Tooltip';
-import AddIcon from '@material-ui/icons/Add';
-import CloseIcon from '@material-ui/icons/Close';
+import { createStyles, makeStyles } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Tooltip from '@mui/material/Tooltip';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store/RootState';
 import { getOpenedPlanIndexes, getOpenedPlanIds, getActivePlanId, getPlanContents, getInExecution } from '../../../redux/plans/selectors';
@@ -14,12 +14,12 @@ import OpenPlanDialog from './OpenPlanDialog';
 import PlanTabPanel from './PlanTabPanel';
 import IconButtonInTabs from '../../common/IconButtonInTabs';
 import { UNPLANNED_ID } from '../../../constants';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Toolbar from '@material-ui/core/Toolbar';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import Toolbar from '@mui/material/Toolbar';
 import { getCmdType } from '../../../redux/plans/selectors';
 import { setCmdTypeAction } from '../../../redux/plans/actions';
 
@@ -56,12 +56,12 @@ const useStyles = makeStyles(
     },
     cmdTypeField: {
       fontSize: "10pt",
-      textAlign:"center"
+      textAlign: "center"
     },
     planTab: {
       width: 700
     }
-}));
+  }));
 
 const a11yProps = (index: any) => {
   return {
@@ -74,7 +74,7 @@ const PlanDisplayArea = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const selector = useSelector((state: RootState) => state);
-  
+
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
   const openedIds = getOpenedPlanIds(selector);
@@ -124,64 +124,7 @@ const PlanDisplayArea = () => {
     );
   };
 
-  if (activePlanId=="_unplanned"){
-    return (
-      <div className={classes.root}>
-        <Tabs
-          orientation="vertical"
-          variant="scrollable"
-          value={value < 0 ? false : value}
-          onChange={handleValueChange}
-          className={classes.tabs}
-        >          
-          {planIndexes.length > 0 && (
-            planIndexes.map((index,i) => (
-              index.id === UNPLANNED_ID ?
-              <Tab
-                key={index.id} label={index.name} {...a11yProps(i)} className={classes.tab}
-                style={{paddingLeft: "30px"}}
-              />
-              : (<Tooltip key={index.id} title={index.name} placement="right">
-                <Tab
-                  label={index.name} {...a11yProps(i)} className={classes.tab}
-                  icon={<CloseIconInTab onClick={() => closePlan(index.id)}/>}
-                />
-              </Tooltip>)
-            ))
-          )}
-          <IconButtonInTabs onClick={handleDialogOpen}>
-            <AddIcon />
-          </IconButtonInTabs>
-        </Tabs>
-        <div className={classes.planTab} >
-          <FormControl component="fieldset">
-            <Toolbar>
-              <FormLabel component="legend" className={classes.cmdTypeField}>Data Type</FormLabel>
-              <RadioGroup aria-label="data-type" name="data-type" value={cmdType} onChange={handleChange}>
-                  <Toolbar>
-                    <FormControlLabel value="Type-A" control={<Radio />} label="Type-A" />
-                    <FormControlLabel value="Type-B" control={<Radio />} label="Type-B" />
-                  </Toolbar>
-              </RadioGroup>
-            </Toolbar>
-          </FormControl>
-          {planIndexes.length > 0 && (
-            planIndexes.map((index,i) => (
-              <PlanTabPanel key={index.id} value={value} index={i} name={index.name} content={planContents[index.id]} cmdType={cmdType} />
-            ))
-          )}
-        </div>
-        
-        <OpenPlanDialog
-          classes={{ paper: classes.dialogPaper }}
-          keepMounted
-          open={dialogOpen}
-          onClose={handleDialogClose}
-        />
-              
-      </div>
-    );
-  } else{
+  if (activePlanId == "_unplanned") {
     return (
       <div className={classes.root}>
         <Tabs
@@ -191,20 +134,19 @@ const PlanDisplayArea = () => {
           onChange={handleValueChange}
           className={classes.tabs}
         >
-          
           {planIndexes.length > 0 && (
-            planIndexes.map((index,i) => (
+            planIndexes.map((index, i) => (
               index.id === UNPLANNED_ID ?
-              <Tab
-                key={index.id} label={index.name} {...a11yProps(i)} className={classes.tab}
-                style={{paddingLeft: "30px"}}
-              />
-              : (<Tooltip key={index.id} title={index.name} placement="right">
                 <Tab
-                  label={index.name} {...a11yProps(i)} className={classes.tab}
-                  icon={<CloseIconInTab onClick={() => closePlan(index.id)}/>}
+                  key={index.id} label={index.name} {...a11yProps(i)} className={classes.tab}
+                  style={{ paddingLeft: "30px" }}
                 />
-              </Tooltip>)
+                : (<Tooltip key={index.id} title={index.name} placement="right">
+                  <Tab
+                    label={index.name} {...a11yProps(i)} className={classes.tab}
+                    icon={<CloseIconInTab onClick={() => closePlan(index.id)} />}
+                  />
+                </Tooltip>)
             ))
           )}
           <IconButtonInTabs onClick={handleDialogOpen}>
@@ -216,27 +158,85 @@ const PlanDisplayArea = () => {
             <Toolbar>
               <FormLabel component="legend" className={classes.cmdTypeField}>Data Type</FormLabel>
               <RadioGroup aria-label="data-type" name="data-type" value={cmdType} onChange={handleChange}>
-                  <Toolbar>
-                    <FormControlLabel value="Type-A" control={<Radio />} label="Type-A" />
-                    <FormControlLabel value="Type-B" control={<Radio />} label="Type-B" />
-                  </Toolbar>
+                <Toolbar>
+                  <FormControlLabel value="Type-A" control={<Radio />} label="Type-A" />
+                  <FormControlLabel value="Type-B" control={<Radio />} label="Type-B" />
+                </Toolbar>
               </RadioGroup>
             </Toolbar>
           </FormControl>
           {planIndexes.length > 0 && (
-            planIndexes.map((index,i) => (
+            planIndexes.map((index, i) => (
               <PlanTabPanel key={index.id} value={value} index={i} name={index.name} content={planContents[index.id]} cmdType={cmdType} />
             ))
           )}
         </div>
-          
+
         <OpenPlanDialog
           classes={{ paper: classes.dialogPaper }}
           keepMounted
           open={dialogOpen}
           onClose={handleDialogClose}
         />
-              
+
+      </div>
+    );
+  } else {
+    return (
+      <div className={classes.root}>
+        <Tabs
+          orientation="vertical"
+          variant="scrollable"
+          value={value < 0 ? false : value}
+          onChange={handleValueChange}
+          className={classes.tabs}
+        >
+
+          {planIndexes.length > 0 && (
+            planIndexes.map((index, i) => (
+              index.id === UNPLANNED_ID ?
+                <Tab
+                  key={index.id} label={index.name} {...a11yProps(i)} className={classes.tab}
+                  style={{ paddingLeft: "30px" }}
+                />
+                : (<Tooltip key={index.id} title={index.name} placement="right">
+                  <Tab
+                    label={index.name} {...a11yProps(i)} className={classes.tab}
+                    icon={<CloseIconInTab onClick={() => closePlan(index.id)} />}
+                  />
+                </Tooltip>)
+            ))
+          )}
+          <IconButtonInTabs onClick={handleDialogOpen}>
+            <AddIcon />
+          </IconButtonInTabs>
+        </Tabs>
+        <div className={classes.planTab} >
+          <FormControl component="fieldset">
+            <Toolbar>
+              <FormLabel component="legend" className={classes.cmdTypeField}>Data Type</FormLabel>
+              <RadioGroup aria-label="data-type" name="data-type" value={cmdType} onChange={handleChange}>
+                <Toolbar>
+                  <FormControlLabel value="Type-A" control={<Radio />} label="Type-A" />
+                  <FormControlLabel value="Type-B" control={<Radio />} label="Type-B" />
+                </Toolbar>
+              </RadioGroup>
+            </Toolbar>
+          </FormControl>
+          {planIndexes.length > 0 && (
+            planIndexes.map((index, i) => (
+              <PlanTabPanel key={index.id} value={value} index={i} name={index.name} content={planContents[index.id]} cmdType={cmdType} />
+            ))
+          )}
+        </div>
+
+        <OpenPlanDialog
+          classes={{ paper: classes.dialogPaper }}
+          keepMounted
+          open={dialogOpen}
+          onClose={handleDialogClose}
+        />
+
       </div>
     );
   }

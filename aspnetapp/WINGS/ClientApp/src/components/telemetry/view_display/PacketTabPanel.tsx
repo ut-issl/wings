@@ -1,23 +1,23 @@
 import React from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import { createStyles, makeStyles, Theme } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
 import { useSelector, useDispatch } from 'react-redux';
 import { Telemetry, TelemetryViewIndex } from '../../../models';
 import { RootState } from '../../../redux/store/RootState';
 import { getTelemetryColor, getLatestTelemetries } from '../../../redux/telemetries/selectors';
-import Toolbar from '@material-ui/core/Toolbar';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Button from '@material-ui/core/Button';
+import Toolbar from '@mui/material/Toolbar';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import Button from '@mui/material/Button';
 import { setTelemetryTypePacketAction } from '../../../redux/views/actions';
-import CenterFocusStrongIcon from '@material-ui/icons/CenterFocusStrong';
+import CenterFocusStrongIcon from '@mui/icons-material/CenterFocusStrong';
 import IconButtonInTabs from '../../common/IconButtonInTabs';
 import OpenPacketTabDialog from './OpenPacketTabDialog';
 
-const useStyles = makeStyles((theme: Theme) => 
+const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       padding: 10
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'block'
     },
     tlmNormal: {
-      "& span" : {
+      "& span": {
         color: theme.palette.success.main
       }
     },
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     dataTypeField: {
       fontSize: "10pt",
-      textAlign:"center"
+      textAlign: "center"
     },
     dialogPaper: {
       width: '80%',
@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme: Theme) =>
       fontSize: 12,
       paddingRight: 20
     }
-}));
+  }));
 
 export interface PacketTabPanelProps {
   tab: TelemetryViewIndex,
@@ -110,9 +110,9 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   const tlmClassList: string[] = [tab.name];
   const tlmColor = getTelemetryColor(selector);
 
-  let tlmsDisplayed:Telemetry[] = [];
+  let tlmsDisplayed: Telemetry[] = [];
   tlms.forEach(tlm => {
-    if (selectedTelemetries.indexOf(tlm.telemetryInfo.name) >= 0){
+    if (selectedTelemetries.indexOf(tlm.telemetryInfo.name) >= 0) {
       tlmsDisplayed.push(tlm);
     }
   })
@@ -162,22 +162,22 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   const showTlmData = (tlm: Telemetry) => {
     const tlmClasses = tlm.telemetryInfo.name.split('.');
     const tlmClassesDisplayed: JSX.Element[] = [];
-    if (tlmClasses.length == 1){
+    if (tlmClasses.length == 1) {
       tlmClassesDisplayed.push(
         <li key={tlm.telemetryInfo.name} className={setClassName(tab.dataType, tlm.telemetryValue.value)}>
-          {tlm.telemetryInfo.name} : <span>{(tab.dataType != "Raw")? tlm.telemetryValue.value: tlm.telemetryValue.rawValue}</span>
+          {tlm.telemetryInfo.name} : <span>{(tab.dataType != "Raw") ? tlm.telemetryValue.value : tlm.telemetryValue.rawValue}</span>
         </li>
       )
       tlmClassList.push(tlm.telemetryInfo.name);
     } else {
-      const thisTlmClasses:string[] = [];
+      const thisTlmClasses: string[] = [];
       tlmClasses.forEach((tlmName, i) => {
-        let tlmClassesTmp = (i == 0)? tlmName :tlmClasses.slice(0,i+1).join(".");
+        let tlmClassesTmp = (i == 0) ? tlmName : tlmClasses.slice(0, i + 1).join(".");
         if (i == tlmClasses.length - 1) {
           tlmClassesDisplayed.push(
             <li key={tlm.telemetryInfo.name} className={setClassName(tab.dataType, tlm.telemetryValue.value)}>
-              {<span style={{marginRight: `${10*i}px`}}></span>}
-              {tlmName} : <span>{(tab.dataType != "Raw")? tlm.telemetryValue.value: tlm.telemetryValue.rawValue}</span>
+              {<span style={{ marginRight: `${10 * i}px` }}></span>}
+              {tlmName} : <span>{(tab.dataType != "Raw") ? tlm.telemetryValue.value : tlm.telemetryValue.rawValue}</span>
             </li>
           )
         } else if (!tlmClassList.includes(tlmClassesTmp)) {
@@ -194,7 +194,7 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
     }
     return (
       <>
-      {(tlmClassesDisplayed.map((tlmClass) => tlmClass))}
+        {(tlmClassesDisplayed.map((tlmClass) => tlmClass))}
       </>
     )
   };
@@ -226,7 +226,7 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
           SET
         </Button>
         <IconButtonInTabs onClick={handleDialogOpen}>
-          <CenterFocusStrongIcon fontSize="small"/>
+          <CenterFocusStrongIcon fontSize="small" />
         </IconButtonInTabs>
       </Toolbar>
       <OpenPacketTabDialog
@@ -243,21 +243,21 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
       >
         <Grid item className={classes.item}>
           {tlmsDisplayed.filter((tlm, i) => i < num / 3)
-          .map(tlm => (
-            showTlmData(tlm)
-          ))}
+            .map(tlm => (
+              showTlmData(tlm)
+            ))}
         </Grid>
         <Grid item className={classes.item}>
           {tlmsDisplayed.filter((tlm, i) => i >= num / 3 && i < 2 * num / 3)
-          .map((tlm => (
-            showTlmData(tlm)
-          )))}
+            .map((tlm => (
+              showTlmData(tlm)
+            )))}
         </Grid>
         <Grid item className={classes.item}>
           {tlmsDisplayed.filter((tlm, i) => i >= 2 * num / 3)
-          .map(tlm => (
-            showTlmData(tlm)
-          ))}
+            .map(tlm => (
+              showTlmData(tlm)
+            ))}
         </Grid>
       </Grid>
     </div>

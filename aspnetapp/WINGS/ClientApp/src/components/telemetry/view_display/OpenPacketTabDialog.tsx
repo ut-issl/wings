@@ -1,13 +1,13 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Button, TextField } from '@material-ui/core';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { createStyles, makeStyles } from '@mui/material/styles';
+import { Button, TextField } from '@mui/material';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
+import Checkbox from '@mui/material/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store/RootState';
 import { SelectOption } from '../../common/SelectBox';
@@ -21,7 +21,7 @@ const useStyles = makeStyles(
       height: '80vh',
       width: 500
     }
-}));
+  }));
 
 export interface OpenPacketTabDialogProps {
   blockNum: number,
@@ -33,36 +33,36 @@ export interface OpenPacketTabDialogProps {
 }
 
 const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
-  const {tab, onClose, blockNum, open } = props;
+  const { tab, onClose, blockNum, open } = props;
   const classes = useStyles();
   const selector = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const [text, setText] = React.useState("");
 
   const formGroupRef = React.useRef<HTMLElement>(null);
-  
+
   const latestTelemetries = getLatestTelemetries(selector)[tab.compoName][tab.name];
-  const telemetryOptions: SelectOption[] = latestTelemetries.map(latestTelemetry => ({id:latestTelemetry.telemetryInfo.name, name:latestTelemetry.telemetryInfo.name}));
+  const telemetryOptions: SelectOption[] = latestTelemetries.map(latestTelemetry => ({ id: latestTelemetry.telemetryInfo.name, name: latestTelemetry.telemetryInfo.name }));
 
 
   interface CheckboxState {
-    [id: string] : boolean;
+    [id: string]: boolean;
   }
 
-  let initCheckboxState : CheckboxState = {};
+  let initCheckboxState: CheckboxState = {};
   telemetryOptions.forEach(telemetryOption => {
-    if (tab.selectedTelemetries.includes(telemetryOption.name)){
+    if (tab.selectedTelemetries.includes(telemetryOption.name)) {
       initCheckboxState[telemetryOption.id] = true;
     }
-    else{
+    else {
       initCheckboxState[telemetryOption.id] = false;
     }
   });
-  
+
   const [checkboxState, setCheckboxState] = React.useState(initCheckboxState);
 
   const handleEntering = () => {
-    if(formGroupRef.current != null){
+    if (formGroupRef.current != null) {
       formGroupRef.current.focus();
     }
   };
@@ -73,9 +73,9 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
   };
 
   const handleOk = () => {
-    let telemetryActive :string[] = [];
+    let telemetryActive: string[] = [];
     telemetryOptions.forEach(telemetryOption => {
-      if (checkboxState[telemetryOption.id] === true){
+      if (checkboxState[telemetryOption.id] === true) {
         telemetryActive.push(telemetryOption.name);
       }
     });
@@ -84,7 +84,7 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckboxState({...checkboxState, [(event.target as HTMLInputElement).value]:event.target.checked});
+    setCheckboxState({ ...checkboxState, [(event.target as HTMLInputElement).value]: event.target.checked });
   };
 
   const handleChangeText = (e: any) => {
@@ -144,7 +144,7 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
                 return <FormControlLabel key={telemetryOption.id} value={telemetryOption.id}
                   control={<Checkbox checked={checkboxState[telemetryOption.id]} />}
                   label={telemetryOption.name}
-                  /> 
+                />
               }
             })
           )}

@@ -1,10 +1,10 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@mui/material/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store/RootState';
 import { getCommandLogs } from '../../../redux/commands/selectors';
 import CmdLogTabPanel from './CmdLogTabPanel';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { getOpid } from '../../../redux/operations/selectors';
 import { updateCommandLogAction } from '../../../redux/commands/actions';
 
@@ -18,7 +18,7 @@ const useStyles = makeStyles(
       width: '80%',
       maxHeight: 435,
     },
-}));
+  }));
 
 const CmdLogDisplayArea = () => {
   const classes = useStyles();
@@ -36,7 +36,7 @@ const CmdLogDisplayArea = () => {
     const data = json.data;
     dispatch(updateCommandLogAction(data));
   };
-  
+
   return (
     <>
       <div className={classes.root}>

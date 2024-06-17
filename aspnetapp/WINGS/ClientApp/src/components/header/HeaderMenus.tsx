@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import {createStyles, makeStyles} from '@material-ui/styles'
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import MenuIcon from '@material-ui/icons/Menu';
+import { createStyles, makeStyles } from '@material-ui/styles'
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import MenuIcon from '@mui/icons-material/Menu';
 import { useDispatch, useSelector } from 'react-redux';
 import logo from '../../assets/img/logo.png';
 import { push } from 'connected-react-router';
@@ -18,7 +18,7 @@ const useStyles = makeStyles(
     menuButton: {
       fontSize: 16
     }
-}));
+  }));
 
 export interface HeaderMenusProps {
   handleDrawerToggle: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
@@ -47,7 +47,7 @@ const HeaderMenus = (props: HeaderMenusProps) => {
         <MenuIcon />
       </IconButton>
       <img
-        src={logo} alt="Logo" width="80px" style={{margin: "0px 10px 0px 5px"}}
+        src={logo} alt="Logo" width="80px" style={{ margin: "0px 10px 0px 5px" }}
         onClick={() => dispatch(push('/'))}
       />
       <Button color="inherit" className={classes.menuButton} onClick={() => dispatch(push('/command'))}>

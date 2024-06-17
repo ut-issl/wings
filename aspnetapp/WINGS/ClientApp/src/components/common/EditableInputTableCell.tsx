@@ -1,7 +1,7 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import TableCell from '@material-ui/core/TableCell';
+import { createStyles, makeStyles } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import TableCell from '@mui/material/TableCell';
 
 const useStyles = makeStyles(
   createStyles({
@@ -11,7 +11,7 @@ const useStyles = makeStyles(
         maxWidth: 120
       }
     },
-}));
+  }));
 
 export interface EditableInputTableCellProps {
   isEditMode: boolean,

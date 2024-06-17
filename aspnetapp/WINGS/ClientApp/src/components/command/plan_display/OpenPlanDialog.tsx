@@ -1,10 +1,10 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
+import { createStyles, makeStyles } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store/RootState';
 import { getCurrentOperation } from '../../../redux/operations/selectors';
@@ -18,7 +18,7 @@ const useStyles = makeStyles(
       height: '60vh',
       width: 500
     }
-}));
+  }));
 
 export interface OpenPlanDialogProps {
   classes: Record<'paper', string>;
@@ -62,9 +62,9 @@ const OpenPlanDialog = (props: OpenPlanDialogProps) => {
         if (indexes.length < 2) {
           return "";
         } else {
-          return indexes[1].filePath.split('cmdplan')[0]+"cmdplan/";
+          return indexes[1].filePath.split('cmdplan')[0] + "cmdplan/";
         }
-        
+
       default:
         return "";
     }

@@ -1,28 +1,28 @@
 import React, { useState } from 'react';
 import { makeStyles, createStyles } from '@material-ui/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import InputIcon from '@material-ui/icons/Input';
-import StopIcon from '@material-ui/icons/Stop';
-import UndoIcon from '@material-ui/icons/Undo';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import InputIcon from '@mui/icons-material/Input';
+import StopIcon from '@mui/icons-material/Stop';
+import UndoIcon from '@mui/icons-material/Undo';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOpid } from '../../redux/operations/selectors';
 import { leaveOperationAction } from '../../redux/operations/actions';
 import { joinOperation } from '../../redux/operations/operations';
 import { Operation } from '../../models';
 import { RootState } from '../../redux/store/RootState';
-import { cyan } from "@material-ui/core/colors";
+import { cyan } from "@mui/material/colors";
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import { openErrorDialogAction } from '../../redux/ui/actions';
 
-const useStyles = makeStyles( 
+const useStyles = makeStyles(
   createStyles({
     isJoining: {
       backgroundColor: cyan[800]
@@ -82,16 +82,16 @@ const OperationList = (props: OperationListProps) => {
               <TableCell>Path Number</TableCell>
               <TableCell>Comment</TableCell>
               <TableCell>Component</TableCell>
-              <TableCell className="t-row-icon-cell"/>
-              <TableCell className="t-row-icon-cell"/>
-              <TableCell className="t-row-icon-cell"/>
+              <TableCell className="t-row-icon-cell" />
+              <TableCell className="t-row-icon-cell" />
+              <TableCell className="t-row-icon-cell" />
             </TableRow>
           </TableHead>
           <TableBody>
             {props.operations.length > 0 && (
               props.operations.map(operation => (
                 <TableRow key={operation.id} className={`${opid === operation.id && classes.isJoining}`}>
-                  <TableCell style={{width: "150px"}}>{operation.pathNumber}</TableCell>
+                  <TableCell style={{ width: "150px" }}>{operation.pathNumber}</TableCell>
                   <TableCell>{operation.comment}</TableCell>
                   <TableCell>{operation.component.name}</TableCell>
                   <TableCell>

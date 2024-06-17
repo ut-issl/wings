@@ -1,5 +1,5 @@
 import React from 'react';
-import {FormLabel, FormControl, RadioGroup, FormControlLabel, Radio, makeStyles, createStyles} from "@material-ui/core"
+import { FormLabel, FormControl, RadioGroup, FormControlLabel, Radio, makeStyles, createStyles } from "@mui/material"
 
 export interface RadioOption {
   id: string,
@@ -16,13 +16,13 @@ export interface RadioBoxProps {
 const RadioBox = (props: RadioBoxProps) => {
   return (
     <FormControl component="fieldset">
-      <FormLabel component="legend" style={{color:"#fdfdfd"}}>{props.label}</FormLabel>
+      <FormLabel component="legend" style={{ color: "#fdfdfd" }}>{props.label}</FormLabel>
       <RadioGroup
         value={props.value}
         onChange={(event) => props.handleChange(event.target.value)}
       >
         {props.options.map(option => (
-          <FormControlLabel key={option.id} value={option.id} control={<Radio />} label={option.name}/>
+          <FormControlLabel key={option.id} value={option.id} control={<Radio />} label={option.name} />
         ))}
       </RadioGroup>
     </FormControl>

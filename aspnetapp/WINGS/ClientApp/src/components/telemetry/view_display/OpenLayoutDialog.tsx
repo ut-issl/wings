@@ -1,10 +1,10 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Button, TextField } from '@material-ui/core';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
+import { createStyles, makeStyles } from '@mui/material/styles';
+import { Button, TextField } from '@mui/material';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store/RootState';
 import SelectBox, { SelectOption } from '../../common/SelectBox';
@@ -24,7 +24,7 @@ const useStyles = makeStyles(
       height: '80vh',
       width: 500
     }
-}));
+  }));
 
 export interface OpenLayoutDialogProps {
   classes: Record<'paper', string>;
@@ -40,7 +40,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
   const dispatch = useDispatch();
   const [value, setValue] = useState("");
   const radioGroupRef = React.useRef<HTMLElement>(null);
-  const layouts = (getLayouts(selector)!=undefined)?getLayouts(selector):[];
+  const layouts = (getLayouts(selector) != undefined) ? getLayouts(selector) : [];
   const layoutOptions: SelectOption[] = layouts.map(layout => ({ id: layout.id, name: layout.name }));
   const templayout = getViewLayout(selector);
 
@@ -57,24 +57,24 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
   const saveLayoutAsync = async (text: string) => {
     var names: string[] = [];
     var views: any[] = [];
-    for (var layout of layouts){
+    for (var layout of layouts) {
       names.push(layout.name);
       views.push(layout.telemetryView);
     }
-    if (names.includes(text)||text==""){
+    if (names.includes(text) || text == "") {
       setText(() => "");
       dispatch(openErrorDialogAction("invalid layout name"));
     }
-    else if (views.includes(templayout)){
+    else if (views.includes(templayout)) {
       setText(() => "");
       dispatch(openErrorDialogAction("invalid layout name"));
     }
     else {
-      const res = await fetch(`/api/operations/${opid}/lyt`,{
+      const res = await fetch(`/api/operations/${opid}/lyt`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        },        body: JSON.stringify({
+        }, body: JSON.stringify({
           telemetryView: {
             allIndexes: templayout.allIndexes,
             blocks: templayout.blocks,
@@ -86,7 +86,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
       });
       dispatch(endLoadingAction());
       setText(() => "");
-      const res_lyts = await fetch(`/api/operations/${opid}/lyt`,{
+      const res_lyts = await fetch(`/api/operations/${opid}/lyt`, {
         method: 'GET'
       });
       const json_lyts = await res_lyts.json();
@@ -100,7 +100,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
     const index = handleLayoutIndexChange(layoutIndex);
     const name = layouts[index].name;
     dispatch(startLoadingAction());
-    const res = await fetch(`/api/operations/${opid}/lyt/${name}`,{
+    const res = await fetch(`/api/operations/${opid}/lyt/${name}`, {
       method: 'DELETE'
     });
     dispatch(endLoadingAction());
@@ -117,23 +117,23 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
   const renameLayoutAsync = async (text: string) => {
     var names: string[] = [];
     var views: any[] = [];
-    for (var layout of layouts){
+    for (var layout of layouts) {
       names.push(layout.name);
       views.push(layout.telemetryView);
     }
-    if (names.includes(text)||text==""){
+    if (names.includes(text) || text == "") {
       setText(() => "");
       dispatch(openErrorDialogAction("invalid layout name"));
     }
-    else{
+    else {
       const index = handleLayoutIndexChange(layoutIndex);
       dispatch(startLoadingAction());
-      const res = await fetch(`/api/operations/${opid}/lyt/${index}/${text}`,{
+      const res = await fetch(`/api/operations/${opid}/lyt/${index}/${text}`, {
         method: 'PUT'
       });
       dispatch(endLoadingAction());
       setText(() => "");
-      const res_lyts = await fetch(`/api/operations/${opid}/lyt`,{
+      const res_lyts = await fetch(`/api/operations/${opid}/lyt`, {
         method: 'GET'
       });
       const json_lyts = await res_lyts.json();
@@ -188,62 +188,62 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
       <DialogTitle id="open-plan-dialog-title">Temporary Save and Restore</DialogTitle>
       <DialogContent dividers>
         <div>
-      <Button
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => tempStoreView()}
-        >
-          Save
-        </Button>
-        <Button
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => backLayout()}
-        >
-          Restore
-        </Button>
-      </div>
+          <Button
+            variant="contained" color="primary" className={classes.button}
+            onClick={() => tempStoreView()}
+          >
+            Save
+          </Button>
+          <Button
+            variant="contained" color="primary" className={classes.button}
+            onClick={() => backLayout()}
+          >
+            Restore
+          </Button>
+        </div>
       </DialogContent>
       <DialogTitle id="open-plan-dialog-title">Save and Select</DialogTitle>
       <DialogContent>
-      <div>
-        <SelectBox
-          label="Select from Saved Layouts" options={layoutOptions}
-          select={handleLayoutIndexChange} value={layoutIndex}
-        />
-      </div>
-      <div>
-        <TextField
+        <div>
+          <SelectBox
+            label="Select from Saved Layouts" options={layoutOptions}
+            select={handleLayoutIndexChange} value={layoutIndex}
+          />
+        </div>
+        <div>
+          <TextField
             label="Save As" onChange={handleChange}
             value={text} type="text"
           />
-      </div>
-      <div>
-        <Button
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => saveLayoutAsync(text)}
-        >
-          Save
-        </Button>
-        <Button 
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => renameLayoutAsync(text)}
-        >
-          Rename
-        </Button>
-      </div>
-      <div>
-        <Button 
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => handleOk()}
-        >
-          Restore
-        </Button>
-        <Button 
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => deleteLayoutAsync()}
-        >
-          Delete
-        </Button>
-      </div>
+        </div>
+        <div>
+          <Button
+            variant="contained" color="primary" className={classes.button}
+            onClick={() => saveLayoutAsync(text)}
+          >
+            Save
+          </Button>
+          <Button
+            variant="contained" color="primary" className={classes.button}
+            onClick={() => renameLayoutAsync(text)}
+          >
+            Rename
+          </Button>
+        </div>
+        <div>
+          <Button
+            variant="contained" color="primary" className={classes.button}
+            onClick={() => handleOk()}
+          >
+            Restore
+          </Button>
+          <Button
+            variant="contained" color="primary" className={classes.button}
+            onClick={() => deleteLayoutAsync()}
+          >
+            Delete
+          </Button>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={handleCancel} color="primary">

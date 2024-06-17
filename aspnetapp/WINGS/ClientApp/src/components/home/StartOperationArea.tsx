@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Button, TextField, makeStyles, createStyles } from '@material-ui/core';
+import { Button, TextField, makeStyles, createStyles } from '@mui/material';
 import SelectBox, { SelectOption } from '../common/SelectBox';
 import RadioBox from '../common/RadioBox';
 import { Component } from '../../models';
@@ -14,12 +14,12 @@ const useStyles = makeStyles(
     button: {
       width: 120
     }
-}));
+  }));
 
 const getDefaultPathNumber = () => {
   const dt = new Date();
   const YY = ('00' + dt.getFullYear()).slice(-2);
-  const MM = ('00' + (dt.getMonth()+1)).slice(-2);
+  const MM = ('00' + (dt.getMonth() + 1)).slice(-2);
   const DD = ('00' + dt.getDate()).slice(-2);
   const hh = ('00' + dt.getHours()).slice(-2);
   const mm = ('00' + dt.getMinutes()).slice(-2);
@@ -27,11 +27,11 @@ const getDefaultPathNumber = () => {
 }
 
 const fileLocationOptions = [
-  {id: "Local", name: "Local"}
+  { id: "Local", name: "Local" }
 ]
 
 const tmtcTargetOptions = [
-    { id: "TmtcIf", name: "TmtcIf" }
+  { id: "TmtcIf", name: "TmtcIf" }
 ]
 
 export interface StartOperationAreaProps {
@@ -43,19 +43,19 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
   const dispatch = useDispatch();
 
   const [pathNumber, setPathNumber] = useState(getDefaultPathNumber()),
-        [comment, setComment] = useState(""),
-        [compoId, setCompoId] = useState(""),
-        [compos, setCompos] = useState<Component[]>([]),
-        [fileLocation, setFileLocation] = useState("Local"),
-        [tmtcTarget, setTmtcTarget] = useState("TmtcIf")
+    [comment, setComment] = useState(""),
+    [compoId, setCompoId] = useState(""),
+    [compos, setCompos] = useState<Component[]>([]),
+    [fileLocation, setFileLocation] = useState("Local"),
+    [tmtcTarget, setTmtcTarget] = useState("TmtcIf")
 
   const inputPathNumber = useCallback((event) => {
     setPathNumber(event.target.value)
-  },[setPathNumber]);
+  }, [setPathNumber]);
 
   const inputComment = useCallback((event) => {
     setComment(event.target.value)
-  },[setComment]);
+  }, [setComment]);
 
   const fetchComponents = async () => {
     const res = await fetch('/api/components', {
@@ -70,7 +70,7 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
 
   const startOperation = async () => {
     dispatch(startLoadingAction());
-    const res = await fetch(`/api/operations`,{
+    const res = await fetch(`/api/operations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -92,7 +92,7 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
       props.updateState();
     } else {
       const json = await res.json();
-      const message = `Status Code: ${res.status}\n${json.message ? json.message: "unknown error"}`;
+      const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
       dispatch(openErrorDialogAction(message));
     }
   }
@@ -109,22 +109,22 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
             label="Path Number" onChange={inputPathNumber}
             value={pathNumber} type="text"
           />
-          <div className="module-spacer--extra-extra-small"/>
+          <div className="module-spacer--extra-extra-small" />
           <TextField
             label="Comment" onChange={inputComment}
             value={comment} type="text"
           />
-          <div className="module-spacer--extra-extra-small"/>
+          <div className="module-spacer--extra-extra-small" />
           <SelectBox
             label="Component" options={compos}
             select={setCompoId} value={compoId}
           />
-          <div className="module-spacer--extra-extra-small"/>
+          <div className="module-spacer--extra-extra-small" />
           <RadioBox
             label="TmtcTarget" options={tmtcTargetOptions}
             handleChange={setTmtcTarget} value={tmtcTarget}
           />
-          <div className="module-spacer--extra-extra-small"/>
+          <div className="module-spacer--extra-extra-small" />
           <RadioBox
             label="Telemetry and Command File Location" options={fileLocationOptions}
             handleChange={setFileLocation} value={fileLocation}

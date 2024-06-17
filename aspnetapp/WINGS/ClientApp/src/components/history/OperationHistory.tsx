@@ -1,21 +1,21 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme } from '@mui/material/styles';
 import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import TextField from '@material-ui/core/TextField';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import Pagination from '@material-ui/lab/Pagination';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import DeleteIcon from '@material-ui/icons/Delete';
-import SearchIcon from '@material-ui/icons/Search';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import Pagination from '@mui/lab/Pagination';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import DeleteIcon from '@mui/icons-material/Delete';
+import SearchIcon from '@mui/icons-material/Search';
 import { Operation, PaginationMeta } from '../../models';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 
@@ -69,7 +69,7 @@ const OperationHistory = () => {
   };
 
   const handleDetailClick = (operation: Operation) => {
-    dispatch(push(`/history/${operation.id}`, {data: operation}))
+    dispatch(push(`/history/${operation.id}`, { data: operation }))
   }
 
   const confirmSearch = () => {
@@ -108,18 +108,18 @@ const OperationHistory = () => {
               page={page}
               onChange={handlePageChange}
               count={meta?.pageCount}
-              showFirstButton showLastButton 
+              showFirstButton showLastButton
             />
           </div>
           <TextField
-            label="" onChange={inputSearch} className={classes.searchField} style={{marginLeft: "auto"}}
-            value={search} type="text" placeholder="Search" onKeyDown={(e) => {e.key === "Enter" && confirmSearch()}}
+            label="" onChange={inputSearch} className={classes.searchField} style={{ marginLeft: "auto" }}
+            value={search} type="text" placeholder="Search" onKeyDown={(e) => { e.key === "Enter" && confirmSearch() }}
           />
-          <IconButton style={{padding: "6px"}} onClick={confirmSearch}>
+          <IconButton style={{ padding: "6px" }} onClick={confirmSearch}>
             <SearchIcon />
           </IconButton>
         </div>
-        <div className="module-spacer--extra-extra-small"/>
+        <div className="module-spacer--extra-extra-small" />
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -127,15 +127,15 @@ const OperationHistory = () => {
                 <TableCell>Path Number</TableCell>
                 <TableCell>Comment</TableCell>
                 <TableCell>Component</TableCell>
-                <TableCell className="t-row-icon-cell"/>
-                <TableCell className="t-row-icon-cell"/>
+                <TableCell className="t-row-icon-cell" />
+                <TableCell className="t-row-icon-cell" />
               </TableRow>
             </TableHead>
             <TableBody>
               {operations.length > 0 && (
                 operations.map(operation => (
                   <TableRow key={operation.id}>
-                    <TableCell style={{width: "150px"}}>{operation.pathNumber}</TableCell>
+                    <TableCell style={{ width: "150px" }}>{operation.pathNumber}</TableCell>
                     <TableCell>{operation.comment}</TableCell>
                     <TableCell>{operation.component && operation.component.name}</TableCell>
                     <TableCell>
