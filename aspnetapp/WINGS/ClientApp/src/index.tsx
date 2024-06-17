@@ -1,23 +1,22 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import * as History from 'history';
-import { MuiThemeProvider } from '@mui/material';
+import { ThemeProvider } from '@mui/material';
 import { theme } from './assets/theme';
 import App from './App';
 import createStore from './redux/store/store';
 
 const history = History.createBrowserHistory();
 export const store = createStore(history);
-
-ReactDOM.render(
+export const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+root.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <App />
-      </MuiThemeProvider>
+      </ThemeProvider>
     </ConnectedRouter>
-  </Provider>,
-  document.getElementById('root')
+  </Provider>
 );
