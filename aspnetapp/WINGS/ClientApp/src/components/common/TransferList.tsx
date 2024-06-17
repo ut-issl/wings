@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { makeStyles, Theme, createStyles } from '@mui/material/styles';
+import { Theme, useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import Card from '@mui/material/Card';
@@ -10,29 +10,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      justifyContent: "left",
-      "& .MuiListItem-root": {
-        height: 30
-      }
-    },
-    cardHeader: {
-      padding: theme.spacing(1, 2),
-    },
-    list: {
-      width: 200,
-      height: 230,
-      backgroundColor: theme.palette.background.paper,
-      overflow: 'auto',
-    },
-    button: {
-      margin: theme.spacing(0.5, 0),
-    },
-  }),
-);
 
 const not = (a: string[], b: string[]) => {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -53,13 +30,32 @@ export interface TransferListProps {
 
 const TransferList = (props: TransferListProps) => {
   const { data, setSelected } = props;
-  const classes = useStyles();
   const [checked, setChecked] = React.useState<string[]>([]);
   const [left, setLeft] = React.useState<string[]>([]);
   const [right, setRight] = React.useState<string[]>([]);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
+  const theme: Theme = useTheme();
+
+  const rootStyle = {
+    justifyContent: "left",
+    "& .MuiListItem-root": {
+      height: 30
+    }
+  };
+  const cardHeaderStyle = {
+    padding: theme.spacing(1, 2),
+  };
+  const listStyle = {
+    width: 200,
+    height: 230,
+    backgroundColor: theme.palette.background.paper,
+    overflow: 'auto',
+  };
+  const buttonStyle = {
+    margin: theme.spacing(0.5, 0),
+  };
 
   useEffect(() => {
     setLeft(data);
@@ -107,7 +103,7 @@ const TransferList = (props: TransferListProps) => {
   const customList = (title: React.ReactNode, items: string[]) => (
     <Card>
       <CardHeader
-        className={classes.cardHeader}
+        sx={cardHeaderStyle}
         avatar={
           <Checkbox
             onClick={handleToggleAll(items)}
@@ -121,7 +117,7 @@ const TransferList = (props: TransferListProps) => {
         subheader={`${numberOfChecked(items)}/${items.length} selected`}
       />
       <Divider />
-      <List className={classes.list} dense component="div" role="list">
+      <List sx={listStyle} dense component="div" role="list">
         {items.map((value: string) => {
           const labelId = `transfer-list-all-item-${value}-label`;
 
@@ -145,14 +141,14 @@ const TransferList = (props: TransferListProps) => {
   );
 
   return (
-    <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
+    <Grid container spacing={2} justify="center" alignItems="center" sx={rootStyle}>
       <Grid item>{customList('Not Selected', left)}</Grid>
       <Grid item>
         <Grid container direction="column" alignItems="center">
           <Button
             variant="outlined"
             size="small"
-            className={classes.button}
+            sx={buttonStyle}
             onClick={handleCheckedRight}
             disabled={leftChecked.length === 0}
             aria-label="move selected right"
@@ -162,7 +158,7 @@ const TransferList = (props: TransferListProps) => {
           <Button
             variant="outlined"
             size="small"
-            className={classes.button}
+            sx={buttonStyle}
             onClick={handleCheckedLeft}
             disabled={rightChecked.length === 0}
             aria-label="move selected left"

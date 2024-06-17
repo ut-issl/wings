@@ -1,5 +1,4 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -12,14 +11,6 @@ import { getAllIndexes } from '../../../redux/plans/selectors';
 import { openPlan } from '../../../redux/plans/operations';
 import FileTreeMultiView from '../../common/FileTreeMultiView';
 
-const useStyles = makeStyles(
-  createStyles({
-    paper: {
-      height: '60vh',
-      width: 500
-    }
-  }));
-
 export interface OpenPlanDialogProps {
   classes: Record<'paper', string>;
   keepMounted: boolean;
@@ -28,7 +19,6 @@ export interface OpenPlanDialogProps {
 }
 
 const OpenPlanDialog = (props: OpenPlanDialogProps) => {
-  const classes = useStyles();
   const selector = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const { onClose, open, ...other } = props;
@@ -36,8 +26,11 @@ const OpenPlanDialog = (props: OpenPlanDialogProps) => {
   const indexes = getAllIndexes(selector);
   const operation = getCurrentOperation(selector);
 
-
   const [values, setValues] = React.useState<string[]>([]);
+  const dialogPaperStyle = {
+    height: '60vh',
+    width: 500
+  };
 
   const handleCancel = () => {
     onClose();
@@ -72,12 +65,11 @@ const OpenPlanDialog = (props: OpenPlanDialogProps) => {
 
   return (
     <Dialog
-      disableBackdropClick
       disableEscapeKeyDown
       maxWidth="xs"
       aria-labelledby="open-plan-dialog-title"
       open={open}
-      classes={{ paper: classes.paper }}
+      PaperProps={dialogPaperStyle}
     >
       <DialogTitle id="open-plan-dialog-title">Select Command File</DialogTitle>
       <DialogContent dividers>

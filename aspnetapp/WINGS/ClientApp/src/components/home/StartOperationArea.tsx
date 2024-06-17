@@ -1,20 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Button, TextField, makeStyles, createStyles } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import SelectBox, { SelectOption } from '../common/SelectBox';
 import RadioBox from '../common/RadioBox';
 import { Component } from '../../models';
 import { useDispatch } from 'react-redux';
 import { openErrorDialogAction, startLoadingAction, endLoadingAction } from '../../redux/ui/actions';
-
-const useStyles = makeStyles(
-  createStyles({
-    container: {
-      maxWidth: 700
-    },
-    button: {
-      width: 120
-    }
-  }));
 
 const getDefaultPathNumber = () => {
   const dt = new Date();
@@ -39,7 +29,6 @@ export interface StartOperationAreaProps {
 }
 
 const StartOperationArea = (props: StartOperationAreaProps) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
 
   const [pathNumber, setPathNumber] = useState(getDefaultPathNumber()),
@@ -104,7 +93,7 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
   return (
     <>
       <div className="p-content-next-headline">
-        <form className={`p-grid__column ${classes.container}`}>
+        <form className={`p-grid__column`} style={{ maxWidth: 700 }}>
           <TextField
             label="Path Number" onChange={inputPathNumber}
             value={pathNumber} type="text"
@@ -133,7 +122,7 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
             <p color="textPrimary">{compos.find(compo => compo.id === compoId)?.localDirPath}</p>
           )}
           <Button
-            variant="contained" color="primary" className={classes.button}
+            variant="contained" color="primary" sx={{ width: 120 }}
             onClick={() => startOperation()}
           >
             Start

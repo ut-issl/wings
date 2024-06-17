@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { createStyles, makeStyles } from '@material-ui/styles'
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -10,25 +9,16 @@ import { getOpid } from '../../redux/operations/selectors';
 import { RootState } from '../../redux/store/RootState';
 import { updateCommandLogAction } from '../../redux/commands/actions';
 
-const useStyles = makeStyles(
-  createStyles({
-    grow: {
-      flexGrow: 1
-    },
-    menuButton: {
-      fontSize: 16
-    }
-  }));
-
 export interface HeaderMenusProps {
   handleDrawerToggle: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
 const HeaderMenus = (props: HeaderMenusProps) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const selector = useSelector((state: RootState) => state);
   const opid = getOpid(selector);
+
+  const menuButtonStyle = { fontSize: 16 };
 
   const handleCmdLog = async () => {
     dispatch(push('/command_log'));
@@ -50,16 +40,16 @@ const HeaderMenus = (props: HeaderMenusProps) => {
         src={logo} alt="Logo" width="80px" style={{ margin: "0px 10px 0px 5px" }}
         onClick={() => dispatch(push('/'))}
       />
-      <Button color="inherit" className={classes.menuButton} onClick={() => dispatch(push('/command'))}>
+      <Button color="inherit" sx={menuButtonStyle} onClick={() => dispatch(push('/command'))}>
         Command
       </Button>
-      <Button color="inherit" className={classes.menuButton} onClick={() => dispatch(push('/telemetry'))}>
+      <Button color="inherit" sx={menuButtonStyle} onClick={() => dispatch(push('/telemetry'))}>
         Telemetry
       </Button>
-      <Button color="inherit" className={classes.menuButton} onClick={handleCmdLog}>
+      <Button color="inherit" sx={menuButtonStyle} onClick={handleCmdLog}>
         CmdLog
       </Button>
-      <div className={classes.grow} />
+      <div style={{ flexGrow: 1 }} />
     </>
   )
 };

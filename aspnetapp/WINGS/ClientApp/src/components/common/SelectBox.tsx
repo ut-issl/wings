@@ -1,13 +1,5 @@
 import React from 'react';
-import { InputLabel, MenuItem, FormControl, Select, makeStyles, createStyles } from "@mui/material"
-
-const useStyles = makeStyles(createStyles({
-  formControl: {
-    marginBottom: 16,
-    minWidth: 128,
-    width: '100%'
-  }
-}));
+import { InputLabel, MenuItem, FormControl, Select } from "@mui/material"
 
 export interface SelectOption {
   id: any,
@@ -22,10 +14,14 @@ export interface SelectBoxProps {
 };
 
 const SelectBox = (props: SelectBoxProps) => {
-  const classes = useStyles();
+  const formControlStyle = {
+    marginBottom: 16,
+    minWidth: 128,
+    width: '100%'
+  };
 
   return (
-    <FormControl className={classes.formControl}>
+    <FormControl sx={formControlStyle}>
       <InputLabel>{props.label}</InputLabel>
       <Select
         value={props.value}

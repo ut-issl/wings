@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { createStyles, makeStyles, Theme } from '@mui/material/styles';
 import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 import Tooltip from '@mui/material/Tooltip';
@@ -19,25 +18,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Operation, PaginationMeta } from '../../models';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    paginationRoot: {
-      '& > *': {
-        marginTop: theme.spacing(2),
-      }
-    },
-    searchField: {
-      "& input": {
-        padding: 8
-      }
-    }
-  })
-);
-
 const sizePerPage = 12;
 
 const OperationHistory = () => {
-  const classes = useStyles();
   const dispatch = useDispatch();
 
   const [meta, setMeta] = useState<PaginationMeta>();
@@ -46,6 +29,12 @@ const OperationHistory = () => {
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [deleteOperation, setDeleteOperation] = useState<Operation | null>(null);
+
+  const searchFieldStyle = {
+    "& input": {
+      padding: 8
+    }
+  };
 
   const inputSearch = useCallback((event) => {
     setSearch(event.target.value)
@@ -112,7 +101,7 @@ const OperationHistory = () => {
             />
           </div>
           <TextField
-            label="" onChange={inputSearch} className={classes.searchField} style={{ marginLeft: "auto" }}
+            label="" onChange={inputSearch} sx={searchFieldStyle} style={{ marginLeft: "auto" }}
             value={search} type="text" placeholder="Search" onKeyDown={(e) => { e.key === "Enter" && confirmSearch() }}
           />
           <IconButton style={{ padding: "6px" }} onClick={confirmSearch}>

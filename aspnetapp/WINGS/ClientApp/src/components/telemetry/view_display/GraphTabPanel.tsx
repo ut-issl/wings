@@ -1,5 +1,4 @@
 import React from 'react';
-import { createStyles, makeStyles, Theme } from '@mui/material/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { TelemetryViewIndex } from '../../../models';
 import { RootState } from '../../../redux/store/RootState';
@@ -22,61 +21,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { Dialog } from '@mui/material';
 
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      padding: 10
-    },
-    item: {
-      [theme.breakpoints.down('sm')]: {
-        width: '100%'
-      },
-      [theme.breakpoints.up('sm')]: {
-        width: '50%'
-      },
-      [theme.breakpoints.up('md')]: {
-        width: '33.33%'
-      },
-    },
-    tlmul: {
-      paddingInlineStart: 0,
-      margin: 0
-    },
-    tlmli: {
-      fontSize: 'xx-small',
-      display: 'block',
-      "& span": {
-        color: theme.palette.success.main
-      }
-    },
-    dialogPaper: {
-      width: '80%',
-      maxHeight: 435,
-    },
-    dataTypeField: {
-      fontSize: "10pt",
-      textAlign: "center"
-    },
-    inputData: {
-      width: "3cm",
-      fontSize: "10pt"
-    },
-    title: {
-      color: '#ffff00'
-    },
-    titleWithSpace: {
-      color: 'white',
-      fontSize: 12,
-      paddingRight: 20
-    },
-    titleWithOutSpace: {
-      color: 'white',
-      fontSize: 12,
-      paddingRight: 20
-    }
-  }));
-
 export interface GraphTabPanelProps {
   tab: TelemetryViewIndex,
   blockNum: number
@@ -85,7 +29,6 @@ export interface GraphTabPanelProps {
 const GraphTabPanel = (props: GraphTabPanelProps) => {
   const { tab, blockNum } = props;
   const selector = useSelector((state: RootState) => state);
-  const classes = useStyles();
   const dispatch = useDispatch();
   const telemetryHistories = getTelemetryHistories(selector);
 
@@ -96,6 +39,31 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
 
   const [showModal, setShowModal] = React.useState(false);
 
+  const dataTypeFieldStyle = {
+    fontSize: "10pt",
+    textAlign: "center"
+  };
+  const inputDataStyle = {
+    width: "3cm",
+    fontSize: "10pt"
+  };
+  const titleStyle = {
+    color: '#ffff00'
+  };
+  const titleWithSpaceStyle = {
+    color: 'white',
+    fontSize: 12,
+    paddingRight: 20
+  };
+  const titleWithOutSpaceStyle = {
+    color: 'white',
+    fontSize: 12,
+    paddingRight: 20
+  };
+  const dialogPaperStyle = JSON.stringify({
+    width: '80%',
+    maxHeight: 435,
+  });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDataType((event.target as HTMLInputElement).value);
@@ -247,34 +215,34 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
   }
 
   return (
-    <div className={classes.root}>
-      <div className={classes.titleWithSpace}>
-        <span className={classes.title}>Name : </span>{tab.name}
+    <div style={{ padding: 10 }}>
+      <div style={titleWithSpaceStyle}>
+        <span style={titleStyle}>Name : </span>{tab.name}
       </div>
-      <div className={classes.titleWithSpace}>
-        <span className={classes.title}>Apid : </span> 0x{Number(tab.tlmApid).toString(16)}
+      <div style={titleWithSpaceStyle}>
+        <span style={titleStyle}>Apid : </span> 0x{Number(tab.tlmApid).toString(16)}
       </div>
-      <div className={classes.titleWithOutSpace}>
-        <span className={classes.title}>Packet Id : </span> 0x{Number(tab.packetId).toString(16)}
+      <div style={titleWithOutSpaceStyle}>
+        <span style={titleStyle}>Packet Id : </span> 0x{Number(tab.packetId).toString(16)}
       </div>
       <Toolbar>
         <TextField
           label="Data Length" onChange={inputDataLength}
-          className={classes.inputData}
+          sx={inputDataStyle}
           value={dataLength} type="text"
         />
         <TextField
           label="y Label Min" onChange={inputYlabelMin}
-          className={classes.inputData}
+          sx={inputDataStyle}
           value={ylabelMin} type="text"
         />
         <TextField
           label="y Label Max" onChange={inputYlabelMax}
-          className={classes.inputData}
+          sx={inputDataStyle}
           value={ylabelMax} type="text"
         />
         <FormControl component="fieldset">
-          <FormLabel component="legend" className={classes.dataTypeField}>Data Type</FormLabel>
+          <FormLabel component="legend" sx={dataTypeFieldStyle}>Data Type</FormLabel>
           <RadioGroup aria-label="data-type" name="data-type" value={dataType} onChange={handleChange}>
             <Toolbar>
               <FormControlLabel value="Default" control={<Radio />} label="Default" />
@@ -291,7 +259,7 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
       </Toolbar>
       <OpenGraphTabDialog
         blockNum={blockNum}
-        classes={{ paper: classes.dialogPaper }}
+        classes={{ paper: dialogPaperStyle }}
         keepMounted
         open={dialogOpen}
         tab={tab}
@@ -303,7 +271,6 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
         options={options}
       />
       <Dialog
-        disableBackdropClick
         disableEscapeKeyDown
         maxWidth="xs"
         aria-labelledby="confirmation-ylabel"

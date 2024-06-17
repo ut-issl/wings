@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { makeStyles, Theme, createStyles } from '@mui/material/styles';
-import TreeView from '@mui/lab/TreeView';
-import TreeItem, { TreeItemProps } from '@mui/lab/TreeItem';
+import { Theme, useTheme } from '@mui/material/styles';
+import TreeView from '@mui/x-tree-view/TreeView';
+import TreeItem, { TreeItemProps } from '@mui/x-tree-view/TreeItem';
 import Typography from '@mui/material/Typography';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -11,83 +11,71 @@ import FolderIcon from '@mui/icons-material/Folder';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { FileIndex } from '../../models';
 
-const useTreeItemStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    content: {
-      color: theme.palette.text.secondary,
-      borderTopRightRadius: theme.spacing(2),
-      borderBottomRightRadius: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-      fontWeight: theme.typography.fontWeightMedium,
-      '$expanded > &': {
-        fontWeight: theme.typography.fontWeightRegular,
-      },
-    },
-    group: {
-      marginLeft: 0,
-      '& $content': {
-        paddingLeft: theme.spacing(2),
-      },
-    },
-    expanded: {},
-    selected: {},
-    label: {
-      fontWeight: 'inherit',
-      color: 'inherit',
-    },
-    labelRoot: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: theme.spacing(0.5, 0),
-    },
-    labelIcon: {
-      marginRight: theme.spacing(1),
-    },
-    labelText: {
-      fontWeight: 'inherit',
-      flexGrow: 1,
-    },
-  }),
-);
-
 interface StyledTreeItemProps extends TreeItemProps {
   labelIcon: React.ElementType<SvgIconProps>;
   labelText: string;
 }
 
 const StyledTreeItem = (props: StyledTreeItemProps) => {
-  const classes = useTreeItemStyles();
   const { labelText, labelIcon: LabelIcon, color, ...other } = props;
+  const theme: Theme = useTheme();
+
+  const contentStyle = {
+    color: theme.palette.text.secondary,
+    borderTopRightRadius: theme.spacing(2),
+    borderBottomRightRadius: theme.spacing(2),
+    paddingRight: theme.spacing(1),
+    fontWeight: theme.typography.fontWeightMedium,
+    '$expanded > &': {
+      fontWeight: theme.typography.fontWeightRegular,
+    },
+  };
+  const expandedStyle = {};
+  const selectedStyle = {};
+  const groupStyle = {
+    marginLeft: 0,
+    '& $content': {
+      paddingLeft: theme.spacing(2),
+    }
+  };
+  const labelStyle = {
+    fontWeight: 'inherit',
+    color: 'inherit',
+  };
+  const labelRootStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0.5, 0),
+  };
+  const labelIconStyle = {
+    marginRight: theme.spacing(1),
+  };
+  const labelTextStyle = {
+    fontWeight: 'inherit',
+    flexGrow: 1,
+  };  
 
   return (
     <TreeItem
       label={
-        <div className={classes.labelRoot}>
-          <LabelIcon color="inherit" className={classes.labelIcon} fontSize="small" />
-          <Typography variant="body2" className={classes.labelText}>
+        <div style={labelRootStyle}>
+          <LabelIcon color="inherit" sx={labelIconStyle} fontSize="small" />
+          <Typography variant="body2" sx={labelTextStyle}>
             {labelText}
           </Typography>
         </div>
       }
       classes={{
-        content: classes.content,
-        expanded: classes.expanded,
-        selected: classes.selected,
-        group: classes.group,
-        label: classes.label,
+        content: contentStyle,
+        expanded: expandedStyle,
+        selected: selectedStyle,
+        group: groupStyle,
+        label: labelStyle,
       }}
       {...other}
     />
   );
 }
-
-const useStyles = makeStyles({
-  root: {
-    height: 240,
-    flexGrow: 1,
-    maxWidth: 400,
-  },
-});
 
 export interface FileTreeMultiViewProps {
   files: FileIndex[],
@@ -97,7 +85,6 @@ export interface FileTreeMultiViewProps {
 }
 
 const FileTreeMultiView = (props: FileTreeMultiViewProps) => {
-  const classes = useStyles();
   const { files, rootPath, select, defaultExpandedFolder } = props
 
   interface CheckedState {
@@ -183,7 +170,7 @@ const FileTreeMultiView = (props: FileTreeMultiViewProps) => {
 
   return (
     <TreeView
-      className={classes.root}
+      sx={{ height: 240, flexGrow: 1, maxWidth: 400 }}
       defaultCollapseIcon={<ArrowDropDownIcon />}
       defaultExpandIcon={<ArrowRightIcon />}
       defaultExpanded={defaultExpandedFolder && defaultExpandedFolder.map(name => "folder--" + name)}

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,25 +13,9 @@ import SetParamTable from './SetParamTable';
 import Select from 'react-select';
 import { SingleValue, ActionMeta } from 'react-select/dist/declarations/src';
 
-const useStyles = makeStyles(
-  createStyles({
-    root: {
-      marginLeft: 20,
-      width: 500
-    },
-    button: {
-      width: 120
-    },
-    commandName: {
-      fontSize: '9pt',
-      color: 'rgba(255, 255, 255, 0.7)'
-    }
-  }));
-
 const execTypeOptions: SelectOption[] = ["RT", "TL", "BL", "UTL"].map(type => ({ id: type, name: type }));
 
 const CommandSelectionArea = () => {
-  const classes = useStyles();
   const selector = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
 
@@ -134,7 +117,7 @@ const CommandSelectionArea = () => {
   }
 
   return (
-    <div className={classes.root}>
+    <div style={{ marginLeft: 20, width: 500 }}>
       <h2 className="u-text__headline">Command Selection</h2>
       <form className="p-content-next-headline p-gird__column">
         <SelectBox
@@ -157,7 +140,7 @@ const CommandSelectionArea = () => {
           select={handleTargetChange} value={target}
         />
         <div className="module-spacer--extra-extra-small" />
-        <div className={classes.commandName}>Command Name</div>
+        <div style={{ fontSize: '9pt', color: 'rgba(255, 255, 255, 0.7)' }}>Command Name</div>
         <Select
           styles={customStyles}
           onChange={handleCommandChange}
@@ -171,7 +154,7 @@ const CommandSelectionArea = () => {
         <SetParamTable command={command} />
         <div className="module-spacer--small" />
         <Button
-          variant="contained" color="primary" className={classes.button}
+          variant="contained" color="primary" sx={{ width: 120 }}
           onClick={addUnplannedCommand}
         >
           Add

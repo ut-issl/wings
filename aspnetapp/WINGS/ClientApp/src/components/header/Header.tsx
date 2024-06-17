@@ -1,30 +1,17 @@
 import React, { useCallback, useState } from 'react';
-import { createStyles, makeStyles } from '@material-ui/styles'
-import { Theme } from '@mui/material'
+import { Theme, useTheme } from '@mui/material'
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import HeaderMenus from './HeaderMenus';
 import DrawerMenus from './DrawerMenus';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      flexGrow: 1,
-    },
-    appBar: {
-      backgroundColor: theme.palette.grey[800]
-    },
-    toolBar: {
-      paddingLeft: 5
-    }
-  }));
-
 const Header = () => {
-  const classes = useStyles();
-
   const [open, setOpen] = useState(false);
+  const theme: Theme = useTheme();
+  const appBarStyle = { backgroundColor: theme.palette.grey[800] };
+  const toolBarStyle = { paddingLeft: 5 };
 
-  const handleDrawerToggle = useCallback((event) => {
+  const handleDrawerToggle = useCallback((event: any) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
@@ -32,9 +19,9 @@ const Header = () => {
   }, [setOpen, open])
 
   return (
-    <div className={classes.root}>
-      <AppBar position="static" className={classes.appBar}>
-        <Toolbar className={classes.toolBar}>
+    <div style={{ flexGrow: 1 }}>
+      <AppBar position="static" sx={appBarStyle}>
+        <Toolbar sx={toolBarStyle}>
           <HeaderMenus handleDrawerToggle={handleDrawerToggle} />
         </Toolbar>
       </AppBar>

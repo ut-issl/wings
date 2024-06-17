@@ -1,5 +1,4 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { push } from 'connected-react-router';
 import Drawer from '@mui/material/Drawer';
@@ -15,30 +14,20 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 
-const useStyles = makeStyles(
-  createStyles({
-    drawer: {
-      flexShrink: 0,
-      width: 256
-    },
-    drawerPaper: {
-      width: 256
-    }
-  }));
-
 export interface DrawerMenusProps {
   open: boolean,
   onClose: (event: {}) => void
 }
 
 const DrawerMenus = (props: DrawerMenusProps) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
 
   const selectMenu = (event: {}, path: string) => {
     dispatch(push(path));
     props.onClose(event);
   }
+
+  const drawerPaperStyle = { width: 256 };
 
   const menus = [
     { id: "home", label: "Home", icon: <HomeIcon />, value: "/" },
@@ -48,13 +37,13 @@ const DrawerMenus = (props: DrawerMenusProps) => {
   ];
 
   return (
-    <nav className={classes.drawer}>
+    <nav style={{ flexShrink: 0, width: 256 }}>
       <Drawer
         variant="temporary"
         anchor="left"
         open={props.open}
         onClose={(event) => props.onClose(event)}
-        classes={{ paper: classes.drawerPaper }}
+        PaperProps={drawerPaperStyle}
         ModalProps={{ keepMounted: true }}
       >
         <List>

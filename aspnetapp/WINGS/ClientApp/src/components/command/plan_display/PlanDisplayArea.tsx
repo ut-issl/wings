@@ -1,5 +1,4 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -23,46 +22,6 @@ import Toolbar from '@mui/material/Toolbar';
 import { getCmdType } from '../../../redux/plans/selectors';
 import { setCmdTypeAction } from '../../../redux/plans/actions';
 
-const useStyles = makeStyles(
-  createStyles({
-    root: {
-      display: 'flex',
-      height: 820,
-    },
-    tabs: {
-      borderRight: "1px solid",
-      width: 230
-    },
-    tab: {
-      width: 220,
-      minHeight: "auto",
-      textAlign: "left",
-      padding: "6px 0 6px 0",
-      "& span": {
-        whiteSpace: "nowrap",
-        textOverflow: "ellipsis",
-        overflow: "hidden",
-        display: "inline-block",
-        flexGrow: 0
-      },
-      "& .MuiTab-wrapper > *:first-child": {
-        marginBottom: 0,
-        padding: "0 5px 0 5px"
-      }
-    },
-    dialogPaper: {
-      width: '80%',
-      maxHeight: 435,
-    },
-    cmdTypeField: {
-      fontSize: "10pt",
-      textAlign: "center"
-    },
-    planTab: {
-      width: 700
-    }
-  }));
-
 const a11yProps = (index: any) => {
   return {
     id: `vertical-tab-${index}`,
@@ -71,9 +30,39 @@ const a11yProps = (index: any) => {
 }
 
 const PlanDisplayArea = () => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const selector = useSelector((state: RootState) => state);
+
+  const planTabStyle = {
+    width: 220,
+    minHeight: "auto",
+    textAlign: "left",
+    padding: "6px 0 6px 0",
+    "& span": {
+      whiteSpace: "nowrap",
+      textOverflow: "ellipsis",
+      overflow: "hidden",
+      display: "inline-block",
+      flexGrow: 0
+    },
+    "& .MuiTab-wrapper > *:first-child": {
+      marginBottom: 0,
+      padding: "0 5px 0 5px"
+    },
+  };
+  const dialogPaperStyle = JSON.stringify({
+    width: '80%',
+    maxHeight: 435,
+  });
+  const cmdFileField = {
+    fontSize: "10pt",
+    textAlign: "center"
+  };
+
+  const tabsStyle = {
+    borderRight: "1px solid",
+    width: 230
+  };
 
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
@@ -126,24 +115,24 @@ const PlanDisplayArea = () => {
 
   if (activePlanId == "_unplanned") {
     return (
-      <div className={classes.root}>
+      <div style={{ display: 'flex', height: 820 }}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
           value={value < 0 ? false : value}
           onChange={handleValueChange}
-          className={classes.tabs}
+          style={tabsStyle}
         >
           {planIndexes.length > 0 && (
             planIndexes.map((index, i) => (
               index.id === UNPLANNED_ID ?
                 <Tab
-                  key={index.id} label={index.name} {...a11yProps(i)} className={classes.tab}
+                  key={index.id} label={index.name} {...a11yProps(i)} sx={planTabStyle}
                   style={{ paddingLeft: "30px" }}
                 />
                 : (<Tooltip key={index.id} title={index.name} placement="right">
                   <Tab
-                    label={index.name} {...a11yProps(i)} className={classes.tab}
+                    label={index.name} {...a11yProps(i)} sx={planTabStyle}
                     icon={<CloseIconInTab onClick={() => closePlan(index.id)} />}
                   />
                 </Tooltip>)
@@ -153,10 +142,10 @@ const PlanDisplayArea = () => {
             <AddIcon />
           </IconButtonInTabs>
         </Tabs>
-        <div className={classes.planTab} >
+        <div style={{ width: 700 }}>
           <FormControl component="fieldset">
             <Toolbar>
-              <FormLabel component="legend" className={classes.cmdTypeField}>Data Type</FormLabel>
+              <FormLabel component="legend" sx={cmdFileField}>Data Type</FormLabel>
               <RadioGroup aria-label="data-type" name="data-type" value={cmdType} onChange={handleChange}>
                 <Toolbar>
                   <FormControlLabel value="Type-A" control={<Radio />} label="Type-A" />
@@ -173,7 +162,7 @@ const PlanDisplayArea = () => {
         </div>
 
         <OpenPlanDialog
-          classes={{ paper: classes.dialogPaper }}
+          classes={{ paper: dialogPaperStyle }}
           keepMounted
           open={dialogOpen}
           onClose={handleDialogClose}
@@ -183,25 +172,25 @@ const PlanDisplayArea = () => {
     );
   } else {
     return (
-      <div className={classes.root}>
+      <div style={{ display: 'flex', height: 820, }}>
         <Tabs
           orientation="vertical"
           variant="scrollable"
           value={value < 0 ? false : value}
           onChange={handleValueChange}
-          className={classes.tabs}
+          sx={tabsStyle}
         >
 
           {planIndexes.length > 0 && (
             planIndexes.map((index, i) => (
               index.id === UNPLANNED_ID ?
                 <Tab
-                  key={index.id} label={index.name} {...a11yProps(i)} className={classes.tab}
+                  key={index.id} label={index.name} {...a11yProps(i)} sx={planTabStyle}
                   style={{ paddingLeft: "30px" }}
                 />
                 : (<Tooltip key={index.id} title={index.name} placement="right">
                   <Tab
-                    label={index.name} {...a11yProps(i)} className={classes.tab}
+                    label={index.name} {...a11yProps(i)} sx={planTabStyle}
                     icon={<CloseIconInTab onClick={() => closePlan(index.id)} />}
                   />
                 </Tooltip>)
@@ -211,10 +200,10 @@ const PlanDisplayArea = () => {
             <AddIcon />
           </IconButtonInTabs>
         </Tabs>
-        <div className={classes.planTab} >
+        <div style={{ width: 700 }} >
           <FormControl component="fieldset">
             <Toolbar>
-              <FormLabel component="legend" className={classes.cmdTypeField}>Data Type</FormLabel>
+              <FormLabel component="legend" sx={cmdFileField}>Data Type</FormLabel>
               <RadioGroup aria-label="data-type" name="data-type" value={cmdType} onChange={handleChange}>
                 <Toolbar>
                   <FormControlLabel value="Type-A" control={<Radio />} label="Type-A" />
@@ -231,10 +220,10 @@ const PlanDisplayArea = () => {
         </div>
 
         <OpenPlanDialog
-          classes={{ paper: classes.dialogPaper }}
           keepMounted
           open={dialogOpen}
           onClose={handleDialogClose}
+          classes={{ paper: dialogPaperStyle }}
         />
 
       </div>

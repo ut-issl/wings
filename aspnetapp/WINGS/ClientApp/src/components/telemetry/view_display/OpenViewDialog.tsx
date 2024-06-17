@@ -1,5 +1,4 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 import { Button, TextField } from '@mui/material';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -16,14 +15,6 @@ import SelectBox, { SelectOption } from '../../common/SelectBox';
 import { getLatestTelemetries } from '../../../redux/telemetries/selectors';
 import { selectTelemetryAction } from '../../../redux/views/actions';
 
-const useStyles = makeStyles(
-  createStyles({
-    paper: {
-      height: '80vh',
-      width: 500
-    }
-  }));
-
 export interface OpenViewDialogProps {
   blockNum: number,
   classes: Record<'paper', string>;
@@ -34,7 +25,6 @@ export interface OpenViewDialogProps {
 
 const OpenViewDialog = (props: OpenViewDialogProps) => {
   const { onClose, blockNum, open } = props;
-  const classes = useStyles();
   const selector = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
 
@@ -42,6 +32,11 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
   const [type, setType] = React.useState("packet");
   const indexes = getAllIndexes(selector);
   const [text, setText] = React.useState("");
+
+  const dialogPaperStyle = {
+    height: '80vh',
+    width: 500
+  };
 
   interface CheckboxState {
     [id: string]: boolean;
@@ -102,13 +97,12 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
 
   return (
     <Dialog
-      disableBackdropClick
       disableEscapeKeyDown
       maxWidth="xs"
       onEntering={handleEntering}
       aria-labelledby="open-plan-dialog-title"
       open={open}
-      classes={{ paper: classes.paper }}
+      PaperProps={dialogPaperStyle}
     >
       <DialogTitle id="open-plan-dialog-title">
         <div style={{ display: "flex" }}>

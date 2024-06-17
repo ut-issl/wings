@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { makeStyles, createStyles } from '@mui/material/styles';
 import { Button, TextField } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -24,38 +23,6 @@ import { getOpid } from '../../../redux/operations/selectors';
 import { finishEditCommandLineAction } from '../../../redux/plans/actions';
 import { getTlmCmdConfig } from '../../../redux/operations/selectors';
 
-const useStyles = makeStyles(
-  createStyles({
-    container: {
-      width: 700,
-      maxHeight: 700,
-    },
-    tableEventShifter: {
-      position: "absolute",
-      zIndex: -10,
-      outline: 0
-    },
-    button: {
-      width: 120
-    },
-    cmdTypeField: {
-      fontSize: "10pt",
-      textAlign: "center"
-    },
-    activeTab: {
-      height: 700,
-      zIndex: 99,
-      position: "absolute",
-      backgroundColor: "#212121"
-    },
-    inactiveTab: {
-      height: 700,
-      zIndex: 1,
-      position: "absolute",
-      backgroundColor: "#212121"
-    }
-  }));
-
 const _sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export interface PlanTabPanelProps {
@@ -68,7 +35,6 @@ export interface PlanTabPanelProps {
 
 const PlanTabPanel = (props: PlanTabPanelProps) => {
   const { value, index, name, content, cmdType } = props;
-  const classes = useStyles();
   const dispatch = useDispatch();
   const selector = useSelector((state: RootState) => state);
 
@@ -546,7 +512,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
 
   return (
     <>
-      <div className={(value !== index) ? classes.inactiveTab : classes.activeTab}>
+      <div style={{ height: 700, zIndex: (value == index) ? 99 : 1, position: "absolute", backgroundColor: "#212121" }}>
         <div
           role="tabpanel"
           id={`vertical-tabpanel-${index}`}
@@ -554,14 +520,13 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         >
           <input
             type="text"
-            className={classes.tableEventShifter}
-            style={{ backgroundColor: "red" }}
+            style={{ backgroundColor: "red", position: "absolute", zIndex: -10, outline: 0 }}
             ref={textInput}
             onKeyDown={(event) => handleKeyDown(event)}
             readOnly
           >
           </input>
-          <TableContainer className={classes.container} id="plan-table-container">
+          <TableContainer sx={{ width: 700, maxHeight: 700 }} id="plan-table-container">
             <Table stickyHeader onClick={handleTableClick}>
               <TableHead>
                 <TableRow>
@@ -585,7 +550,6 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             </Table>
           </TableContainer>
           <Dialog
-            disableBackdropClick
             disableEscapeKeyDown
             maxWidth="md"
             aria-labelledby="edit-commandLine"
@@ -604,13 +568,13 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             </DialogActions>
             <DialogActions>
               <Button
-                variant="contained" color="primary" className={classes.button}
+                variant="contained" color="primary" sx={{ width: 120 }}
                 onClick={() => { setShowModal(false) }}
               >
                 Cancel
               </Button>
               <Button
-                variant="contained" color="primary" className={classes.button}
+                variant="contained" color="primary" sx={{ width: 120 }}
                 onClick={finishEditting}
               >
                 Update

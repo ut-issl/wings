@@ -1,5 +1,4 @@
 import React from 'react';
-import { createStyles, makeStyles, Theme } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,26 +8,12 @@ import TableRow from '@mui/material/TableRow';
 import { CommandFileLineLogs } from '../../../models';
 import CmdLogTableRow from './CmdLogTableRow';
 
-const useStyles = makeStyles(
-  createStyles({
-    container: {
-      width: 850,
-      maxHeight: 700,
-    },
-    tableEventShifter: {
-      position: "absolute",
-      zIndex: -10,
-      outline: 0
-    }
-  }));
-
 export interface CmdLogTabPanelProps {
   content: CommandFileLineLogs[]
 }
 
 const CmdLogTabPanel = (props: CmdLogTabPanelProps) => {
   const { content } = props;
-  const classes = useStyles();
 
   return (
     <div
@@ -36,7 +21,7 @@ const CmdLogTabPanel = (props: CmdLogTabPanelProps) => {
       id={'vertical-tabpanel-logs'}
       aria-labelledby={'vertical-tab-logs'}
     >
-      <TableContainer className={classes.container} id="plan-table-container">
+      <TableContainer style={{ width: 850, maxHeight: 700 }} id="plan-table-container">
         <Table stickyHeader>
           <TableHead>
             <TableRow>

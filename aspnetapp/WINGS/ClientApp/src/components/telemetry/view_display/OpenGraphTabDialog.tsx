@@ -1,5 +1,4 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 import { Button, TextField } from '@mui/material';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -15,14 +14,6 @@ import { TelemetryViewIndex } from '../../../models';
 import { getTelemetryHistories } from '../../../redux/telemetries/selectors';
 import { selectTelemetryAction } from '../../../redux/views/actions';
 
-const useStyles = makeStyles(
-  createStyles({
-    paper: {
-      height: '80vh',
-      width: 500
-    }
-  }));
-
 export interface OpenGraphTabDialogProps {
   blockNum: number,
   classes: Record<'paper', string>;
@@ -34,7 +25,6 @@ export interface OpenGraphTabDialogProps {
 
 const OpenGraphTabDialog = (props: OpenGraphTabDialogProps) => {
   const { tab, onClose, blockNum, open } = props;
-  const classes = useStyles();
   const selector = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const formGroupRef = React.useRef<HTMLElement>(null);
@@ -43,6 +33,10 @@ const OpenGraphTabDialog = (props: OpenGraphTabDialogProps) => {
   const telemetryHistories = getTelemetryHistories(selector)[tab.compoName][tab.name];
   const telemetryOptions: SelectOption[] = telemetryHistories.map(telemetryHistory => ({ id: telemetryHistory.telemetryInfo.name, name: telemetryHistory.telemetryInfo.name }));
 
+  const paperStyle = JSON.stringify({
+    height: '80vh',
+    width: 500
+  });
 
   interface CheckboxState {
     [id: string]: boolean;
@@ -108,13 +102,12 @@ const OpenGraphTabDialog = (props: OpenGraphTabDialogProps) => {
 
   return (
     <Dialog
-      disableBackdropClick
       disableEscapeKeyDown
       maxWidth="xs"
       onEntering={handleEntering}
       aria-labelledby="open-plan-dialog-title"
       open={open}
-      classes={{ paper: classes.paper }}
+      classes={{ paper: paperStyle }}
     >
       <DialogTitle id="open-plan-dialog-title">
         <TextField

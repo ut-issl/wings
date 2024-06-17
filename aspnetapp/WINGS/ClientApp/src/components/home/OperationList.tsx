@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { makeStyles, createStyles } from '@material-ui/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -22,21 +21,12 @@ import { cyan } from "@mui/material/colors";
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import { openErrorDialogAction } from '../../redux/ui/actions';
 
-const useStyles = makeStyles(
-  createStyles({
-    isJoining: {
-      backgroundColor: cyan[800]
-    },
-  })
-);
-
 export interface OperationListProps {
   operations: Operation[],
   updateState: () => void
 }
 
 const OperationList = (props: OperationListProps) => {
-  const classes = useStyles();
   const selector = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const opid = getOpid(selector);
@@ -90,7 +80,7 @@ const OperationList = (props: OperationListProps) => {
           <TableBody>
             {props.operations.length > 0 && (
               props.operations.map(operation => (
-                <TableRow key={operation.id} className={`${opid === operation.id && classes.isJoining}`}>
+                <TableRow key={operation.id} sx={opid === operation.id ? { backgroundColor: cyan[800] } : {}}>
                   <TableCell style={{ width: "150px" }}>{operation.pathNumber}</TableCell>
                   <TableCell>{operation.comment}</TableCell>
                   <TableCell>{operation.component.name}</TableCell>

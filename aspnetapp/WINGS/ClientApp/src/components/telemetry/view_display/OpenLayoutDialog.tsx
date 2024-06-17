@@ -1,5 +1,4 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 import { Button, TextField } from '@mui/material';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -15,17 +14,6 @@ import { fetchLayoutsAction, backViewAction, selectedLayoutCommitAction, tempSto
 import { getOpid } from '../../../redux/operations/selectors';
 import { Layout } from '../../../models/TelemetryView';
 
-const useStyles = makeStyles(
-  createStyles({
-    button: {
-      width: 120
-    },
-    paper: {
-      height: '80vh',
-      width: 500
-    }
-  }));
-
 export interface OpenLayoutDialogProps {
   classes: Record<'paper', string>;
   keepMounted: boolean;
@@ -35,7 +23,6 @@ export interface OpenLayoutDialogProps {
 
 const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
   const { onClose, open } = props;
-  const classes = useStyles();
   const selector = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const [value, setValue] = useState("");
@@ -43,6 +30,12 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
   const layouts = (getLayouts(selector) != undefined) ? getLayouts(selector) : [];
   const layoutOptions: SelectOption[] = layouts.map(layout => ({ id: layout.id, name: layout.name }));
   const templayout = getViewLayout(selector);
+
+  const dialogPaperStyle = {
+    height: '80vh',
+    width: 500
+  };
+  const buttonStyle = { width: 120 };
 
   const tempStoreView = () => {
     dispatch(tempStoreViewAction(templayout));
@@ -177,25 +170,24 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
 
   return (
     <Dialog
-      disableBackdropClick
       disableEscapeKeyDown
       maxWidth="xs"
       onEntering={handleEntering}
       aria-labelledby="open-plan-dialog-title"
       open={open}
-      classes={{ paper: classes.paper }}
+      PaperProps={dialogPaperStyle}
     >
       <DialogTitle id="open-plan-dialog-title">Temporary Save and Restore</DialogTitle>
       <DialogContent dividers>
         <div>
           <Button
-            variant="contained" color="primary" className={classes.button}
+            variant="contained" color="primary" sx={buttonStyle}
             onClick={() => tempStoreView()}
           >
             Save
           </Button>
           <Button
-            variant="contained" color="primary" className={classes.button}
+            variant="contained" color="primary" sx={buttonStyle}
             onClick={() => backLayout()}
           >
             Restore
@@ -218,13 +210,13 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
         </div>
         <div>
           <Button
-            variant="contained" color="primary" className={classes.button}
+            variant="contained" color="primary" sx={buttonStyle}
             onClick={() => saveLayoutAsync(text)}
           >
             Save
           </Button>
           <Button
-            variant="contained" color="primary" className={classes.button}
+            variant="contained" color="primary" sx={buttonStyle}
             onClick={() => renameLayoutAsync(text)}
           >
             Rename
@@ -232,13 +224,13 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
         </div>
         <div>
           <Button
-            variant="contained" color="primary" className={classes.button}
+            variant="contained" color="primary" sx={buttonStyle}
             onClick={() => handleOk()}
           >
             Restore
           </Button>
           <Button
-            variant="contained" color="primary" className={classes.button}
+            variant="contained" color="primary" sx={buttonStyle}
             onClick={() => deleteLayoutAsync()}
           >
             Delete
