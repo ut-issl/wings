@@ -6,6 +6,7 @@
     "@mui/icons-material": "^5.0.0",
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.20",
+    "@reduxjs/toolkit": "^2.2.5",
     "babel-eslint": "10.1.0",
     "browserslist": "^4.16.6",
     "connected-react-router": "^6.9.3",
