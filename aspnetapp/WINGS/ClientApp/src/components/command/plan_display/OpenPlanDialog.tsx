@@ -12,7 +12,6 @@ import { openPlan } from '../../../redux/plans/operations';
 import FileTreeMultiView from '../../common/FileTreeMultiView';
 
 export interface OpenPlanDialogProps {
-  classes: Record<'paper', string>;
   keepMounted: boolean;
   open: boolean;
   onClose: () => void;
@@ -27,10 +26,6 @@ const OpenPlanDialog = (props: OpenPlanDialogProps) => {
   const operation = getCurrentOperation(selector);
 
   const [values, setValues] = React.useState<string[]>([]);
-  const dialogPaperStyle = {
-    height: '60vh',
-    width: 500
-  };
 
   const handleCancel = () => {
     onClose();
@@ -69,7 +64,6 @@ const OpenPlanDialog = (props: OpenPlanDialogProps) => {
       maxWidth="xs"
       aria-labelledby="open-plan-dialog-title"
       open={open}
-      PaperProps={dialogPaperStyle}
     >
       <DialogTitle id="open-plan-dialog-title">Select Command File</DialogTitle>
       <DialogContent dividers>

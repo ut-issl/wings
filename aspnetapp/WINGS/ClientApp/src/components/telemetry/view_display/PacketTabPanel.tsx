@@ -89,10 +89,6 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
     fontSize: "10pt",
     textAlign: "center"
   };
-  const dialogPaperStyle = JSON.stringify({
-    width: '80%',
-    maxHeight: 435,
-  });
   const titleStyle = {
     color: '#ffff00'
   };
@@ -217,7 +213,6 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
       </Toolbar>
       <OpenPacketTabDialog
         blockNum={blockNum}
-        classes={{ paper: dialogPaperStyle }}
         keepMounted
         open={dialogOpen}
         tab={tab}

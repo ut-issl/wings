@@ -17,7 +17,6 @@ import { selectTelemetryAction } from '../../../redux/views/actions';
 
 export interface OpenViewDialogProps {
   blockNum: number,
-  classes: Record<'paper', string>;
   keepMounted: boolean;
   open: boolean;
   onClose: () => void;
@@ -32,11 +31,6 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
   const [type, setType] = React.useState("packet");
   const indexes = getAllIndexes(selector);
   const [text, setText] = React.useState("");
-
-  const dialogPaperStyle = {
-    height: '80vh',
-    width: 500
-  };
 
   interface CheckboxState {
     [id: string]: boolean;
@@ -102,7 +96,6 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
       // onEntering={handleEntering}
       aria-labelledby="open-plan-dialog-title"
       open={open}
-      PaperProps={dialogPaperStyle}
     >
       <DialogTitle id="open-plan-dialog-title">
         <div style={{ display: "flex" }}>

@@ -15,7 +15,6 @@ import { getOpid } from '../../../redux/operations/selectors';
 import { Layout } from '../../../models/TelemetryView';
 
 export interface OpenLayoutDialogProps {
-  classes: Record<'paper', string>;
   keepMounted: boolean;
   open: boolean;
   onClose: () => void;
@@ -31,11 +30,6 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
   const layoutOptions: SelectOption[] = layouts.map(layout => ({ id: layout.id, name: layout.name }));
   const templayout = getViewLayout(selector);
 
-  const dialogPaperStyle = {
-    height: '80vh',
-    // width: 500,
-    width: '80%',
-  };
   const buttonStyle = { width: 120 };
 
   const tempStoreView = () => {
@@ -176,7 +170,6 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
       // onEntering={handleEntering}
       aria-labelledby="open-plan-dialog-title"
       open={open}
-      PaperProps={dialogPaperStyle}
     >
       <DialogTitle id="open-plan-dialog-title">Temporary Save and Restore</DialogTitle>
       <DialogContent dividers>

@@ -16,7 +16,6 @@ import { selectTelemetryAction } from '../../../redux/views/actions';
 
 export interface OpenPacketTabDialogProps {
   blockNum: number,
-  classes: Record<'paper', string>;
   keepMounted: boolean;
   open: boolean;
   tab: TelemetryViewIndex;
@@ -28,11 +27,6 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
   const selector = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const [text, setText] = React.useState("");
-
-  const dialogPaperStyle = {
-    height: '80vh',
-    width: 500
-  };
 
   const formGroupRef = React.useRef<HTMLElement>(null);
 
@@ -109,7 +103,6 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
       // onEntering={handleEntering}
       aria-labelledby="open-plan-dialog-title"
       open={open}
-      PaperProps={dialogPaperStyle}
     >
       <DialogTitle id="open-plan-dialog-title">
         <TextField

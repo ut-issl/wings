@@ -60,10 +60,6 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
     fontSize: 12,
     paddingRight: 20
   };
-  const dialogPaperStyle = JSON.stringify({
-    width: '80%',
-    maxHeight: 435,
-  });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDataType((event.target as HTMLInputElement).value);
@@ -259,7 +255,6 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
       </Toolbar>
       <OpenGraphTabDialog
         blockNum={blockNum}
-        classes={{ paper: dialogPaperStyle }}
         keepMounted
         open={dialogOpen}
         tab={tab}

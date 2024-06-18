@@ -16,7 +16,6 @@ import { selectTelemetryAction } from '../../../redux/views/actions';
 
 export interface OpenGraphTabDialogProps {
   blockNum: number,
-  classes: Record<'paper', string>;
   keepMounted: boolean;
   open: boolean;
   tab: TelemetryViewIndex;

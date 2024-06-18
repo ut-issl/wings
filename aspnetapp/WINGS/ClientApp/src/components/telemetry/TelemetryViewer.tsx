@@ -21,10 +21,6 @@ const TelemetryViewer = () => {
   };
 
   const opid = getOpid(selector);
-  const dialogPaperStyle = JSON.stringify({
-    width: '80%',
-    maxHeight: 435,
-  });
 
   return (
     <section className="c-section-container">
@@ -45,7 +41,6 @@ const TelemetryViewer = () => {
       </div>
       <div>
         <OpenLayoutDialog
-          classes={{ paper: dialogPaperStyle }}
           keepMounted
           open={dialogOpen}
           onClose={handleDialogClose}

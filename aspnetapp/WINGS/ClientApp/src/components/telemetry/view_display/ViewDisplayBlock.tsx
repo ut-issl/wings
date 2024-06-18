@@ -78,11 +78,6 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
   const value = blockInfo.activeTab;
   const theme: Theme = useTheme();
 
-  const dialogPaperStyle = JSON.stringify({
-    width: '80%',
-    maxHeight: 435,
-  });
-
   const TabsStyle = {
     '& .MuiTabs-indicator': {
       backgroundColor: 'red',
@@ -144,7 +139,6 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
       )}
       <OpenViewDialog
         blockNum={blockNum}
-        classes={{ paper: dialogPaperStyle }}
         keepMounted
         open={dialogOpen}
         onClose={handleDialogClose}

@@ -50,10 +50,6 @@ const PlanDisplayArea = () => {
       padding: "0 5px 0 5px"
     },
   };
-  const dialogPaperStyle = JSON.stringify({
-    width: '80%',
-    maxHeight: 435,
-  });
   const cmdFileField = {
     fontSize: "10pt",
     textAlign: "center"
@@ -162,7 +158,6 @@ const PlanDisplayArea = () => {
         </div>
 
         <OpenPlanDialog
-          classes={{ paper: dialogPaperStyle }}
           keepMounted
           open={dialogOpen}
           onClose={handleDialogClose}
@@ -223,7 +218,6 @@ const PlanDisplayArea = () => {
           keepMounted
           open={dialogOpen}
           onClose={handleDialogClose}
-          classes={{ paper: dialogPaperStyle }}
         />
 
       </div>
