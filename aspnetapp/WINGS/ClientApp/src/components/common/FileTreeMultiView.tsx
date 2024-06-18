@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Theme, useTheme } from '@mui/material/styles';
-import TreeView from '@mui/x-tree-view/TreeView';
-import TreeItem, { TreeItemProps } from '@mui/x-tree-view/TreeItem';
+import TreeView from '@mui/lab/TreeView';
+import TreeItem, { TreeItemProps } from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -53,7 +53,7 @@ const StyledTreeItem = (props: StyledTreeItemProps) => {
   const labelTextStyle = {
     fontWeight: 'inherit',
     flexGrow: 1,
-  };  
+  };
 
   return (
     <TreeItem
