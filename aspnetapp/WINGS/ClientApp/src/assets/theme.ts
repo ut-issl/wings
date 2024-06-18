@@ -104,6 +104,16 @@ export const theme = createTheme({
         }
       }
     },
+    MuiCheckbox: {
+      styleOverrides: {
+        root: {
+          color: grey[400],
+          '&.Mui-checked': {
+            color: red["A400"]
+          }
+        }
+      }
+    },
     MuiTableHead: {
       styleOverrides: {
         root: {
