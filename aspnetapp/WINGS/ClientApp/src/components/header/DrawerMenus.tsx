@@ -1,6 +1,5 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { push } from 'connected-react-router';
+import { useNavigate } from 'react-router-dom';
 import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import HomeIcon from '@mui/icons-material/Home';
@@ -20,10 +19,10 @@ export interface DrawerMenusProps {
 }
 
 const DrawerMenus = (props: DrawerMenusProps) => {
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const selectMenu = (event: {}, path: string) => {
-    dispatch(push(path));
+    navigate(path);
     props.onClose(event);
   }
 
@@ -54,7 +53,7 @@ const DrawerMenus = (props: DrawerMenusProps) => {
           </ListItem>
           <Divider />
           {menus.map(menu => (
-            <ListItem button key={menu.id} onClick={(event) => selectMenu(event, menu.value)}>
+            <ListItem key={menu.id} onClick={(event) => selectMenu(event, menu.value)}>
               <ListItemIcon>
                 {menu.icon}
               </ListItemIcon>

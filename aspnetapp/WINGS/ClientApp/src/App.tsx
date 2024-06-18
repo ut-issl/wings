@@ -1,19 +1,20 @@
 import React, { useEffect } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import Router from './Router';
 import Header from './components/header/Header';
 import LoadingBackDrop from './components/common/LoadingBackDrop';
-import ErrorDialog from  './components/common/ErrorDialog';
+import ErrorDialog from './components/common/ErrorDialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOpid } from './redux/operations/selectors';
 import { RootState } from './redux/store/RootState';
 import { updateLatestTelemetriesAction, addTelemetryHistoriesAction } from './redux/telemetries/actions';
 import "./assets/style.css";
 
-export function useValueRef<T>(val: T){
+export function useValueRef<T>(val: T) {
   const ref = React.useRef(val);
-  React.useEffect(()=> {
+  React.useEffect(() => {
     ref.current = val;
-  },[val]);
+  }, [val]);
   return ref
 }
 
@@ -23,7 +24,7 @@ const App = () => {
   const opid = getOpid(selector);
   const [refTlmTime, setRefTlmTime] = React.useState("");
   const refTime = useValueRef(refTlmTime);
-  
+
   const fetchTelemetry = async () => {
     if (opid === "") return;
     const res = await fetch(`/api/operations/${opid}/tlm?refTlmTime=${refTime.current}`, {
@@ -45,12 +46,14 @@ const App = () => {
 
   return (
     <div>
-      <Header />
-      <main className="c-main">
-        <Router />
-      </main>
-      <LoadingBackDrop />
-      <ErrorDialog />
+      <BrowserRouter>
+        <Header />
+        <main className="c-main">
+          <Router />
+        </main>
+        <LoadingBackDrop />
+        <ErrorDialog />
+      </BrowserRouter>
     </div>
   )
 };

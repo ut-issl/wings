@@ -10,13 +10,19 @@ import createStore from './redux/store/store';
 
 const history = History.createBrowserHistory();
 export const store = createStore(history);
-export const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('Failed to find the root element');
+export const root = ReactDOM.createRoot(rootElement);
+
 root.render(
-  <Provider store={store}>
-    <ConnectedRouter history={history}>
-      <ThemeProvider theme={theme}>
-        <App />
-      </ThemeProvider>
-    </ConnectedRouter>
-  </Provider>
+  <React.StrictMode>
+    <Provider store={store}>
+      <ConnectedRouter history={history}>
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
+      </ConnectedRouter>
+    </Provider>
+  </React.StrictMode>
 );
