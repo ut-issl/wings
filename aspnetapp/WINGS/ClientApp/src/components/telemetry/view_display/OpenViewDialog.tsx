@@ -99,7 +99,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
     <Dialog
       disableEscapeKeyDown
       maxWidth="xs"
-      onEntering={handleEntering}
+      // onEntering={handleEntering}
       aria-labelledby="open-plan-dialog-title"
       open={open}
       PaperProps={dialogPaperStyle}

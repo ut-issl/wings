@@ -10,6 +10,7 @@
     "@reduxjs/toolkit": "^2.2.5",
     "babel-eslint": "10.1.0",
     "browserslist": "^4.16.6",
+    "chart.js": "^4.4.3",
     "connected-react-router": "^6.9.3",
     "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",

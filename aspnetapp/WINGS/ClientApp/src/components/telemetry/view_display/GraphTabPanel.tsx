@@ -87,11 +87,11 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
   let tlmLabels: { [id: string]: string[] } = {};
   const items: { label: string; backgroundColor: string; borderColor: string; pointBorderWidth: number; data: number[]; }[] = [];
 
-  const inputDataLength = React.useCallback((event) => {
+  const inputDataLength = React.useCallback((event: any) => {
     setDataLength(event.target.value)
   }, [setDataLength]);
 
-  const inputYlabelMin = React.useCallback((event) => {
+  const inputYlabelMin = React.useCallback((event: any) => {
     if (!isNaN(Number(event.target.value))) {
       setYlabelMin(event.target.value);
     }
@@ -100,7 +100,7 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
     }
   }, [setYlabelMin]);
 
-  const inputYlabelMax = React.useCallback((event) => {
+  const inputYlabelMax = React.useCallback((event: any) => {
     if (!isNaN(Number(event.target.value))) {
       setYlabelMax(event.target.value);
     }
@@ -197,21 +197,21 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
   }
 
   const options = {
-    animation: false,
-    scales: {
-      xAxes: [{
-        type: "time",
-        time: {
-          parser: 'YYYY-MM-DD HH:mm:ss.S',
-          unit: 'minute',
-          stepSize: 1,
-        }
-      }],
-      yAxes: {
-        min: (tab.ylabelMin != '') ? Number(tab.ylabelMin) : null,
-        max: (tab.ylabelMax != '') ? Number(tab.ylabelMax) : null
-      }
-    }
+    // animation: false,
+    // scales: {
+    //   xAxes: [{
+    //     type: "time",
+    //     time: {
+    //       parser: 'YYYY-MM-DD HH:mm:ss.S',
+    //       unit: 'minute',
+    //       stepSize: 1,
+    //     }
+    //   }],
+    //   yAxes: {
+    //     min: (tab.ylabelMin != '') ? Number(tab.ylabelMin) : null,
+    //     max: (tab.ylabelMax != '') ? Number(tab.ylabelMax) : null
+    //   }
+    // }
   }
 
   return (
@@ -266,7 +266,6 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
         onClose={handleDialogClose}
       />
       <Line
-        type={Line}
         data={data}
         options={options}
       />

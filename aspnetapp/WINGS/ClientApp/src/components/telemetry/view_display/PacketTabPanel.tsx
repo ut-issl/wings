@@ -54,6 +54,10 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
       width: '33.33%'
     },
   };
+  const tlmliStyle = {
+    fontSize: 'xx-small',
+    display: 'block',
+  };
   const tlmulStyle = {
     paddingInlineStart: 0,
     margin: 0
@@ -70,32 +74,16 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
     paddingTop: "5px"
   };
   const tlmNormalStyle = {
-    fontSize: 'xx-small',
-    display: 'block',
-    "& span": {
-      color: theme.palette.success.main
-    }
+    color: theme.palette.success.main
   };
   const tlmColorRedStyle = {
-    fontSize: 'xx-small',
-    display: 'block',
-    "& span": {
-      color: theme.palette.error.main
-    }
+    color: theme.palette.error.main
   };
   const tlmColorBlueStyle = {
-    fontSize: 'xx-small',
-    display: 'block',
-    "& span": {
-      color: theme.palette.success.dark
-    }
+    color: theme.palette.success.dark
   };
   const tlmColorGreenStyle = {
-    fontSize: 'xx-small',
-    display: 'block',
-    "& span": {
-      color: theme.palette.success.contrastText
-    }
+    color: theme.palette.success.contrastText
   };
   const dataTypeFieldStyle = {
     fontSize: "10pt",
@@ -162,8 +150,8 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
     const tlmClassesDisplayed: JSX.Element[] = [];
     if (tlmClasses.length == 1) {
       tlmClassesDisplayed.push(
-        <li key={tlm.telemetryInfo.name} style={setClassName(tab.dataType, tlm.telemetryValue.value)}>
-          {tlm.telemetryInfo.name} : <span>{(tab.dataType != "Raw") ? tlm.telemetryValue.value : tlm.telemetryValue.rawValue}</span>
+        <li key={tlm.telemetryInfo.name} style={tlmliStyle}>
+          {tlm.telemetryInfo.name} : <span style={setClassName(tab.dataType, tlm.telemetryValue.value)}>{(tab.dataType != "Raw") ? tlm.telemetryValue.value : tlm.telemetryValue.rawValue}</span>
         </li>
       )
       tlmClassList.push(tlm.telemetryInfo.name);
@@ -173,9 +161,9 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
         let tlmClassesTmp = (i == 0) ? tlmName : tlmClasses.slice(0, i + 1).join(".");
         if (i == tlmClasses.length - 1) {
           tlmClassesDisplayed.push(
-            <li key={tlm.telemetryInfo.name} style={setClassName(tab.dataType, tlm.telemetryValue.value)}>
+            <li key={tlm.telemetryInfo.name} style={tlmliStyle}>
               {<span style={{ marginRight: `${10 * i}px` }}></span>}
-              {tlmName} : <span>{(tab.dataType != "Raw") ? tlm.telemetryValue.value : tlm.telemetryValue.rawValue}</span>
+              {tlmName} : <span style={setClassName(tab.dataType, tlm.telemetryValue.value)}>{(tab.dataType != "Raw") ? tlm.telemetryValue.value : tlm.telemetryValue.rawValue}</span>
             </li>
           )
         } else if (!tlmClassList.includes(tlmClassesTmp)) {

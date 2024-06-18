@@ -33,7 +33,8 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
 
   const dialogPaperStyle = {
     height: '80vh',
-    width: 500
+    // width: 500,
+    width: '80%',
   };
   const buttonStyle = { width: 120 };
 
@@ -172,7 +173,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
     <Dialog
       disableEscapeKeyDown
       maxWidth="xs"
-      onEntering={handleEntering}
+      // onEntering={handleEntering}
       aria-labelledby="open-plan-dialog-title"
       open={open}
       PaperProps={dialogPaperStyle}

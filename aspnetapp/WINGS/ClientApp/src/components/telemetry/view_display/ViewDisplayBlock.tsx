@@ -14,6 +14,23 @@ import { activateViewAction, closeViewAction } from '../../../redux/views/action
 import OpenViewDialog from './OpenViewDialog';
 import { root } from '../../..';
 
+const ViewDisplayContent = styled('div')(({ theme }) => ({
+  [theme.breakpoints.down('lg')]: {
+    width: '100%'
+  },
+  [theme.breakpoints.up('lg')]: {
+    width: 'calc(50% - 1rem)'
+  },
+  "& .MuiTab-root": {
+    minWidth: 100
+  },
+  minHeight: 'calc(50vh - 4.5rem)',
+  margin: 2,
+  borderStyle: "solid",
+  borderColor: theme.palette.primary.light,
+  borderWidth: "0px 1px 1px 1px"
+}));
+
 const a11yProps = (index: any) => {
   return {
     id: `simple-tab-${index}`,
@@ -32,22 +49,6 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
   const value = blockInfo.activeTab;
   const theme: Theme = useTheme();
 
-  const rootStyle = {
-    [theme.breakpoints.down('lg')]: {
-      width: '100%'
-    },
-    [theme.breakpoints.up('lg')]: {
-      width: 'calc(50% - 1rem)'
-    },
-    "& .MuiTab-root": {
-      minWidth: 100
-    },
-    minHeight: 'calc(50vh - 4.5rem)',
-    margin: 2,
-    borderStyle: "solid",
-    borderColor: theme.palette.primary.light,
-    borderWidth: "0px 1px 1px 1px"
-  };
   const tabStyle = {
     width: 120,
     minHeight: "auto",
@@ -106,7 +107,7 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
   };
 
   return (
-    <div style={rootStyle}>
+    <ViewDisplayContent theme={theme}>
       <AppBar position="static">
         <Tabs value={value} onChange={handleValueChange}>
           {blockInfo.tabs.map((tab, i) => (
@@ -134,7 +135,7 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
         open={dialogOpen}
         onClose={handleDialogClose}
       />
-    </div>
+    </ViewDisplayContent>
   );
 };
 

@@ -39,12 +39,12 @@ const ViewTabPanel = (props: ViewTabPanelProps) => {
           //   const content = contents[tab.id];
           //   return <CharacterTabPanel tab={tab} content={content} />;
           // }
-          
+
           case "graph": {
             const content = contents[tab.id];
             return <GraphTabPanel tab={tab} blockNum={blockNum} />;
           }
-        
+
           default:
             break;
         }
