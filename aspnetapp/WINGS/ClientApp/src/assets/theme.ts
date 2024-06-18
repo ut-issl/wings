@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { blueGrey, pink, cyan, purple, grey } from "@mui/material/colors";
+import { blueGrey, pink, cyan, purple, grey, red } from "@mui/material/colors";
 
 export const theme = createTheme({
   palette: {
@@ -64,8 +64,43 @@ export const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          transition: 'none !important'
+          transition: 'none !important',
+          backgroundColor: grey[800],
+          color: '#fff'
         },
+      }
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          backgroundColor: grey[800],
+          color: '#fff',
+          '&.Mui-selected': {
+            backgroundColor: grey[600],
+          },
+          '&.Mui-selected:hover': {
+            backgroundColor: grey[600],
+          },
+          '&:hover': {
+            backgroundColor: grey[700],
+          }
+        }
+      }
+    },
+    MuiRadio: {
+      styleOverrides: {
+        root: {
+          '&.Mui-checked': {
+            color: red["A400"]
+          }
+        }
+      }
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: grey[400]
+        }
       }
     },
     MuiTableHead: {

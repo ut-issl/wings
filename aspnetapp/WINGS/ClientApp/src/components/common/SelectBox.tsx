@@ -18,7 +18,6 @@ export interface SelectBoxProps {
 
 const SelectBox = (props: SelectBoxProps) => {
   const formControlStyle = {
-    marginBottom: 16,
     minWidth: 128,
     width: '100%'
   };
