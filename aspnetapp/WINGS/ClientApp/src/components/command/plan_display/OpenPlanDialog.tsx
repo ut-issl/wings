@@ -35,7 +35,7 @@ const OpenPlanDialog = (props: OpenPlanDialogProps) => {
   const handleOk = () => {
     if (values.length != 0) {
       indexes.forEach(index => {
-        if (values.indexOf(index.id) >= 0) {
+        if (values.includes(index.name)) {
           dispatch(openPlan(index.id));
         }
       })

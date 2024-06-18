@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Theme, useTheme } from '@mui/material/styles';
-import TreeView from '@mui/lab/TreeView';
-import TreeItem, { TreeItemProps } from '@mui/lab/TreeItem';
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
+import { TreeItem, TreeItemProps } from '@mui/x-tree-view/TreeItem';
 import Typography from '@mui/material/Typography';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import DescriptionIcon from '@mui/icons-material/Description';
+import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone';
 import FolderIcon from '@mui/icons-material/Folder';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import { FileIndex } from '../../models';
@@ -19,28 +18,6 @@ const StyledTreeItem = (props: StyledTreeItemProps) => {
   const { labelText, labelIcon: LabelIcon, color, ...other } = props;
   const theme: Theme = useTheme();
 
-  const contentStyle = {
-    color: theme.palette.text.secondary,
-    borderTopRightRadius: theme.spacing(2),
-    borderBottomRightRadius: theme.spacing(2),
-    paddingRight: theme.spacing(1),
-    fontWeight: theme.typography.fontWeightMedium,
-    '$expanded > &': {
-      fontWeight: theme.typography.fontWeightRegular,
-    },
-  };
-  const expandedStyle = {};
-  const selectedStyle = {};
-  const groupStyle = {
-    marginLeft: 0,
-    '& $content': {
-      paddingLeft: theme.spacing(2),
-    }
-  };
-  const labelStyle = {
-    fontWeight: 'inherit',
-    color: 'inherit',
-  };
   const labelRootStyle = {
     display: 'flex',
     alignItems: 'center',
@@ -64,13 +41,6 @@ const StyledTreeItem = (props: StyledTreeItemProps) => {
           </Typography>
         </div>
       }
-      classes={{
-        content: contentStyle,
-        expanded: expandedStyle,
-        selected: selectedStyle,
-        group: groupStyle,
-        label: labelStyle,
-      }}
       {...other}
     />
   );
@@ -87,19 +57,23 @@ const FileTreeView = (props: FileTreeViewProps) => {
   const { files, rootPath, select, defaultExpandedFolder } = props
   const [selected, setSelected] = useState<string[]>([]);
 
-  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
-    if (nodeIds.includes("folder--")) {
-      setSelected([]);
-    } else {
-      setSelected(nodeIds);
-      select(nodeIds);
-    }
+  const handleSelect = (label: string) => {
+    setSelected([label]);
+    select([label]);
   };
+
+  const handleClear = () => {
+    setSelected([]);
+    select([]);
+  }
+
+  var convertedRootPath = rootPath.replaceAll("\\", "/");
 
   var tree: any = {};
   files.forEach((file: FileIndex) => {
     var currentNode = tree;
-    const filePath = file.filePath.replace(rootPath, "");
+    var convertedFilePath = file.filePath.replaceAll("\\", "/");
+    const filePath = convertedFilePath.replace(convertedRootPath, "");
     filePath.split('/').forEach((segment: string) => {
       if (currentNode[segment] === undefined) {
         if (segment.includes(".ops")) {
@@ -130,10 +104,15 @@ const FileTreeView = (props: FileTreeViewProps) => {
         data.length > 0 && data.map((child: any) => {
           const label = child.label;
           if ('file' in child) {
-            return <StyledTreeItem key={label} nodeId={child.file.id} labelText={label} labelIcon={DescriptionIcon} />
+            if (selected.includes(label)) {
+              return <StyledTreeItem key={label} itemId={child.file.id} labelText={label} labelIcon={DescriptionIcon} onClick={() => handleSelect(label)} />
+            }
+            else {
+              return <StyledTreeItem key={label} itemId={child.file.id} labelText={label} labelIcon={DescriptionTwoToneIcon} onClick={() => handleSelect(label)} />
+            }
           } else {
             return (
-              <StyledTreeItem key={label} nodeId={`folder--${label}`} labelText={label} labelIcon={FolderIcon}>
+              <StyledTreeItem key={label} itemId={`folder--${label}`} labelText={label} labelIcon={FolderIcon} onClick={handleClear}>
                 {showTreeItem(child.children)}
               </StyledTreeItem>
             )
@@ -144,17 +123,11 @@ const FileTreeView = (props: FileTreeViewProps) => {
   };
 
   return (
-    <TreeView
+    <SimpleTreeView
       sx={{ height: 240, flexGrow: 1, maxWidth: 400 }}
-      defaultCollapseIcon={<ArrowDropDownIcon />}
-      defaultExpandIcon={<ArrowRightIcon />}
-      defaultExpanded={defaultExpandedFolder && defaultExpandedFolder.map(name => "folder--" + name)}
-      defaultEndIcon={<div style={{ width: 24 }} />}
-      selected={selected}
-      onNodeSelect={handleSelect}
     >
       {showTreeItem(toTreeData(tree))}
-    </TreeView>
+    </SimpleTreeView>
   )
 };
 

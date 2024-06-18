@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Theme, useTheme } from '@mui/material/styles';
-import TreeView from '@mui/lab/TreeView';
-import TreeItem, { TreeItemProps } from '@mui/lab/TreeItem';
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
+import { TreeItem, TreeItemProps } from '@mui/x-tree-view/TreeItem';
 import Typography from '@mui/material/Typography';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import DescriptionIcon from '@mui/icons-material/Description';
 import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone';
 import FolderIcon from '@mui/icons-material/Folder';
@@ -20,28 +18,6 @@ const StyledTreeItem = (props: StyledTreeItemProps) => {
   const { labelText, labelIcon: LabelIcon, color, ...other } = props;
   const theme: Theme = useTheme();
 
-  const contentStyle = {
-    color: theme.palette.text.secondary,
-    borderTopRightRadius: theme.spacing(2),
-    borderBottomRightRadius: theme.spacing(2),
-    paddingRight: theme.spacing(1),
-    fontWeight: theme.typography.fontWeightMedium,
-    '$expanded > &': {
-      fontWeight: theme.typography.fontWeightRegular,
-    },
-  };
-  const expandedStyle = {};
-  const selectedStyle = {};
-  const groupStyle = {
-    marginLeft: 0,
-    '& $content': {
-      paddingLeft: theme.spacing(2),
-    }
-  };
-  const labelStyle = {
-    fontWeight: 'inherit',
-    color: 'inherit',
-  };
   const labelRootStyle = {
     display: 'flex',
     alignItems: 'center',
@@ -65,13 +41,6 @@ const StyledTreeItem = (props: StyledTreeItemProps) => {
           </Typography>
         </div>
       }
-      classes={{
-        content: contentStyle,
-        expanded: expandedStyle,
-        selected: selectedStyle,
-        group: groupStyle,
-        label: labelStyle,
-      }}
       {...other}
     />
   );
@@ -91,35 +60,26 @@ const FileTreeMultiView = (props: FileTreeMultiViewProps) => {
     [id: string]: boolean;
   }
 
-  let initCheckedState: CheckedState = {};
-  files.forEach(element => initCheckedState[element.name] = false);
-  const [checkedState, setCheckedState] = useState(initCheckedState);
+  const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
 
-  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
-    let changeCheckedState = { ...checkedState };
-    if (nodeIds.includes("folder--")) {
-      files.forEach(element => {
-        changeCheckedState[element.name] = false;
-      })
-    }
-    else {
-      select(nodeIds);
-      files.forEach(element => {
-        if (nodeIds.indexOf(element.id) >= 0) {
-          changeCheckedState[element.name] = true;
-        }
-        else {
-          changeCheckedState[element.name] = false;
-        }
-      })
-    }
-    setCheckedState(changeCheckedState);
+  const handleSelectedItemsChange = (event: React.SyntheticEvent, ids: string[]) => {
+    setSelectedItems(ids);
+    var fileNameLists: string[] = [];
+    files.forEach(element => {
+      if (ids.includes(element.id)) {
+        fileNameLists.push(element.name);
+      }
+    })
+    select(fileNameLists);
   };
+
+  var convertedRootPath = rootPath.replaceAll("\\", "/");
 
   var tree: any = {};
   files.forEach((file: FileIndex) => {
     var currentNode = tree;
-    const filePath = file.filePath.replace(rootPath, "");
+    var convertedFilePath = file.filePath.replaceAll("\\", "/");
+    const filePath = convertedFilePath.replace(convertedRootPath, "");
     filePath.split('/').forEach((segment: string) => {
       if (currentNode[segment] === undefined) {
         if (segment.includes(".ops")) {
@@ -150,15 +110,15 @@ const FileTreeMultiView = (props: FileTreeMultiViewProps) => {
         data.length > 0 && data.map((child: any) => {
           const label = child.label;
           if ('file' in child) {
-            if (checkedState[child.label] === true) {
-              return <StyledTreeItem key={label} nodeId={child.file.id} labelText={label} labelIcon={DescriptionIcon} />
+            if (selectedItems.includes(child.file.id)) {
+              return <StyledTreeItem key={label} itemId={child.file.id} labelText={label} labelIcon={DescriptionIcon} />
             }
             else {
-              return <StyledTreeItem key={label} nodeId={child.file.id} labelText={label} labelIcon={DescriptionTwoToneIcon} />
+              return <StyledTreeItem key={label} itemId={child.file.id} labelText={label} labelIcon={DescriptionTwoToneIcon} />
             }
           } else {
             return (
-              <StyledTreeItem key={label} nodeId={`folder--${label}`} labelText={label} labelIcon={FolderIcon}>
+              <StyledTreeItem key={label} itemId={`folder--${label}`} labelText={label} labelIcon={FolderIcon}>
                 {showTreeItem(child.children)}
               </StyledTreeItem>
             )
@@ -169,18 +129,14 @@ const FileTreeMultiView = (props: FileTreeMultiViewProps) => {
   };
 
   return (
-    <TreeView
+    <SimpleTreeView
+      multiSelect
+      selectedItems={selectedItems}
+      onSelectedItemsChange={handleSelectedItemsChange}
       sx={{ height: 240, flexGrow: 1, maxWidth: 400 }}
-      defaultCollapseIcon={<ArrowDropDownIcon />}
-      defaultExpandIcon={<ArrowRightIcon />}
-      defaultExpanded={defaultExpandedFolder && defaultExpandedFolder.map(name => "folder--" + name)}
-      defaultEndIcon={<div style={{ width: 24 }} />}
-      //selected={selected}
-      multiSelect={true}
-      onNodeSelect={handleSelect}
     >
       {showTreeItem(toTreeData(tree))}
-    </TreeView>
+    </SimpleTreeView>
   )
 };
 
