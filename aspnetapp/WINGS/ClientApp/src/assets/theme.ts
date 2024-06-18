@@ -87,19 +87,20 @@ export const theme = createTheme({
         }
       }
     },
-    MuiRadio: {
-      styleOverrides: {
-        root: {
-          '&.Mui-checked': {
-            color: red["A400"]
-          }
-        }
-      }
-    },
     MuiIconButton: {
       styleOverrides: {
         root: {
           color: grey[400]
+        }
+      }
+    },
+    MuiRadio: {
+      styleOverrides: {
+        root: {
+          color: grey[400],
+          '&.Mui-checked': {
+            color: red["A400"]
+          }
         }
       }
     },

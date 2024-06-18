@@ -30,13 +30,7 @@ const OperationHistory = () => {
   const [open, setOpen] = useState(false);
   const [deleteOperation, setDeleteOperation] = useState<Operation | null>(null);
 
-  const searchFieldStyle = {
-    "& input": {
-      padding: 8
-    }
-  };
-
-  const inputSearch = useCallback((event) => {
+  const inputSearch = useCallback((event: any) => {
     setSearch(event.target.value)
   }, [setSearch]);
 
@@ -101,7 +95,7 @@ const OperationHistory = () => {
             />
           </div>
           <TextField
-            label="" onChange={inputSearch} sx={searchFieldStyle} style={{ marginLeft: "auto" }}
+            label="" onChange={inputSearch} style={{ marginLeft: "auto", padding: 0 }}
             value={search} type="text" placeholder="Search" onKeyDown={(e) => { e.key === "Enter" && confirmSearch() }}
           />
           <IconButton style={{ padding: "6px" }} onClick={confirmSearch}>

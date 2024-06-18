@@ -10,7 +10,7 @@ import { Operation, LocationState } from '../../models';
 import LogExportArea from './LogExportArea';
 
 const HistoryDetail = () => {
-  const location = useLocation<LocationState<Operation>>();
+  const location = useLocation() as unknown as { state: LocationState<Operation> };
   const operation = location.state.data;
   const theme: Theme = useTheme();
 

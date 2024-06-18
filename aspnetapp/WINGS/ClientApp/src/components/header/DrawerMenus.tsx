@@ -9,9 +9,11 @@ import ComputerIcon from '@mui/icons-material/Computer';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
+import { grey } from '@mui/material/colors';
 
 export interface DrawerMenusProps {
   open: boolean,
@@ -53,12 +55,12 @@ const DrawerMenus = (props: DrawerMenusProps) => {
           </ListItem>
           <Divider />
           {menus.map(menu => (
-            <ListItem key={menu.id} onClick={(event) => selectMenu(event, menu.value)}>
-              <ListItemIcon>
+            <ListItemButton key={menu.id} onClick={(event) => selectMenu(event, menu.value)}>
+              <ListItemIcon sx={{ color: grey[400] }}>
                 {menu.icon}
               </ListItemIcon>
               <ListItemText primary={menu.label} />
-            </ListItem>
+            </ListItemButton>
           ))}
         </List>
       </Drawer>
