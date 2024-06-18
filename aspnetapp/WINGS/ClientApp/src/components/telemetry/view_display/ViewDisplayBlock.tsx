@@ -22,7 +22,7 @@ const ViewDisplayContent = styled('div')(({ theme }) => ({
     width: 'calc(50% - 1rem)'
   },
   "& .MuiTab-root": {
-    minWidth: 100
+    width: 120
   },
   minHeight: 'calc(50vh - 4.5rem)',
   margin: 2,
@@ -30,6 +30,35 @@ const ViewDisplayContent = styled('div')(({ theme }) => ({
   borderColor: theme.palette.primary.light,
   borderWidth: "0px 1px 1px 1px"
 }));
+
+const DisplayTab = styled(Tab)({
+  width: '100%',
+  minHeight: "auto",
+  textAlign: "left",
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  padding: "0",
+  border: 0,
+  "& span": {
+    color: "#fff",
+    "& .Mui-selected": {
+      color: "red"
+    },
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+    display: "inline-block",
+    flexGrow: 0
+  },
+  "& .MuiTab-wrapper > *:first-child": {
+    marginBottom: 0,
+    padding: 0,
+    marginRight: 15,
+    marginLeft: 5,
+    width: 20,
+    height: 20
+  }
+})
 
 const a11yProps = (index: any) => {
   return {
@@ -49,32 +78,16 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
   const value = blockInfo.activeTab;
   const theme: Theme = useTheme();
 
-  const tabStyle = {
-    width: 120,
-    minHeight: "auto",
-    textAlign: "left",
-    padding: "0",
-    "& span": {
-      whiteSpace: "nowrap",
-      textOverflow: "ellipsis",
-      overflow: "hidden",
-      display: "inline-block",
-      flexGrow: 0
-    },
-    "& .MuiTab-wrapper > *:first-child": {
-      marginBottom: 0,
-      padding: 0,
-      marginRight: 15,
-      marginLeft: 5,
-      width: 20,
-      height: 20
-    }
-  };
-
   const dialogPaperStyle = JSON.stringify({
     width: '80%',
     maxHeight: 435,
   });
+
+  const TabsStyle = {
+    '& .MuiTabs-indicator': {
+      backgroundColor: 'red',
+    }
+  };
 
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
@@ -109,11 +122,12 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
   return (
     <ViewDisplayContent theme={theme}>
       <AppBar position="static">
-        <Tabs value={value} onChange={handleValueChange}>
+        <Tabs value={value} onChange={handleValueChange} sx={TabsStyle}>
           {blockInfo.tabs.map((tab, i) => (
-            <Tab
-              key={i} label={tab.name} {...a11yProps(i)} sx={tabStyle}
+            <DisplayTab
+              key={i} label={<span>{tab.name}</span>} {...a11yProps(i)}
               icon={<CloseIconInTab onClick={() => closeView(i)} />}
+              iconPosition="start"
             />
           ))}
           <IconButtonInTabs onClick={handleDialogOpen}>
