@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, styled } from '@mui/material';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -530,10 +530,10 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             <Table stickyHeader onClick={handleTableClick}>
               <TableHead>
                 <TableRow>
-                  <TableCell style={{ width: "40px", padding: "0" }} />
-                  <TableCell style={{ width: "27px", padding: "0" }} />
-                  <TableCell style={{ fontWeight: "bold" }}>{name}</TableCell>
-                  <TableCell style={{ width: "120px", padding: "0" }} />
+                  <TableCell sx={{ width: "40px", padding: "0" }} />
+                  <TableCell sx={{ width: "27px", padding: "0" }} />
+                  <TableCell sx={{ fontWeight: "bold", }}>{name}</TableCell>
+                  <TableCell sx={{ width: "120px", padding: "0" }} />
                 </TableRow>
               </TableHead>
               <TableBody id="plan-table-body">

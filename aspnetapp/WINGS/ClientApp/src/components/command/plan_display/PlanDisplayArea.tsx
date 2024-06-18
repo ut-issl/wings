@@ -21,6 +21,8 @@ import FormLabel from '@mui/material/FormLabel';
 import Toolbar from '@mui/material/Toolbar';
 import { getCmdType } from '../../../redux/plans/selectors';
 import { setCmdTypeAction } from '../../../redux/plans/actions';
+import { styled } from '@mui/material';
+import { grey } from '@mui/material/colors';
 
 const a11yProps = (index: any) => {
   return {
@@ -29,27 +31,35 @@ const a11yProps = (index: any) => {
   };
 }
 
+const PlanTab = styled(Tab)({
+  width: 220,
+  minHeight: "auto",
+  textAlign: "left",
+  padding: "2px 0 2px 0",
+  "&.Mui-selected": {
+    "& span": {
+      color: "white"
+    }
+  },
+  "& span": {
+    color: grey[400],
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+    display: "inline-block",
+    flexGrow: 0,
+    width: "100%",
+  },
+  "& .MuiTab-wrapper > *:first-child": {
+    marginBottom: 0,
+    padding: "0 5px 0 5px"
+  },
+})
+
 const PlanDisplayArea = () => {
   const dispatch = useDispatch();
   const selector = useSelector((state: RootState) => state);
 
-  const planTabStyle = {
-    width: 220,
-    minHeight: "auto",
-    textAlign: "left",
-    padding: "6px 0 6px 0",
-    "& span": {
-      whiteSpace: "nowrap",
-      textOverflow: "ellipsis",
-      overflow: "hidden",
-      display: "inline-block",
-      flexGrow: 0
-    },
-    "& .MuiTab-wrapper > *:first-child": {
-      marginBottom: 0,
-      padding: "0 5px 0 5px"
-    },
-  };
   const cmdFileField = {
     fontSize: "10pt",
     textAlign: "center"
@@ -122,14 +132,15 @@ const PlanDisplayArea = () => {
           {planIndexes.length > 0 && (
             planIndexes.map((index, i) => (
               index.id === UNPLANNED_ID ?
-                <Tab
-                  key={index.id} label={index.name} {...a11yProps(i)} sx={planTabStyle}
+                <PlanTab
+                  key={index.id} label={<span>{index.name}</span>} {...a11yProps(i)}
                   style={{ paddingLeft: "30px" }}
                 />
                 : (<Tooltip key={index.id} title={index.name} placement="right">
-                  <Tab
-                    label={index.name} {...a11yProps(i)} sx={planTabStyle}
+                  <PlanTab
+                    key={index.id} label={<span>{index.name}</span>} {...a11yProps(i)}
                     icon={<CloseIconInTab onClick={() => closePlan(index.id)} />}
+                    iconPosition="start"
                   />
                 </Tooltip>)
             ))
@@ -179,14 +190,15 @@ const PlanDisplayArea = () => {
           {planIndexes.length > 0 && (
             planIndexes.map((index, i) => (
               index.id === UNPLANNED_ID ?
-                <Tab
-                  key={index.id} label={index.name} {...a11yProps(i)} sx={planTabStyle}
+                <PlanTab
+                  key={index.id} label={<span>{index.name}</span>} {...a11yProps(i)}
                   style={{ paddingLeft: "30px" }}
                 />
                 : (<Tooltip key={index.id} title={index.name} placement="right">
-                  <Tab
-                    label={index.name} {...a11yProps(i)} sx={planTabStyle}
+                  <PlanTab
+                    label={<span>{index.name}</span>}  {...a11yProps(i)}
                     icon={<CloseIconInTab onClick={() => closePlan(index.id)} />}
+                    iconPosition="start"
                   />
                 </Tooltip>)
             ))

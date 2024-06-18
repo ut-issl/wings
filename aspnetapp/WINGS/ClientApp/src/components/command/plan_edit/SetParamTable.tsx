@@ -24,13 +24,14 @@ const SetParamTable = (props: SetParamAreaProps) => {
 
   const tableStyle = {
     "& .MuiTableCell-root": {
-      padding: 8
+      padding: 1
     }
   };
-  const nameCellStyle = { width: 50 };
-  const valueCellStyle = { width: 150, padding: 0 };
-  const typeCellStyle = { width: 60 };
-  const valueInputStyle = { "& input": { padding: 8 } };
+  const nameCellStyle = { width: 50, padding: 0 };
+  const valueCellStyle = { width: 100, padding: 0 };
+  const typeCellStyle = { width: 60, padding: 0 };
+  const descriptionCellStyle = { width: 60, padding: 0 };
+  const valueInputStyle = { "& input": { padding: 1 }, padding: 0 };
 
   if (command.execType != execType) {
     if (command.execType == "RT") {
@@ -131,7 +132,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
               <TableCell sx={nameCellStyle}>Name</TableCell>
               <TableCell sx={valueCellStyle}>Value</TableCell>
               <TableCell sx={typeCellStyle}>Type</TableCell>
-              <TableCell>Description</TableCell>
+              <TableCell sx={descriptionCellStyle}>Description</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

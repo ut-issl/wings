@@ -22,7 +22,7 @@ const CmdLogTableRow = (props: CmdLogTableRowProps) => {
       return { color: theme.palette.error.main, margin: 0 };
     }
     else if (status == "Comment") {
-      return { color: theme.palette.info.main };
+      return { color: theme.palette.info.main, margin: 0 };
     }
     else {
       return { margin: 0 };
@@ -58,10 +58,10 @@ const CmdLogTableRow = (props: CmdLogTableRowProps) => {
       <TableCell style={{ width: 24, padding: "6px 6px 6px 10px" }} align="right">
         {props.index + 1}
       </TableCell>
-      <TableCell style={{ width: 10, padding: 6 }}>
+      <TableCell style={{ width: 10, paddingLeft: 1.5, paddingRight: 1.5 }}>
         {props.line.time}
       </TableCell>
-      <TableCell sx={{ padding: 6 }} >
+      <TableCell sx={{ padding: 1 }} >
         {showCmdLogContent()}
       </TableCell>
     </TableRow>

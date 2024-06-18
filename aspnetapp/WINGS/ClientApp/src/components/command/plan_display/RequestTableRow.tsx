@@ -9,6 +9,7 @@ import { deleteUnplannedCommandAction, moveUpUnplannedCommandAction, moveDownUnp
 import { getActivePlanId } from '../../../redux/plans/selectors';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store/RootState';
+import { grey } from '@mui/material/colors';
 
 export interface RequestTableRowProps {
   line: CommandPlanLine,
@@ -29,29 +30,33 @@ const RequestTableRow = (props: RequestTableRowProps) => {
     if (isSelected) {
       return {
         height: 20,
+        padding: 0,
         backgroundColor: theme.palette.grey[800]
       };
     }
     else {
       return {
-        height: 20
+        height: 20,
+        padding: 0,
+        borderColor: grey[400]
       };
     }
   }
 
-  const lineNumCellStyle = { width: 24, padding: "6px 6px 6px 10px" };
-  const stopCellStyle = { width: 10, padding: 6 };
+  const lineNumCellStyle = { width: 24, padding: 1 };
+  const stopCellStyle = { width: 10, padding: 1 };
   const stopIconStyle = {
     fill: theme.palette.primary.light,
     width: "15px",
     height: "15px",
-    verticalAlign: "middle"
+    verticalAlign: "middle",
+    padding: 0
   };
-  const requestCellStyle = { padding: 6 };
-  const commentStyle = { color: theme.palette.info.main };
-  const deleteStyle = { width: 40 };
-  const arrowUpwardStyle = { width: 40 };
-  const arrowDownwardStyle = { width: 40 };
+  const requestCellStyle = { padding: 0 };
+  const commentStyle = { color: theme.palette.info.main, padding: 0 };
+  const deleteStyle = { width: 40, paddingButtom: 1, paddingTop: 1 };
+  const arrowUpwardStyle = { width: 40, paddingButtom: 1, paddingTop: 1 };
+  const arrowDownwardStyle = { width: 40, paddingButtom: 1, paddingTop: 1 };
 
   const showCommandParam = (command: Command) => {
     return (
@@ -98,7 +103,7 @@ const RequestTableRow = (props: RequestTableRowProps) => {
   const statusColor = (status: RequestStatus) => {
     if (status.error) return { margin: 0, color: theme.palette.error.main };
     if (status.success) return { margin: 0, color: theme.palette.success.main };
-    return {};
+    return { margin: 0 };
   }
   const deleteUnplannedCommand = () => {
     dispatch(deleteUnplannedCommandAction(props.index));

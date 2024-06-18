@@ -13,6 +13,7 @@ import { ViewBlockInfo } from '../../../models';
 import { activateViewAction, closeViewAction } from '../../../redux/views/actions';
 import OpenViewDialog from './OpenViewDialog';
 import { root } from '../../..';
+import { grey } from '@mui/material/colors';
 
 const ViewDisplayContent = styled('div')(({ theme }) => ({
   [theme.breakpoints.down('lg')]: {
@@ -39,11 +40,13 @@ const DisplayTab = styled(Tab)({
   textOverflow: "ellipsis",
   padding: "0",
   border: 0,
+  "&.Mui-selected": {
+    "& span": {
+      color: "white"
+    }
+  },
   "& span": {
-    color: "#fff",
-    "& .Mui-selected": {
-      color: "red"
-    },
+    color: grey[300],
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
     overflow: "hidden",
@@ -78,12 +81,6 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
   const value = blockInfo.activeTab;
   const theme: Theme = useTheme();
 
-  const TabsStyle = {
-    '& .MuiTabs-indicator': {
-      backgroundColor: 'red',
-    }
-  };
-
   const [dialogOpen, setDialogOpen] = React.useState(false);
 
   const handleDialogOpen = () => {
@@ -117,7 +114,7 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
   return (
     <ViewDisplayContent theme={theme}>
       <AppBar position="static">
-        <Tabs value={value} onChange={handleValueChange} sx={TabsStyle}>
+        <Tabs value={value} onChange={handleValueChange}>
           {blockInfo.tabs.map((tab, i) => (
             <DisplayTab
               key={i} label={<span>{tab.name}</span>} {...a11yProps(i)}
