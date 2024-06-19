@@ -127,7 +127,7 @@ const PlanDisplayArea = () => {
           variant="scrollable"
           value={value < 0 ? false : value}
           onChange={handleValueChange}
-          style={tabsStyle}
+          sx={tabsStyle}
         >
           {planIndexes.length > 0 && (
             planIndexes.map((index, i) => (

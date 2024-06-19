@@ -30,6 +30,12 @@ const DrawerMenus = (props: DrawerMenusProps) => {
 
   const drawerPaperStyle = { width: 256 };
 
+  const ListItemButtonStyle = {
+    "&:hover": {
+      backgroundColor: grey[700]
+    }
+  }
+
   const menus = [
     { id: "home", label: "Home", icon: <HomeIcon />, value: "/" },
     { id: "history", label: "Operation History", icon: <HistoryIcon />, value: "/history" },
@@ -55,7 +61,7 @@ const DrawerMenus = (props: DrawerMenusProps) => {
           </ListItem>
           <Divider />
           {menus.map(menu => (
-            <ListItemButton key={menu.id} onClick={(event) => selectMenu(event, menu.value)}>
+            <ListItemButton key={menu.id} onClick={(event) => selectMenu(event, menu.value)} sx={ListItemButtonStyle}>
               <ListItemIcon sx={{ color: grey[400] }}>
                 {menu.icon}
               </ListItemIcon>

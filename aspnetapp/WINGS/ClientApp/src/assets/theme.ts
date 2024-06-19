@@ -135,7 +135,8 @@ export const theme = createTheme({
           backgroundColor: blueGrey[500],
         },
         root: {
-          borderBottom: "0px",
+          borderBottom: "1px solid",
+          borderBottomColor: grey[700],
           color: "#fff",
         }
       }
@@ -151,7 +152,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           '& .MuiTabs-indicator': {
-            backgroundColor: 'red',
+            backgroundColor: red["A400"]
           }
         }
       }

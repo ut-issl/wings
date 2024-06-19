@@ -38,7 +38,6 @@ const RequestTableRow = (props: RequestTableRowProps) => {
       return {
         height: 20,
         padding: 0,
-        borderColor: grey[400]
       };
     }
   }

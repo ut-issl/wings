@@ -8,6 +8,7 @@ import logo from '../../assets/img/logo.png';
 import { getOpid } from '../../redux/operations/selectors';
 import { RootState } from '../../redux/store/RootState';
 import { updateCommandLogAction } from '../../redux/commands/actions';
+import { grey } from '@mui/material/colors';
 
 export interface HeaderMenusProps {
   handleDrawerToggle: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
@@ -19,7 +20,18 @@ const HeaderMenus = (props: HeaderMenusProps) => {
   const opid = getOpid(selector);
   const navigate = useNavigate();
 
-  const menuButtonStyle = { fontSize: 16 };
+  const menuButtonStyle = {
+    fontSize: 16,
+    "&:hover": {
+      backgroundColor: grey[700]
+    }
+  };
+
+  const IconButtonStyle = {
+    "&:hover": {
+      backgroundColor: grey[700]
+    }
+  }
 
   const handleCmdLog = async () => {
     navigate('/command_log');
@@ -34,7 +46,7 @@ const HeaderMenus = (props: HeaderMenusProps) => {
 
   return (
     <>
-      <IconButton onClick={(event) => props.handleDrawerToggle(event)}>
+      <IconButton onClick={(event) => props.handleDrawerToggle(event)} sx={IconButtonStyle}>
         <MenuIcon />
       </IconButton>
       <img

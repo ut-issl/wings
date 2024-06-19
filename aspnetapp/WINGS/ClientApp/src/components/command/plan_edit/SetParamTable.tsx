@@ -31,7 +31,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
   const valueCellStyle = { width: 100, padding: 0 };
   const typeCellStyle = { width: 60, padding: 0 };
   const descriptionCellStyle = { width: 60, padding: 0 };
-  const valueInputStyle = { "& input": { padding: 1 }, padding: 0 };
+  const valueInputStyle = { "& input": { padding: 0.5 }, padding: 0 };
 
   if (command.execType != execType) {
     if (command.execType == "RT") {
