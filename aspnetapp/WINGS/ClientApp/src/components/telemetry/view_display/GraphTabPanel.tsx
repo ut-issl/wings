@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { TelemetryViewIndex } from '../../../models';
 import { RootState } from '../../../redux/store/RootState';
 import { getTelemetryHistories } from '../../../redux/telemetries/selectors';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -20,6 +21,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import { Dialog } from '@mui/material';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 export interface GraphTabPanelProps {
   tab: TelemetryViewIndex,
@@ -105,10 +108,6 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
     }
   }, [setYlabelMax]);
 
-  let maxValue: number = 0;
-  let minValue: number = 0;
-  let isFirstValueSet = false;
-
   tab.selectedTelemetries.forEach((telemetryName, index) => {
     const selectedTelemetryHistory = telemetryHistories[tab.compoName][tab.name].find(element => element.telemetryInfo.name == telemetryName);
     if (selectedTelemetryHistory != undefined) {
@@ -132,18 +131,6 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
         tlmData[telemetryName] = tlmDataTmp;
         tlmLabels[telemetryName] = tlmLabelTmp;
       }
-
-      if (!isFirstValueSet && !isNaN(tlmData[telemetryName][0])) {
-        maxValue = tlmData[telemetryName].reduce((num1, num2) => Math.max(num1, num2));
-        minValue = tlmData[telemetryName].reduce((num1, num2) => Math.min(num1, num2));
-        isFirstValueSet = true;
-      }
-      else if (!isNaN(tlmDataTmp[0])) {
-        let tempMaxValue = tlmData[telemetryName].reduce((num1: number, num2: number) => Math.max(num1, num2));
-        let tempMinValue = tlmData[telemetryName].reduce((num1: number, num2: number) => Math.min(num1, num2));
-        maxValue = Math.max(maxValue, tempMaxValue);
-        minValue = Math.min(minValue, tempMinValue);
-      }
     }
 
     items.push(
@@ -166,18 +153,11 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
 
   const handleOk = () => {
     if (
-      isNaN(Number(ylabelMin))
-      || isNaN(Number(ylabelMax))
-      || (
-        Number(ylabelMin) != 0
-        && (
-          (Number(ylabelMax) == 0 && Number(ylabelMin) >= maxValue)
-          || (Number(ylabelMax) != 0 && Number(ylabelMin) >= Number(ylabelMax))
-        )
-      )
-      || (
-        Number(ylabelMax) != 0
-        && (Number(ylabelMin) == 0 && Number(ylabelMax) <= minValue)
+      !(ylabelMin === "" && ylabelMax === "")
+      && (
+        isNaN(Number(ylabelMin))
+        || isNaN(Number(ylabelMax))
+        || Number(ylabelMin) >= Number(ylabelMax)
       )
     ) {
       setShowModal(true);
@@ -187,28 +167,43 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
     }
   };
 
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      // title: {
+      //   display: true,
+      //   text: 'Chart.js Line Chart',
+      // },
+    },
+    animation: {
+      duration: 0
+    },
+    scales: {
+      x: {
+        type: 'time',
+        time: {
+          displayFormats: {
+            millisecond: 'YYYY-MM-DD HH:mm:ss.S',
+            second: 'YYYY-MM-DD HH:mm:ss.S',
+            minute: 'YYYY-MM-DD HH:mm:ss',
+          }
+        },
+        tooltipFormat: 'YYYY-MM-DD HH:mm:ss.S'
+      },
+      y: {
+        min: (tab.ylabelMin != '') ? Number(tab.ylabelMin) : NaN,
+        max: (tab.ylabelMax != '') ? Number(tab.ylabelMax) : NaN
+      }
+    }
+  };
+
   const data = {
     labels: tlmLabels[tab.selectedTelemetries[0]],
-    datasets: items
-  }
-
-  const options = {
-    // animation: false,
-    // scales: {
-    //   xAxes: [{
-    //     type: "time",
-    //     time: {
-    //       parser: 'YYYY-MM-DD HH:mm:ss.S',
-    //       unit: 'minute',
-    //       stepSize: 1,
-    //     }
-    //   }],
-    //   yAxes: {
-    //     min: (tab.ylabelMin != '') ? Number(tab.ylabelMin) : null,
-    //     max: (tab.ylabelMax != '') ? Number(tab.ylabelMax) : null
-    //   }
-    // }
-  }
+    datasets: items,
+  };
 
   return (
     <div style={{ padding: 10 }}>
