@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import { useSelector, useDispatch } from 'react-redux';
 import { Telemetry, TelemetryViewIndex } from '../../../models';
 import { RootState } from '../../../redux/store/RootState';
-import { getTelemetryColor, getLatestTelemetries } from '../../../redux/telemetries/selectors';
+import { getTelemetryColor, getLatestTelemetries, getTelemetryHistories } from '../../../redux/telemetries/selectors';
 import Toolbar from '@material-ui/core/Toolbar';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -14,8 +14,10 @@ import FormLabel from '@material-ui/core/FormLabel';
 import Button from '@material-ui/core/Button';
 import { setTelemetryTypePacketAction } from '../../../redux/views/actions';
 import CenterFocusStrongIcon from '@material-ui/icons/CenterFocusStrong';
+import { AlarmAddOutlined, ArrowLeft, ArrowRight } from '@material-ui/icons';
 import IconButtonInTabs from '../../common/IconButtonInTabs';
 import OpenPacketTabDialog from './OpenPacketTabDialog';
+import OpenPacketTimeHistoryTabDialog from './OpenPacketTimeHistoryTabDialog';
 
 const useStyles = makeStyles((theme: Theme) => 
   createStyles({
@@ -92,6 +94,13 @@ const useStyles = makeStyles((theme: Theme) =>
       color: 'white',
       fontSize: 12,
       paddingRight: 20
+    },
+    iconField: {
+      padding: 0
+    },
+    leftRightIconField: {
+      paddingTop: 2,
+      paddingBottom: 2
     }
 }));
 
@@ -106,6 +115,7 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const tlms = getLatestTelemetries(selector)[tab.compoName][tab.name];
+  const tlmHistory = getTelemetryHistories(selector)[tab.compoName][tab.name];
   const selectedTelemetries = tab.selectedTelemetries;
   const tlmClassList: string[] = [tab.name];
   const tlmColor = getTelemetryColor(selector);
@@ -119,23 +129,54 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   const num = tlmsDisplayed.length;
 
   const [dataType, setDataType] = React.useState(tab.dataType);
+  const [packetType, setPacketType] = React.useState(tab.packetType);
+  const [packetHistoryTimeId, setPacketHistoryTimeId] = React.useState("");
   const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [timeHistoryDialogOpen, setTimeHistoryDialogOpen] = React.useState(false);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeDataType = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDataType((event.target as HTMLInputElement).value);
   };
 
+  const handleChangePacketType = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPacketType((event.target as HTMLInputElement).value);
+  };
+
   const handleOk = () => {
-    dispatch(setTelemetryTypePacketAction(blockNum, dataType));
+    dispatch(setTelemetryTypePacketAction(blockNum, dataType, packetType));
   };
 
   const handleDialogOpen = () => {
     setDialogOpen(true);
   }
 
+  const handleSetTimeId = (id: string) => {
+    setPacketHistoryTimeId(id);
+  }
+
+  const handleTimeHistoryDialogOpen = () => {
+    setTimeHistoryDialogOpen(true);
+  }
+
   const handleDialogClose = () => {
     setDialogOpen(false);
   };
+
+  const handleTimeHistoryDialogClose = () => {
+    setTimeHistoryDialogOpen(false);
+  };
+
+  const handleTimeHistoryNext = () => {
+    if (Number(packetHistoryTimeId) != tlmHistory[0].telemetryValues.length - 1 ) {
+      setPacketHistoryTimeId(String(Number(packetHistoryTimeId) + 1));
+    }
+  }
+
+  const handleTimeHistoryBack = () => {
+    if (Number(packetHistoryTimeId) != 0) {
+      setPacketHistoryTimeId(String(Number(packetHistoryTimeId) - 1));
+    }
+  }
 
   const setTlmTagColor = (i: number) => {
     if (i <= 2) {
@@ -162,6 +203,21 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   const showTlmData = (tlm: Telemetry) => {
     const tlmClasses = tlm.telemetryInfo.name.split('.');
     const tlmClassesDisplayed: JSX.Element[] = [];
+    let tlmValue = "";
+    if (tab.dataType == "Raw") {
+      if (packetType == "RealTime") {
+        tlmValue = tlm.telemetryValue.rawValue;
+      } else {
+        tlmValue = (packetHistoryTimeId == "") ? "" : String(tlmHistory.find(tlmhistory => tlmhistory.telemetryInfo.name == tlm.telemetryInfo.name)?.telemetryValues[Number(packetHistoryTimeId)].rawValue); 
+      }
+    } else {
+      if (packetType == "RealTime") {
+        tlmValue = tlm.telemetryValue.value;
+      } else {
+        tlmValue = (packetHistoryTimeId == "") ? "" : String(tlmHistory.find(tlmhistory => tlmhistory.telemetryInfo.name == tlm.telemetryInfo.name)?.telemetryValues[Number(packetHistoryTimeId)].value); 
+      }
+    }
+
     if (tlmClasses.length == 1){
       tlmClassesDisplayed.push(
         <li key={tlm.telemetryInfo.name} className={setClassName(tab.dataType, tlm.telemetryValue.value)}>
@@ -175,9 +231,9 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
         let tlmClassesTmp = (i == 0)? tlmName :tlmClasses.slice(0,i+1).join(".");
         if (i == tlmClasses.length - 1) {
           tlmClassesDisplayed.push(
-            <li key={tlm.telemetryInfo.name} className={setClassName(tab.dataType, tlm.telemetryValue.value)}>
-              {<span style={{marginRight: `${10*i}px`}}></span>}
-              {tlmName} : <span>{(tab.dataType != "Raw")? tlm.telemetryValue.value: tlm.telemetryValue.rawValue}</span>
+            <li key={tlm.telemetryInfo.name} className={setClassName(tab.dataType, tlmValue)}>
+              {<span style={{marginRight: `${10 * i}px`}}></span>}
+              {tlmName} : <span>{tlmValue}</span>
             </li>
           )
         } else if (!tlmClassList.includes(tlmClassesTmp)) {
@@ -202,29 +258,57 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   return (
     <div className={classes.root}>
       <Toolbar>
-        <FormControl component="fieldset">
-          <Toolbar>
+        <div>
+          <div className={classes.titleWithSpace}>
+            <span className={classes.title}>Name : </span>{tab.name}
+          </div>
+          <div className={classes.titleWithSpace}>
+            <span className={classes.title}>Apid : </span> 0x{Number(tab.tlmApid).toString(16)}
+          </div>
+          <div className={classes.titleWithOutSpace}>
+            <span className={classes.title}>Packet Id : </span> 0x{Number(tab.packetId).toString(16)}
+          </div>
+          <div className={classes.titleWithOutSpace}>
+            <span className={classes.title}>Time : </span> {((packetType == "History" && packetHistoryTimeId != "") ?
+              String(tlmHistory[0].telemetryValues[Number(packetHistoryTimeId)].time) :
+              String(tlms[0].telemetryValue.time))}
+          </div>
+        </div>
+        <FormControl component="fieldset" >
             <FormLabel component="legend" className={classes.dataTypeField}>Data Type</FormLabel>
-            <RadioGroup aria-label="data-type" name="data-type" value={dataType} onChange={handleChange}>
-              <Toolbar>
+            <RadioGroup aria-label="data-type" name="data-type" value={dataType} onChange={handleChangeDataType}>
+              <Toolbar style={{paddingLeft: 5, paddingRight:5}}>
                 <FormControlLabel value="Default" control={<Radio />} label="Default" />
                 <FormControlLabel value="Raw" control={<Radio />} label="Raw" />
               </Toolbar>
             </RadioGroup>
-          </Toolbar>
         </FormControl>
-        <div className={classes.titleWithSpace}>
-          <span className={classes.title}>Name : </span>{tab.name}
-        </div>
-        <div className={classes.titleWithSpace}>
-          <span className={classes.title}>Apid : </span> 0x{Number(tab.tlmApid).toString(16)}
-        </div>
-        <div className={classes.titleWithOutSpace}>
-          <span className={classes.title}>Packet Id : </span> 0x{Number(tab.packetId).toString(16)}
-        </div>
+        <FormControl component="fieldset" >
+            <FormLabel component="legend" className={classes.dataTypeField}>Packet Type</FormLabel>
+            <RadioGroup aria-label="data-type" name="data-type" value={packetType} onChange={handleChangePacketType}>
+              <Toolbar style={{paddingLeft: 5, paddingRight:5}}>
+                <FormControlLabel value="RealTime" control={<Radio />} label="RealTime" />
+                <FormControlLabel value="History" control={<Radio />} label="History" />
+              </Toolbar>
+            </RadioGroup>
+        </FormControl>
         <Button onClick={handleOk} color="primary">
           SET
         </Button>
+        {(packetType == "History") ?
+          <div style={{textAlign: "center"}}>
+            <IconButtonInTabs onClick={handleTimeHistoryDialogOpen} className={classes.iconField} >
+              <AlarmAddOutlined fontSize="small" />
+            </IconButtonInTabs>
+              <IconButtonInTabs onClick={handleTimeHistoryBack} className={classes.leftRightIconField} >
+                <ArrowLeft fontSize="small" />
+              </IconButtonInTabs>
+              <IconButtonInTabs onClick={handleTimeHistoryNext} className={classes.leftRightIconField} >
+                <ArrowRight fontSize="small" />
+              </IconButtonInTabs>
+          </div> : 
+          <></>
+        }
         <IconButtonInTabs onClick={handleDialogOpen}>
           <CenterFocusStrongIcon fontSize="small"/>
         </IconButtonInTabs>
@@ -236,6 +320,15 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
         open={dialogOpen}
         tab={tab}
         onClose={handleDialogClose}
+      />
+      <OpenPacketTimeHistoryTabDialog
+        blockNum={blockNum}
+        classes={{ paper: classes.dialogPaper }}
+        keepMounted
+        open={timeHistoryDialogOpen}
+        tab={tab}
+        setTimeId={handleSetTimeId}
+        onClose={handleTimeHistoryDialogClose}
       />
       <Grid
         container

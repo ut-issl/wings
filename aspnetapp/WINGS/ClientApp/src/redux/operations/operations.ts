@@ -50,7 +50,7 @@ export const joinOperation = (operation: Operation) => {
     if (resTlms.status == 200) {
       const jsonTlms = await resTlms.json();
       const tlmPackets = jsonTlms.data as TelemetryPacket[];
-      const packetIndexes: TelemetryViewIndex[] = tlmPackets.map(packet => ({ id: packet.packetInfo.name + "_packet", name: packet.packetInfo.name, filePath: "", tlmApid: packet.packetInfo.tlmApid, packetId: packet.packetInfo.id, compoName: packet.packetInfo.compoName, type: "packet", selectedTelemetries: [], dataType: "Default", dataLength: "500", ylabelMin: "", ylabelMax: "" }));
+      const packetIndexes: TelemetryViewIndex[] = tlmPackets.map(packet => ({ id: packet.packetInfo.name + "_packet", name: packet.packetInfo.name, filePath: "", tlmApid: packet.packetInfo.tlmApid, packetId: packet.packetInfo.id, compoName: packet.packetInfo.compoName, type: "packet", selectedTelemetries: [], dataType: "Default", packetType: "RealTime", dataLength: "500", ylabelMin: "", ylabelMax: "" }));
       const graphIndexes: TelemetryViewIndex[] = tlmPackets.map(packet => ({ id: packet.packetInfo.name + "_graph", name: packet.packetInfo.name, filePath: "", tlmApid: packet.packetInfo.tlmApid, packetId: packet.packetInfo.id, compoName: packet.packetInfo.compoName, type: "graph", selectedTelemetries: [], dataType: "Default", dataLength: "500", ylabelMin: "", ylabelMax: "" }));
       const viewIndexes = [...packetIndexes, ...graphIndexes];
       dispatch(fetchViewIndexesAction(viewIndexes));
