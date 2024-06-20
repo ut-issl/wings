@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.0.0",
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.20",
