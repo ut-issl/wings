@@ -10,7 +10,6 @@
     "@mui/material": "^5.15.20",
     "@mui/x-tree-view": "^7.7.0",
     "@reduxjs/toolkit": "^2.2.5",
-    "@typescript-eslint/parser": "^7.13.1",
     "babel-eslint": "10.1.0",
     "browserslist": "^4.16.6",
     "chart.js": "^4.4.3",
