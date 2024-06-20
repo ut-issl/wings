@@ -5,7 +5,6 @@ import {
   compose
 } from 'redux';
 import * as H from 'history';
-import { connectRouter, routerMiddleware } from 'connected-react-router';
 import thunk from 'redux-thunk';
 import { UIReducer } from '../ui/reducers';
 import { OperationsReducer } from '../operations/reducers';
@@ -24,7 +23,6 @@ const composeReduxDevToolsEnhancers = typeof window === 'object' && window.__RED
 export default function createStore(history: H.History) {
   return reduxCreateStore(
     combineReducers({
-      router: connectRouter(history),
       ui: UIReducer,
       operation: OperationsReducer,
       cmds: CommandsReducer,
@@ -34,7 +32,6 @@ export default function createStore(history: H.History) {
     }),
     composeReduxDevToolsEnhancers(
       applyMiddleware(
-        routerMiddleware(history),
         thunk
     ))
   )

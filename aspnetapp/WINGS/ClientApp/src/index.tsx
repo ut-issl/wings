@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'connected-react-router';
+import { BrowserRouter } from 'react-router-dom';
 import * as History from 'history';
 import { ThemeProvider } from '@mui/material';
 import { theme } from './assets/theme';
@@ -18,11 +18,11 @@ export const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <ConnectedRouter history={history}>
+      <BrowserRouter>
         <ThemeProvider theme={theme}>
           <App />
         </ThemeProvider>
-      </ConnectedRouter>
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>
 );

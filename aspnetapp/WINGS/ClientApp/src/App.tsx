@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import Router from './Router';
 import Header from './components/header/Header';
 import LoadingBackDrop from './components/common/LoadingBackDrop';
@@ -46,14 +45,12 @@ const App = () => {
 
   return (
     <div>
-      <BrowserRouter>
-        <Header />
-        <main className="c-main">
-          <Router />
-        </main>
-        <LoadingBackDrop />
-        <ErrorDialog />
-      </BrowserRouter>
+      <Header />
+      <main className="c-main">
+        <Router />
+      </main>
+      <LoadingBackDrop />
+      <ErrorDialog />
     </div>
   )
 };
