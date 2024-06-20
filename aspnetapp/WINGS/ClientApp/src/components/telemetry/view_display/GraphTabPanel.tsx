@@ -182,17 +182,17 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
       duration: 0
     },
     scales: {
-      x: {
-        type: 'time',
-        time: {
-          displayFormats: {
-            millisecond: 'YYYY-MM-DD HH:mm:ss.S',
-            second: 'YYYY-MM-DD HH:mm:ss.S',
-            minute: 'YYYY-MM-DD HH:mm:ss',
-          }
-        },
-        tooltipFormat: 'YYYY-MM-DD HH:mm:ss.S'
-      },
+      // x: {
+      //   type: 'time',
+      //   time: {
+      //     displayFormats: {
+      //       millisecond: 'YYYY-MM-DD HH:mm:ss.S',
+      //       second: 'YYYY-MM-DD HH:mm:ss.S',
+      //       minute: 'YYYY-MM-DD HH:mm:ss',
+      //     }
+      //   },
+      //   tooltipFormat: 'YYYY-MM-DD HH:mm:ss.S'
+      // },
       y: {
         min: (tab.ylabelMin != '') ? Number(tab.ylabelMin) : NaN,
         max: (tab.ylabelMax != '') ? Number(tab.ylabelMax) : NaN
