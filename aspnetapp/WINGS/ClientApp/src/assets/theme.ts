@@ -5,6 +5,9 @@ export const theme = createTheme({
   palette: {
     primary: blueGrey,
     secondary: pink,
+    background: {
+      paper: grey[800]
+    },
     success: {
       main: cyan["A200"],
       dark: "#008AF2",
@@ -154,6 +157,24 @@ export const theme = createTheme({
           '& .MuiTabs-indicator': {
             backgroundColor: red["A400"]
           }
+        }
+      }
+    },
+    MuiCardHeader: {
+      styleOverrides: {
+        subheader: {
+          color: grey[400]
+        }
+      }
+    },
+    MuiButton: {
+      styleOverrides:
+      {
+        root: {
+          "&.Mui-disabled": {
+            color: grey[700],
+            borderColor: grey[800]
+          },
         }
       }
     }

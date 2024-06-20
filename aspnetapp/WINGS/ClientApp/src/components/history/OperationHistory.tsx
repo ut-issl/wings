@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { push } from 'connected-react-router';
+import { useNavigate } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
@@ -21,14 +20,13 @@ import ConfirmationDialog from '../common/ConfirmationDialog';
 const sizePerPage = 12;
 
 const OperationHistory = () => {
-  const dispatch = useDispatch();
-
   const [meta, setMeta] = useState<PaginationMeta>();
   const [operations, setOperations] = useState<Operation[]>([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [deleteOperation, setDeleteOperation] = useState<Operation | null>(null);
+  const navigate = useNavigate();
 
   const inputSearch = useCallback((event: any) => {
     setSearch(event.target.value)
@@ -52,7 +50,7 @@ const OperationHistory = () => {
   };
 
   const handleDetailClick = (operation: Operation) => {
-    dispatch(push(`/history/${operation.id}`, { data: operation }))
+    navigate(`/history/${operation.id}`, { state: { data: operation } });
   }
 
   const confirmSearch = () => {

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Theme, useTheme } from '@mui/material/styles';
+import { Theme, styled, useTheme } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
 import Card from '@mui/material/Card';
@@ -10,6 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import { grey } from '@mui/material/colors';
 
 const not = (a: string[], b: string[]) => {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -22,6 +23,12 @@ const intersection = (a: string[], b: string[]) => {
 const union = (a: string[], b: string[]) => {
   return [...a, ...not(b, a)];
 }
+
+const GridButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(0.5, 0),
+  color: grey[500],
+  borderColor: grey[600]
+}));
 
 export interface TransferListProps {
   data: string[],
@@ -52,9 +59,6 @@ const TransferList = (props: TransferListProps) => {
     height: 230,
     backgroundColor: theme.palette.background.paper,
     overflow: 'auto',
-  };
-  const buttonStyle = {
-    margin: theme.spacing(0.5, 0),
   };
 
   useEffect(() => {
@@ -141,30 +145,28 @@ const TransferList = (props: TransferListProps) => {
   );
 
   return (
-    <Grid container spacing={2} justify="center" alignItems="center" sx={rootStyle}>
+    <Grid container spacing={2} alignItems="center" sx={rootStyle}>
       <Grid item>{customList('Not Selected', left)}</Grid>
       <Grid item>
         <Grid container direction="column" alignItems="center">
-          <Button
+          <GridButton
             variant="outlined"
             size="small"
-            sx={buttonStyle}
             onClick={handleCheckedRight}
             disabled={leftChecked.length === 0}
             aria-label="move selected right"
           >
             &gt;
-          </Button>
-          <Button
+          </GridButton>
+          <GridButton
             variant="outlined"
             size="small"
-            sx={buttonStyle}
             onClick={handleCheckedLeft}
             disabled={rightChecked.length === 0}
             aria-label="move selected left"
           >
             &lt;
-          </Button>
+          </GridButton>
         </Grid>
       </Grid>
       <Grid item>{customList('Selected', right)}</Grid>
