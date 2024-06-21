@@ -22,6 +22,7 @@ import { Dialog } from '@mui/material';
 import { getOpid } from '../../../redux/operations/selectors';
 import { finishEditCommandLineAction } from '../../../redux/plans/actions';
 import { getTlmCmdConfig } from '../../../redux/operations/selectors';
+import { AppDispatch } from '../../../redux/store/store';
 
 const _sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -35,7 +36,7 @@ export interface PlanTabPanelProps {
 
 const PlanTabPanel = (props: PlanTabPanelProps) => {
   const { value, index, name, content, cmdType } = props;
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const selector = useSelector((state: RootState) => state);
 
   const [lastSelectedRow, setLastSelectedRow] = React.useState(-1);
@@ -360,9 +361,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             }
           }
         }
-        await dispatch(postCommand(row, cmdType, req, paramsValue, commandret)).then(() => {
-          console.log('Command posted:', commandret[0]);
-        })
+        await dispatch(postCommand(row, cmdType, req, paramsValue, commandret));
         exeret = commandret[0];
         break;
 

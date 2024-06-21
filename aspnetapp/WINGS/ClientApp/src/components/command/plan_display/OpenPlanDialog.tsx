@@ -10,6 +10,7 @@ import { getCurrentOperation } from '../../../redux/operations/selectors';
 import { getAllIndexes } from '../../../redux/plans/selectors';
 import { openPlan } from '../../../redux/plans/operations';
 import FileTreeMultiView from '../../common/FileTreeMultiView';
+import { AppDispatch } from '../../../redux/store/store';
 
 export interface OpenPlanDialogProps {
   keepMounted: boolean;
@@ -19,7 +20,7 @@ export interface OpenPlanDialogProps {
 
 const OpenPlanDialog = (props: OpenPlanDialogProps) => {
   const selector = useSelector((state: RootState) => state);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { onClose, open, ...other } = props;
 
   const indexes = getAllIndexes(selector);
