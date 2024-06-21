@@ -108,7 +108,7 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   };
 
   const handleOk = () => {
-    dispatch(setTelemetryTypePacketAction(blockNum, dataType));
+    dispatch(setTelemetryTypePacketAction({ block: blockNum, dataType: dataType }));
   };
 
   const handleDialogOpen = () => {

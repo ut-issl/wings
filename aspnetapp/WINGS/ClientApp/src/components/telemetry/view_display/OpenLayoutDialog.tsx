@@ -10,7 +10,7 @@ import SelectBox, { SelectOption } from '../../common/SelectBox';
 import { getViewLayout, getLayouts } from '../../../redux/views/selectors';
 import { useState } from 'react';
 import { startLoadingAction, endLoadingAction, openErrorDialogAction } from '../../../redux/ui/actions';
-import { fetchLayoutsAction, backViewAction, selectedLayoutCommitAction, tempStoreViewAction } from '../../../redux/views/actions';
+import { fetchLayoutsAction, backViewAction, commitSelectedLayoutAction, tempStoreViewAction } from '../../../redux/views/actions';
 import { getOpid } from '../../../redux/operations/selectors';
 import { Layout } from '../../../models/TelemetryView';
 
@@ -158,7 +158,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
 
   const handleOk = async () => {
     const index = handleLayoutIndexChange(layoutIndex);
-    dispatch(selectedLayoutCommitAction(index));
+    dispatch(commitSelectedLayoutAction(index));
     layoutIndex = '';
     onClose();
   };

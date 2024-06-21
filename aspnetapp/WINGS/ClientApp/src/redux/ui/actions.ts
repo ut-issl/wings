@@ -1,29 +1,6 @@
-export const START_LOADING = 'START_LOADING' as const;
-export const END_LOADING = 'END_LOADING' as const;
-export const OPEN_ERROR_DIALOG = 'OPEN_ERROR_DIALOG' as const;
-export const CLOSE_ERROR_DIALOG = 'CLOSE_ERROR_DIALOG' as const;
+import { createAction } from "@reduxjs/toolkit";
 
-export const startLoadingAction = () => {
-  return {
-    type: START_LOADING
-  };
-};
-
-export const endLoadingAction = () => {
-  return {
-    type: END_LOADING
-  };
-};
-
-export const openErrorDialogAction = (message: string) => {
-  return {
-    type: OPEN_ERROR_DIALOG,
-    payload: message
-  };
-};
-
-export const closeErrorDialogAction = () => {
-  return {
-    type: CLOSE_ERROR_DIALOG
-  };
-};
+export const startLoadingAction = createAction('ui/startLoading');
+export const endLoadingAction = createAction('ui/endLoading');
+export const openErrorDialogAction = createAction<string>('ui/openErrorDialog');
+export const closeErrorDialogAction = createAction('ui/closeErrorDialog');

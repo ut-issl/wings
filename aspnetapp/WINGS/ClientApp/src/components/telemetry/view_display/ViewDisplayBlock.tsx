@@ -92,11 +92,11 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
   };
 
   const handleValueChange = (event: React.ChangeEvent<{}>, newValue: number) => {
-    dispatch(activateViewAction(blockNum, newValue))
+    dispatch(activateViewAction({ block: blockNum, tab: newValue }))
   };
 
   const closeView = (tab: number) => {
-    dispatch(closeViewAction(blockNum, tab))
+    dispatch(closeViewAction({ block: blockNum, tab: tab }))
   }
 
   interface CloseIconInTabProps {

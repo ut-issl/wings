@@ -62,7 +62,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
     indexes.forEach(element => {
       if (checkboxState[element.id] === true) {
         if (type === "packet" || "graph" && element.type === type) {
-          dispatch(openViewAction(blockNum, element.id, {}));
+          dispatch(openViewAction({ block: blockNum, id: element.id, content: {} }));
           makeCheckboxStateFalse[element.id] = false;
         }
         if (type === "packet") {
@@ -71,7 +71,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
           tlms.forEach(tlm => {
             telemetryShowed.push(tlm.telemetryInfo.name);
           })
-          dispatch(selectTelemetryAction(blockNum, telemetryShowed));
+          dispatch(selectTelemetryAction({ block: blockNum, tlmName: telemetryShowed }));
         }
       }
     });

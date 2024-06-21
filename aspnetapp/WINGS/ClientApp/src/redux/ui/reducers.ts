@@ -1,46 +1,28 @@
 import * as Actions from './actions';
 import initialState from '../store/initialState';
+import { createSlice } from '@reduxjs/toolkit';
 
-type Actions = 
-  | ReturnType<typeof Actions.startLoadingAction>
-  | ReturnType<typeof Actions.endLoadingAction>
-  | ReturnType<typeof Actions.openErrorDialogAction>
-  | ReturnType<typeof Actions.closeErrorDialogAction>
-;
-
-export const UIReducer = (state = initialState.ui, action: Actions) => {
-  switch (action.type) {
-    case Actions.START_LOADING:
-      return {
-        ...state,
-        isLoading: true
-      };
-    
-    case Actions.END_LOADING:
-      return {
-        ...state,
-        isLoading: false
-      };
-    
-    case Actions.OPEN_ERROR_DIALOG:
-      return {
-        ...state,
-        errorDialog: {
-          open: true,
-          message: action.payload
-        }
-      };
-
-    case Actions.CLOSE_ERROR_DIALOG:
-      return {
-        ...state,
-        errorDialog: {
-          open: false,
-          message: ""
-        }
-      };
-
-    default:
-      return state;
+export const uiSlice = createSlice({
+  name: 'ui',
+  initialState: initialState.ui,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(Actions.startLoadingAction, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(Actions.endLoadingAction, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(Actions.openErrorDialogAction, (state, action) => {
+        state.errorDialog.open = true;
+        state.errorDialog.message = action.payload;
+      })
+      .addCase(Actions.closeErrorDialogAction, (state) => {
+        state.errorDialog.open = false;
+        state.errorDialog.message = "";
+      })
   }
-}
+})
+
+export default uiSlice.reducer;

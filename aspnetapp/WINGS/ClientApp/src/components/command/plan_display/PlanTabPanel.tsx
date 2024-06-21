@@ -6,9 +6,9 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { CommandPlanLine, RequestStatus, CmdFileVariable, Telemetry, TlmCmdConfigurationInfo } from '../../../models';
+import { CommandPlanLine, RequestStatus, CmdFileVariable, Telemetry, TlmCmdConfigurationInfo, Request as CommandPlanLineRequest } from '../../../models';
 import RequestTableRow from './RequestTableRow';
-import { selectedPlanRowAction, execRequestSuccessAction, execRequestErrorAction, execRequestsStartAction, execRequestsEndAction, cmdFileVariableEditAction } from '../../../redux/plans/actions';
+import { selectedPlanRowAction, execRequestSuccessAction, execRequestErrorAction, execRequestsStartAction, execRequestsEndAction, editCmdFileVariableAction } from '../../../redux/plans/actions';
 import { getActivePlanId, getAllIndexes, getInExecution, getPlanContents, getSelectedRow, getCommandFileVariables } from '../../../redux/plans/selectors';
 import { useDispatch, useSelector } from 'react-redux';
 import { openPlan, postCommand, postCommandFileLineLog } from '../../../redux/plans/operations';
@@ -158,8 +158,8 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
     });
     const json = await res.json();
     if (res.status === 200) {
-      const commandFileLine = json.data;
-      dispatch(finishEditCommandLineAction(num - 1, commandFileLine));
+      const commandFileLineRequest = json.data as CommandPlanLineRequest;
+      dispatch(finishEditCommandLineAction({ row: num - 1, commandFileLineRequest: commandFileLineRequest }));
     } else {
       const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
       dispatch(openErrorDialogAction(message));
@@ -178,8 +178,8 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
     });
     const json = await res.json();
     if (res.status === 200) {
-      const commandFileLine = json.data;
-      dispatch(finishEditCommandLineAction(row, commandFileLine));
+      const commandFileLineRequest = json.data as CommandPlanLineRequest;
+      dispatch(finishEditCommandLineAction({ row: row, commandFileLineRequest: commandFileLineRequest }));
     } else {
       const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
       dispatch(openErrorDialogAction(message));
@@ -360,7 +360,9 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             }
           }
         }
-        await dispatch(postCommand(row, cmdType, req, paramsValue, commandret));
+        await dispatch(postCommand(row, cmdType, req, paramsValue, commandret)).then(() => {
+          console.log('Command posted:', commandret[0]);
+        })
         exeret = commandret[0];
         break;
 
@@ -468,7 +470,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         }
         setCmdFileVariables(cmdFileVariablesTemp);
         dispatch(execRequestSuccessAction(row));
-        dispatch(cmdFileVariableEditAction(cmdFileVariablesTemp));
+        dispatch(editCmdFileVariableAction(cmdFileVariablesTemp));
         break;
 
       case "get":

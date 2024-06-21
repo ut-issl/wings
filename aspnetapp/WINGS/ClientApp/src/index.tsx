@@ -9,7 +9,7 @@ import App from './App';
 import createStore from './redux/store/store';
 
 const history = History.createBrowserHistory();
-export const store = createStore(history);
+export const store = createStore();
 
 const rootElement = document.getElementById('root');
 if (!rootElement) throw new Error('Failed to find the root element');
