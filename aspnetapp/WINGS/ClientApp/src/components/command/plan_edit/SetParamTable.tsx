@@ -10,7 +10,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Command } from '../../../models';
 import { useDispatch } from 'react-redux';
-import { selectedCommandEditAction } from '../../../redux/plans/actions';
+import { editSelectedCommandAction } from '../../../redux/plans/actions';
 
 export interface SetParamAreaProps {
   command: Command
@@ -43,7 +43,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
       }
       setExecTime('0');
       setExecType(command.execType);
-      dispatch(selectedCommandEditAction(newSelectedCommand));
+      dispatch(editSelectedCommandAction(newSelectedCommand));
     }
     else if (command.execType == 'TL' || command.execType == 'BL') {
       var execTimeInt = (execTime == undefined) ? '0' : execTime;
@@ -56,7 +56,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
       setExecTime('0');
       setExecTime(isNaN(parseInt(execTimeInt)) ? '0' : String(parseInt(execTimeInt)));
       setExecType(command.execType);
-      dispatch(selectedCommandEditAction(newSelectedCommand));
+      dispatch(editSelectedCommandAction(newSelectedCommand));
     }
     else if (command.execType == 'UTL') {
       var execTimeDouble = (execTime == undefined) ? '0' : execTime;
@@ -68,7 +68,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
           execTimeStr: execTimeDouble
         }
         setExecTime(isNaN(parseFloat(execTimeDouble)) ? '0' : String(parseFloat(execTimeDouble)));
-        dispatch(selectedCommandEditAction(newSelectedCommand));
+        dispatch(editSelectedCommandAction(newSelectedCommand));
       }
       else if (execTimeDouble.slice(-2) !== '.') {
         setExecTime(execTimeDouble);
@@ -85,7 +85,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
       execTimeStr: event.target.value.toString()
     }
     setExecTime(isNaN(parseInt(event.target.value)) ? '0' : String(parseInt(event.target.value)));
-    dispatch(selectedCommandEditAction(newSelectedCommand));
+    dispatch(editSelectedCommandAction(newSelectedCommand));
   };
 
   const handleExecUnixTimeChange = (event: any) => {
@@ -97,7 +97,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
         execTimeStr: event.target.value.toString()
       }
       setExecTime(isNaN(parseFloat(event.target.value)) ? '0' : String(parseFloat(event.target.value)));
-      dispatch(selectedCommandEditAction(newSelectedCommand));
+      dispatch(editSelectedCommandAction(newSelectedCommand));
     }
     else if (event.target.value.indexOf('.') == event.target.value.length - 1) {
       setExecTime(event.target.value);
@@ -116,7 +116,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
         ...command.params.slice(i + 1)
       ]
     }
-    dispatch(selectedCommandEditAction(newSelectedCommand));
+    dispatch(editSelectedCommandAction(newSelectedCommand));
   };
 
   return (

@@ -163,7 +163,7 @@ const GraphTabPanel = (props: GraphTabPanelProps) => {
       setShowModal(true);
     }
     else {
-      dispatch(setTelemetryTypeGraphAction(blockNum, dataType, dataLength, ylabelMin, ylabelMax));
+      dispatch(setTelemetryTypeGraphAction({ block: blockNum, dataType, dataLength, ylabelMin, ylabelMax }));
     }
   };
 

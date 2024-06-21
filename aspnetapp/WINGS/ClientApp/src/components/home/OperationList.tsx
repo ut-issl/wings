@@ -20,6 +20,7 @@ import { RootState } from '../../redux/store/RootState';
 import { cyan } from "@mui/material/colors";
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import { openErrorDialogAction } from '../../redux/ui/actions';
+import { AppDispatch } from '../../redux/store/store';
 
 export interface OperationListProps {
   operations: Operation[],
@@ -28,7 +29,7 @@ export interface OperationListProps {
 
 const OperationList = (props: OperationListProps) => {
   const selector = useSelector((state: RootState) => state);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const opid = getOpid(selector);
 
   const [open, setOpen] = useState(false);

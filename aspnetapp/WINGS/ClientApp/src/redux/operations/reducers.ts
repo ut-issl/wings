@@ -1,9 +1,10 @@
 import * as Actions from './actions';
 import initialState from '../store/initialState';
 import { createSlice } from '@reduxjs/toolkit';
+import { Operation } from '../../models';
 
 export const operationsSlice = createSlice({
-  name: 'operation',
+  name: 'operations',
   initialState: initialState.operation,
   reducers: {},
   extraReducers: (builder) => {
@@ -12,10 +13,38 @@ export const operationsSlice = createSlice({
         state.tlmCmdConfig = action.payload;
       })
       .addCase(Actions.joinOperationAction, (state, action) => {
-        state = action.payload;
+        const operation = action.payload as Operation;
+        state.id = operation.id;
+        state.pathNumber = operation.pathNumber;
+        state.comment = operation.comment;
+        state.isRunning = operation.isRunning;
+        state.isTmtcConncted = operation.isTmtcConncted;
+        state.fileLocation= operation.fileLocation;
+        state.operatorId = operation.operatorId;
+        state.operator = operation.operator;
+        state.componentId = operation.componentId;
+        state.component = operation.component;
+        state.createdAt = operation.createdAt;
+        state.satelliteId = operation.satelliteId;
+        state.planId = operation.planId;
+        state.tlmCmdConfig = operation.tlmCmdConfig;
       })
       .addCase(Actions.leaveOperationAction, (state) => {
-        state = initialState.operation;
+        const operation = initialState.operation as Operation;
+        state.id = operation.id;
+        state.pathNumber = operation.pathNumber;
+        state.comment = operation.comment;
+        state.isRunning = operation.isRunning;
+        state.isTmtcConncted = operation.isTmtcConncted;
+        state.fileLocation= operation.fileLocation;
+        state.operatorId = operation.operatorId;
+        state.operator = operation.operator;
+        state.componentId = operation.componentId;
+        state.component = operation.component;
+        state.createdAt = operation.createdAt;
+        state.satelliteId = operation.satelliteId;
+        state.planId = operation.planId;
+        state.tlmCmdConfig = operation.tlmCmdConfig;
       })
   }
 })

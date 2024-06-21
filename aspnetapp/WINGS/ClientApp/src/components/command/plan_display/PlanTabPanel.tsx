@@ -6,7 +6,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { CommandPlanLine, RequestStatus, CmdFileVariable, Telemetry, TlmCmdConfigurationInfo, Request as CommandPlanLineRequest } from '../../../models';
+import { CommandPlanLine, RequestStatus, CmdFileVariable, Telemetry, TlmCmdConfigurationInfo, Request as CommandPlanLineRequest, Command } from '../../../models';
 import RequestTableRow from './RequestTableRow';
 import { selectedPlanRowAction, execRequestSuccessAction, execRequestErrorAction, execRequestsStartAction, execRequestsEndAction, editCmdFileVariableAction } from '../../../redux/plans/actions';
 import { getActivePlanId, getAllIndexes, getInExecution, getPlanContents, getSelectedRow, getCommandFileVariables } from '../../../redux/plans/selectors';
@@ -32,6 +32,10 @@ export interface PlanTabPanelProps {
   name: string,
   content: CommandPlanLine[],
   cmdType: string
+}
+
+function isNotNull(value: string | null): value is string {
+  return value !== null;
 }
 
 const PlanTabPanel = (props: PlanTabPanelProps) => {
@@ -316,14 +320,12 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
 
       case "command":
         let commandret = [false];
-        let paramsValue = [];
+        let paramsValue: string[] = [];
+        let command = req.body as Command;
 
-        if (req.body.execTimeStr == null) {
-          req.body.execTimeStr = "";
-        }
-        else if (req.body.execTimeStr.indexOf("{") != -1) {
-          let varTi = req.body.execTimeStr.substring(req.body.execTimeStr.indexOf("{") + 1,
-            req.body.execTimeStr.indexOf("}"));
+        if ((command.execTimeStr != null) && (command.execTimeStr.indexOf("{") != -1)) {
+          let varTi = command.execTimeStr.substring(command.execTimeStr.indexOf("{") + 1,
+            command.execTimeStr.indexOf("}"));
           let tiValue = getVariableValue(varTi);
 
           if (!tiValue.isSuccess) {
@@ -331,22 +333,24 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             return false;
           }
 
-          if (req.body.execType == "TL" || req.body.execType == "BL") {
-            req.body.execTimeInt = tiValue.value;
-          } else if (req.body.execType == "UTL") {
-            req.body.execTimeDouble = tiValue.value;
+          if (command.execType == "TL" || command.execType == "BL") {
+            command.execTimeInt = Number(tiValue.value);
+          } else if (command.execType == "UTL") {
+            command.execTimeDouble = Number(tiValue.value);
           } else {
             dispatch(execRequestErrorAction(row));
             return false;
           }
         }
 
-        if (req.body.params.length != 0) {
+        if (command.params.length != 0) {
           for (let i = 0; i < req.body.params.length; i++) {
-            if (req.body.params[i].value.indexOf("{") != -1) {
-              let varStart = req.body.params[i].value.indexOf("{") + 1;
-              let varEnd = req.body.params[i].value.indexOf("}");
-              let varParam = req.body.params[i].value.substring(varStart, varEnd);
+            if (command.params[i].value == null) continue;
+            let commandValue: string = command.params[i].value as string;
+            if (commandValue.indexOf("{") != -1) {
+              let varStart = commandValue.indexOf("{") + 1;
+              let varEnd = commandValue.indexOf("}");
+              let varParam = commandValue.substring(varStart, varEnd);
               let varValue = getVariableValue(varParam);
 
               if (!varValue.isSuccess) {
@@ -357,7 +361,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
               }
 
             } else {
-              paramsValue.push(req.body.params[i].value);
+              paramsValue.push(commandValue);
             }
           }
         }

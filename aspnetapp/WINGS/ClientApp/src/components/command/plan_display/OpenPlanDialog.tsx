@@ -67,7 +67,7 @@ const OpenPlanDialog = (props: OpenPlanDialogProps) => {
       open={open}
     >
       <DialogTitle id="open-plan-dialog-title">Select Command File</DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers sx={{ height: "60vh" }}>
         <FileTreeMultiView
           files={indexes.slice(1)}
           rootPath={rootPath()}

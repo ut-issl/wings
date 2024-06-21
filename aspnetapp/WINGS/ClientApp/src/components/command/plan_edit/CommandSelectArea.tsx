@@ -6,7 +6,7 @@ import { RootState } from '../../../redux/store/RootState';
 import { getCommands, getTargets, getComponents } from '../../../redux/commands/selectors';
 import SelectBox, { SelectOption } from '../../common/SelectBox';
 import CheckBox from '../../common/CheckBox';
-import { selectedCommandEditAction, selectedCommandCommitAction, selectedTargetEditAction, selectedComponentEditAction } from '../../../redux/plans/actions';
+import { editSelectedCommandAction, commitSelectedCommandAction, editSelectedTargetAction, editSelectedComponentAction } from '../../../redux/plans/actions';
 import { getSelectedCommand } from '../../../redux/plans/selectors';
 import { TARGET_ALL, COMPONENT_ALL } from '../../../constants';
 import SetParamTable from './SetParamTable';
@@ -45,7 +45,7 @@ const CommandSelectionArea = () => {
   }, [component, target]);
 
   const handleComponentChange = (component: string) => {
-    dispatch(selectedComponentEditAction(component));
+    dispatch(editSelectedComponentAction(component));
   }
 
   const handleIsViaMobcChange = (isViaMobc: boolean) => {
@@ -53,7 +53,7 @@ const CommandSelectionArea = () => {
       ...command,
       isViaMobc: isViaMobc
     };
-    dispatch(selectedCommandEditAction(newSelectedCommand));
+    dispatch(editSelectedCommandAction(newSelectedCommand));
   }
 
   const handleExecTypeChange = (execType: string) => {
@@ -64,11 +64,11 @@ const CommandSelectionArea = () => {
       execTimeDouble: NaN,
       execTimeStr: ""
     };
-    dispatch(selectedCommandEditAction(newSelectedCommand));
+    dispatch(editSelectedCommandAction(newSelectedCommand));
   };
 
   const handleTargetChange = (target: string) => {
-    dispatch(selectedTargetEditAction(target));
+    dispatch(editSelectedTargetAction(target));
   }
 
   const handleCommandChange = (newValue: SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => {
@@ -82,7 +82,7 @@ const CommandSelectionArea = () => {
         execTimeStr: command.execTimeStr,
         isViaMobc: command.isViaMobc
       }
-      dispatch(selectedCommandEditAction(newSelectedCommand));
+      dispatch(editSelectedCommandAction(newSelectedCommand));
     }
   }
 
@@ -112,7 +112,7 @@ const CommandSelectionArea = () => {
   const addUnplannedCommand = () => {
     if (command.name === "") return;
     if (command.params.map(param => param.value).every(value => value)) {
-      dispatch(selectedCommandCommitAction());
+      dispatch(commitSelectedCommandAction());
     }
   }
 

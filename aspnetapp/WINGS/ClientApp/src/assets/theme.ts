@@ -76,7 +76,6 @@ export const theme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          height: '80vh',
           width: '80%'
         }
       }
