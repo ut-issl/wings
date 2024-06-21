@@ -68,7 +68,7 @@ const OpenPacketTabDialog = (props: OpenPacketTabDialogProps) => {
         telemetryActive.push(telemetryOption.name);
       }
     });
-    dispatch(selectTelemetryAction(blockNum, telemetryActive));
+    dispatch(selectTelemetryAction({ block: blockNum, tlmName: telemetryActive }));
     onClose();
   };
 
