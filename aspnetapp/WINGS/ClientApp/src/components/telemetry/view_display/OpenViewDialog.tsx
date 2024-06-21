@@ -110,7 +110,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
           />
         </div>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers sx={{height: "60vh"}}>
         <FormGroup
           ref={formGroupRef}
           aria-label="ringtone"
