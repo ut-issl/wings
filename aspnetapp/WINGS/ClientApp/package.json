@@ -12,8 +12,6 @@
     "@mui/material": "^5.15.20",
     "@mui/x-tree-view": "^7.7.0",
     "@reduxjs/toolkit": "^2.2.5",
-    "@typescript-eslint/eslint-plugin": "^7.13.1",
-    "@typescript-eslint/parser": "^7.13.1",
     "browserslist": "^4.16.6",
     "chart.js": "^4.4.3",
     "eslint": "^9.5.0",
@@ -37,8 +35,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^3.1.0",
     "reselect": "^4.0.0",
-    "rimraf": "^3.0.2",
-    "typescript": "^5.5.2"
+    "rimraf": "^3.0.2"
   },
   "devDependencies": {
     "@redux-devtools/app": "^6.1.0",
@@ -48,16 +45,26 @@
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
     "@types/redux-logger": "^3.0.13",
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
     "ajv": "^7.1.0",
     "cross-env": "^7.0.3",
     "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-flowtype": "^5.2.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.22.0"
+    "eslint-plugin-react": "^7.22.0",
+    "typescript": "^4.9.5"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": [
+      "react-app",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    ],
+    "plugins": [
+      "@typescript-eslint"
+    ]
   },
   "scripts": {
     "start": "rimraf ./build && react-scripts start",
