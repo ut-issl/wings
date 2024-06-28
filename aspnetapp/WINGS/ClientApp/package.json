@@ -5,6 +5,7 @@
   "dependencies": {
     "@babel/eslint-parser": "^7.24.7",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/plugin-transform-numeric-separator": "^7.24.7",
     "@babel/plugin-transform-private-methods": "^7.24.7",
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.0.0",
@@ -12,11 +13,12 @@
     "@mui/material": "^5.15.20",
     "@mui/x-tree-view": "^7.7.0",
     "@reduxjs/toolkit": "^2.2.5",
+    "@rollup/plugin-terser": "^0.4.4",
     "browserslist": "^4.16.6",
     "chart.js": "^4.4.3",
-    "eslint": "^9.5.0",
     "file-saver": "^2.0.5",
     "font-awesome": "^4.7.0",
+    "glob": "^10.4.2",
     "history": "^5.3.0",
     "html-react-parser": "^1.2.4",
     "jquery": "^3.5.1",
@@ -35,7 +37,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^3.1.0",
     "reselect": "^4.0.0",
-    "rimraf": "^3.0.2"
+    "rimraf": "^5.0.7"
   },
   "devDependencies": {
     "@redux-devtools/app": "^6.1.0",
@@ -45,16 +47,17 @@
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
     "@types/redux-logger": "^3.0.13",
-    "@typescript-eslint/eslint-plugin": "^7.13.1",
-    "@typescript-eslint/parser": "^7.13.1",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
     "ajv": "^7.1.0",
     "cross-env": "^7.0.3",
+    "eslint": "^8.1.0",
     "eslint-config-react-app": "^7.0.1",
-    "eslint-plugin-flowtype": "^5.2.0",
+    "eslint-plugin-flowtype": "^8.0.3",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.22.0",
-    "typescript": "^4.9.5"
+    "typescript": "^4.5.5"
   },
   "eslintConfig": {
     "extends": [
@@ -62,6 +65,10 @@
       "plugin:@typescript-eslint/recommended",
       "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "project": "./tsconfig.eslint.json"
+    },
     "plugins": [
       "@typescript-eslint"
     ]
