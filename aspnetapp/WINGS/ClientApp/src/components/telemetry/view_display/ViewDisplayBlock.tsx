@@ -63,7 +63,7 @@ const DisplayTab = styled(Tab)({
   }
 })
 
-const a11yProps = (index: any) => {
+const a11yProps = (index: number) => {
   return {
     id: `simple-tab-${index}`,
     'aria-controls': `simple-tabpanel-${index}`,
@@ -91,7 +91,7 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
     setDialogOpen(false);
   };
 
-  const handleValueChange = (event: React.ChangeEvent<{}>, newValue: number) => {
+  const handleValueChange = (event: React.SyntheticEvent, newValue: number) => {
     dispatch(activateViewAction({ block: blockNum, tab: newValue }))
   };
 

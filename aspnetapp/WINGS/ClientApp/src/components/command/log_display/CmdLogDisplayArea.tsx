@@ -6,6 +6,7 @@ import CmdLogTabPanel from './CmdLogTabPanel';
 import Button from '@mui/material/Button';
 import { getOpid } from '../../../redux/operations/selectors';
 import { updateCommandLogAction } from '../../../redux/commands/actions';
+import { CommandLogsJson } from '../../../models';
 
 const CmdLogDisplayArea = () => {
   const dispatch = useDispatch();
@@ -18,16 +19,22 @@ const CmdLogDisplayArea = () => {
     const res = await fetch(`/api/operations/${opid}/cmd_fileline/log`, {
       method: 'GET'
     });
-    const json = await res.json();
+    const json = await res.json() as CommandLogsJson;
     const data = json.data;
     dispatch(updateCommandLogAction(data));
+  };
+
+  const handleButtonClick = () => {
+    handleOk().catch(error => {
+      console.error("Failed to fetch command fileline logs:", error);
+    });
   };
 
   return (
     <>
       <div style={{ height: 700, margin: '.3cm' }}>
         <CmdLogTabPanel content={commandLogs} />
-        <Button onClick={handleOk} color="primary">
+        <Button onClick={handleButtonClick} color="primary">
           RELOAD
         </Button>
       </div>

@@ -5,16 +5,16 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 export interface SelectOption {
-  id: any,
+  id: string | number,
   name: string
-};
+}
 
 export interface SelectBoxProps {
   label: string,
-  value: any,
-  select: any,
+  value: string,
+  select: (selected: string) => void,
   options: SelectOption[]
-};
+}
 
 const SelectBox = (props: SelectBoxProps) => {
   const formControlStyle = {

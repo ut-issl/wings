@@ -9,7 +9,7 @@ export interface RadioOption {
 export interface RadioBoxProps {
   label: string,
   value: string,
-  handleChange: any,
+  handleChange: (value: string) => void,
   options: RadioOption[]
 }
 

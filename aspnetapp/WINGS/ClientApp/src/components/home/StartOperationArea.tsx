@@ -1,18 +1,18 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Button, TextField } from '@mui/material';
-import SelectBox, { SelectOption } from '../common/SelectBox';
+import SelectBox from '../common/SelectBox';
 import RadioBox from '../common/RadioBox';
-import { Component } from '../../models';
+import { Component, ComponentJson } from '../../models';
 import { useDispatch } from 'react-redux';
 import { openErrorDialogAction, startLoadingAction, endLoadingAction } from '../../redux/ui/actions';
 
 const getDefaultPathNumber = () => {
   const dt = new Date();
-  const YY = ('00' + dt.getFullYear()).slice(-2);
-  const MM = ('00' + (dt.getMonth() + 1)).slice(-2);
-  const DD = ('00' + dt.getDate()).slice(-2);
-  const hh = ('00' + dt.getHours()).slice(-2);
-  const mm = ('00' + dt.getMinutes()).slice(-2);
+  const YY = ('00' + dt.getFullYear().toString()).slice(-2);
+  const MM = ('00' + (dt.getMonth() + 1).toString()).slice(-2);
+  const DD = ('00' + dt.getDate().toString()).slice(-2);
+  const hh = ('00' + dt.getHours().toString()).slice(-2);
+  const mm = ('00' + dt.getMinutes().toString()).slice(-2);
   return (YY + MM + DD + "-" + hh + mm);
 }
 
@@ -38,24 +38,37 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
     [fileLocation, setFileLocation] = useState("Local"),
     [tmtcTarget, setTmtcTarget] = useState("TmtcIf")
 
-  const inputPathNumber = useCallback((event: any) => {
+  const inputPathNumber = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setPathNumber(event.target.value)
   }, [setPathNumber]);
 
-  const inputComment = useCallback((event: any) => {
+  const inputComment = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setComment(event.target.value)
   }, [setComment]);
 
   const fetchComponents = async () => {
-    const res = await fetch('/api/components', {
-      method: 'GET'
-    });
-    if (res.status == 200) {
-      const json = await res.json();
-      const data = json.data as Component[];
-      setCompos(data);
+    try {
+      const res = await fetch('/api/components', {
+        method: 'GET'
+      });
+      if (res.status === 200) {
+        const json = await res.json() as ComponentJson;
+        const data = json.data;
+        setCompos(data);
+      } else {
+        console.error(`Failed to fetch components: ${res.statusText}`);
+      }
+    } catch (error) {
+      console.error('An error occurred while fetching components:', error);
     }
+  };
+
+  const fetchComponentsWrapper = () => {
+    fetchComponents().catch((error) => {
+      console.error('An unhandled error occurred:', error);
+    });
   }
+
 
   const startOperation = async () => {
     dispatch(startLoadingAction());
@@ -80,14 +93,20 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
       setComment("");
       props.updateState();
     } else {
-      const json = await res.json();
+      const json = await res.json() as { message: string };
       const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
       dispatch(openErrorDialogAction(message));
     }
   }
 
+  const startOperationClick = () => {
+    startOperation().catch(error => {
+      console.log("Error failed to start operation:", error);
+    })
+  };
+
   useEffect(() => {
-    fetchComponents();
+    fetchComponentsWrapper();
   }, []);
 
   return (
@@ -123,7 +142,7 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
           )}
           <Button
             variant="contained" color="primary" sx={{ width: 120 }}
-            onClick={() => startOperation()}
+            onClick={() => startOperationClick()}
           >
             Start
           </Button>

@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { startLoadingAction, endLoadingAction, openErrorDialogAction } from '../../../redux/ui/actions';
 import { fetchLayoutsAction, backViewAction, commitSelectedLayoutAction, tempStoreViewAction } from '../../../redux/views/actions';
 import { getOpid } from '../../../redux/operations/selectors';
-import { Layout } from '../../../models/TelemetryView';
+import { Layout, LayoutJson, TelemetryView } from '../../../models/TelemetryView';
 
 export interface OpenLayoutDialogProps {
   keepMounted: boolean;
@@ -43,9 +43,9 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
 
   const opid = getOpid(selector);
   const saveLayoutAsync = async (text: string) => {
-    var names: string[] = [];
-    var views: any[] = [];
-    for (var layout of layouts) {
+    const names: string[] = [];
+    const views: TelemetryView[] = [];
+    for (const layout of layouts) {
       names.push(layout.name);
       views.push(layout.telemetryView);
     }
@@ -65,8 +65,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
         }, body: JSON.stringify({
           telemetryView: {
             allIndexes: templayout.allIndexes,
-            blocks: templayout.blocks,
-            contents: templayout.contents
+            blocks: templayout.blocks
           },
           id: layouts.length,
           name: text
@@ -77,12 +76,18 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
       const res_lyts = await fetch(`/api/operations/${opid}/lyt`, {
         method: 'GET'
       });
-      const json_lyts = await res_lyts.json();
-      const lyts = json_lyts.data as Layout[];
+      const json_lyts = await res_lyts.json() as LayoutJson;
+      const lyts = json_lyts.data;
       dispatch(fetchLayoutsAction(lyts));
     }
     onClose();
   }
+
+  const saveLayoutClick = (text: string) => {
+    saveLayoutAsync(text).catch(error => {
+      console.log("Error failed to save layout:", error);
+    })
+  };
 
   const deleteLayoutAsync = async () => {
     const index = handleLayoutIndexChange(layoutIndex);
@@ -96,16 +101,22 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
     const res_lyts = await fetch(`/api/operations/${opid}/lyt`, {
       method: 'GET'
     });
-    const json_lyts = await res_lyts.json();
-    const lyts = json_lyts.data as Layout[];
+    const json_lyts = await res_lyts.json() as LayoutJson;
+    const lyts = json_lyts.data;
     dispatch(fetchLayoutsAction(lyts));
     onClose();
   }
 
+  const deleteLayoutClick = () => {
+    deleteLayoutAsync().catch(error => {
+      console.log("Error failed to delete layout:", error);
+    })
+  };
+
   const renameLayoutAsync = async (text: string) => {
-    var names: string[] = [];
-    var views: any[] = [];
-    for (var layout of layouts) {
+    const names: string[] = [];
+    const views: TelemetryView[] = [];
+    for (const layout of layouts) {
       names.push(layout.name);
       views.push(layout.telemetryView);
     }
@@ -124,16 +135,22 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
       const res_lyts = await fetch(`/api/operations/${opid}/lyt`, {
         method: 'GET'
       });
-      const json_lyts = await res_lyts.json();
-      const lyts = json_lyts.data as Layout[];
+      const json_lyts = await res_lyts.json() as LayoutJson;
+      const lyts = json_lyts.data;
       dispatch(fetchLayoutsAction(lyts));
     }
     onClose();
   }
 
+  const renameLayoutClick = (text: string) => {
+    renameLayoutAsync(text).catch(error => {
+      console.log("Error failed to rename layout:", error);
+    })
+  };
+
 
   const [text, setText] = useState('');
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(() => e.target.value)
   }
 
@@ -148,7 +165,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
     setValue("");
   };
 
-  var [layoutIndex, setLayoutIndex] = useState('');
+  const [layoutIndex, setLayoutIndex] = useState('');
 
   const handleLayoutIndexChange = (layoutIndex: string) => {
     setLayoutIndex(layoutIndex);
@@ -156,10 +173,10 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
     return index;
   }
 
-  const handleOk = async () => {
+  const handleOk = () => {
     const index = handleLayoutIndexChange(layoutIndex);
     dispatch(commitSelectedLayoutAction(index));
-    layoutIndex = '';
+    setLayoutIndex('');
     onClose();
   };
 
@@ -205,13 +222,13 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
         <div>
           <Button
             variant="contained" color="primary" sx={buttonStyle}
-            onClick={() => saveLayoutAsync(text)}
+            onClick={() => saveLayoutClick(text)}
           >
             Save
           </Button>
           <Button
             variant="contained" color="primary" sx={buttonStyle}
-            onClick={() => renameLayoutAsync(text)}
+            onClick={() => renameLayoutClick(text)}
           >
             Rename
           </Button>
@@ -225,7 +242,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
           </Button>
           <Button
             variant="contained" color="primary" sx={buttonStyle}
-            onClick={() => deleteLayoutAsync()}
+            onClick={() => deleteLayoutClick()}
           >
             Delete
           </Button>

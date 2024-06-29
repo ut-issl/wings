@@ -47,85 +47,90 @@ const StyledTreeItem = (props: StyledTreeItemProps) => {
 }
 
 export interface FileTreeMultiViewProps {
-  files: FileIndex[],
-  rootPath: string,
-  select: any,
-  defaultExpandedFolder?: string[]
+  files: FileIndex[];
+  rootPath: string;
+  select: (fileNames: string[]) => void;
+  defaultExpandedFolder?: string[];
 }
 
 const FileTreeMultiView = (props: FileTreeMultiViewProps) => {
-  const { files, rootPath, select, defaultExpandedFolder } = props
-
-  interface CheckedState {
-    [id: string]: boolean;
-  }
+  const { files, rootPath, select, defaultExpandedFolder } = props;
 
   const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
 
   const handleSelectedItemsChange = (event: React.SyntheticEvent, ids: string[]) => {
     setSelectedItems(ids);
-    var fileNameLists: string[] = [];
-    files.forEach(element => {
+    const fileNameLists: string[] = [];
+    files.forEach((element) => {
       if (ids.includes(element.id)) {
         fileNameLists.push(element.name);
       }
-    })
+    });
     select(fileNameLists);
   };
 
-  var convertedRootPath = rootPath.replaceAll("\\", "/");
+  const convertedRootPath = rootPath.replaceAll("\\", "/");
 
-  var tree: any = {};
+  interface TreeNode {
+    [key: string]: TreeNode | FileIndex;
+  }
+
+  const tree: TreeNode = {};
   files.forEach((file: FileIndex) => {
-    var currentNode = tree;
-    var convertedFilePath = file.filePath.replaceAll("\\", "/");
-    const filePath = convertedFilePath.replace(convertedRootPath, "");
-    filePath.split('/').forEach((segment: string) => {
+    let currentNode = tree;
+    const convertedFilePath = file.filePath.replace(/\\/g, '/');
+    const filePath = convertedFilePath.replace(convertedRootPath, '');
+    filePath.split('/').forEach((segment) => {
       if (currentNode[segment] === undefined) {
-        if (segment.includes(".ops")) {
-          currentNode[file.name] = file
+        if (segment.includes('.ops')) {
+          currentNode[file.name] = file;
         } else {
           currentNode[segment] = {};
         }
       }
-      currentNode = currentNode[segment];
-    })
+      currentNode = currentNode[segment] as TreeNode;
+    });
   });
 
-  const toTreeData = (tree: any) => {
-    return Object.keys(tree).map((label: any) => {
-      var o: any = { label: label };
-      if ('id' in tree[label]) {
-        o.file = tree[label];
-      } else if (Object.keys(tree[label]).length > 0) {
-        o.children = toTreeData(tree[label]);
+  const toTreeData = (tree: TreeNode) => {
+    return Object.keys(tree).map((label) => {
+      const node = tree[label];
+      const o: { label: string; file?: FileIndex; children?: ReturnType<typeof toTreeData> } = { label };
+      if ('id' in node) {
+        o.file = node as FileIndex;
+      } else if (Object.keys(node).length > 0) {
+        o.children = toTreeData(node);
       }
       return o;
-    })
+    });
   };
 
-  const showTreeItem = (data: any) => {
-    if (data) {
-      return (
-        data.length > 0 && data.map((child: any) => {
-          const label = child.label;
-          if ('file' in child) {
-            if (selectedItems.includes(child.file.id)) {
-              return <StyledTreeItem key={label} itemId={child.file.id} labelText={label} labelIcon={DescriptionIcon} />
-            }
-            else {
-              return <StyledTreeItem key={label} itemId={child.file.id} labelText={label} labelIcon={DescriptionTwoToneIcon} />
-            }
-          } else {
-            return (
-              <StyledTreeItem key={label} itemId={`folder--${label}`} labelText={label} labelIcon={FolderIcon}>
-                {showTreeItem(child.children)}
-              </StyledTreeItem>
-            )
-          }
-        })
-      )
-    }
+  const showTreeItem = (data: ReturnType<typeof toTreeData>) => {
+    return data.length > 0 && data.map((child) => {
+      const label = child.label;
+      if (child.file) {
+        const Icon = selectedItems.includes(child.file.id) ? DescriptionIcon : DescriptionTwoToneIcon;
+        return (
+          <StyledTreeItem
+            key={label}
+            itemId={child.file.id}
+            labelText={label}
+            labelIcon={Icon}
+          />
+        );
+      } else {
+        return (
+          <StyledTreeItem
+            key={label}
+            itemId={`folder--${label}`}
+            labelText={label}
+            labelIcon={FolderIcon}
+          >
+            {showTreeItem(child.children || [])}
+          </StyledTreeItem>
+        );
+      }
+    });
   };
 
   return (
@@ -137,7 +142,7 @@ const FileTreeMultiView = (props: FileTreeMultiViewProps) => {
     >
       {showTreeItem(toTreeData(tree))}
     </SimpleTreeView>
-  )
+  );
 };
 
 export default FileTreeMultiView;

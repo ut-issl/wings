@@ -8,6 +8,7 @@ import { getOpid } from './redux/operations/selectors';
 import { RootState } from './redux/store/RootState';
 import { updateLatestTelemetriesAction, addTelemetryHistoriesAction } from './redux/telemetries/actions';
 import "./assets/style.css";
+import { TelemetryPacketJson } from './models';
 
 export function useValueRef<T>(val: T) {
   const ref = React.useRef(val);
@@ -30,7 +31,7 @@ const App = () => {
       method: 'GET'
     });
     if (res.status == 200) {
-      const json = await res.json();
+      const json = await res.json() as TelemetryPacketJson;
       const data = json.data;
       setRefTlmTime(json.latestTlmTime);
       dispatch(updateLatestTelemetriesAction(data));
@@ -39,7 +40,17 @@ const App = () => {
   }
 
   useEffect(() => {
-    const interval = setInterval(fetchTelemetry, 1000);
+    const interval = setInterval(() => {
+      (async () => {
+        try {
+          await fetchTelemetry();
+        } catch (error) {
+          console.error('Error fetching telemetry:', error);
+        }
+      })().catch(error => {
+        console.error('Error in interval function:', error);
+      });
+    }, 1000);
     return () => clearInterval(interval);
   }, [opid]);
 

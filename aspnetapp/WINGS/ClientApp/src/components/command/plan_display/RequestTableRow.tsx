@@ -1,5 +1,5 @@
 import React from 'react';
-import { Command, CommandPlanLine, Request, RequestStatus } from '../../../models';
+import { Command, CommandController, CommandPlanLine, Request, RequestStatus } from '../../../models';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import StopIcon from '@mui/icons-material/Stop';
@@ -73,7 +73,8 @@ const RequestTableRow = (props: RequestTableRowProps) => {
   };
 
   const showControlBody = (request: Request) => {
-    const { method, body } = request;
+    const method = request.method;
+    const body = request.body as CommandController;
 
     switch (method) {
       case "wait_sec":
@@ -129,7 +130,7 @@ const RequestTableRow = (props: RequestTableRowProps) => {
         return <p style={{ margin: 0, color: theme.palette.info.main }}>{req.body}</p>;
 
       case "command":
-        const command = req.body;
+        const command = req.body as Command;
         return (
           <p style={statusColor(status)}>
             {(command.component) ? ((command.isViaMobc) ? "MOBC_" + command.execType + "_" + command.component + "_RT." : command.component + "_" + command.execType + ".") : command.execType + "."}
@@ -153,7 +154,7 @@ const RequestTableRow = (props: RequestTableRowProps) => {
 
       default:
         return;
-    };
+    }
   }
 
   if (activePlanId == '_unplanned') {

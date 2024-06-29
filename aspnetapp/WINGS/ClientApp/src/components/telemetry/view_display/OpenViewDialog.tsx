@@ -36,7 +36,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
     [id: string]: boolean;
   }
 
-  let initCheckboxState: CheckboxState = {};
+  const initCheckboxState: CheckboxState = {};
   indexes.forEach(element => initCheckboxState[element.id] = false);
   const [checkboxState, setCheckboxState] = React.useState(initCheckboxState);
 
@@ -48,7 +48,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
 
   const handleCancel = () => {
     onClose();
-    let makeCheckboxStateFalse = { ...checkboxState };
+    const makeCheckboxStateFalse = { ...checkboxState };
     indexes.forEach(element => {
       if (checkboxState[element.id] === true) {
         makeCheckboxStateFalse[element.id] = false;
@@ -58,16 +58,16 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
   };
 
   const handleOk = () => {
-    let makeCheckboxStateFalse = { ...checkboxState };
+    const makeCheckboxStateFalse = { ...checkboxState };
     indexes.forEach(element => {
       if (checkboxState[element.id] === true) {
         if (type === "packet" || "graph" && element.type === type) {
-          dispatch(openViewAction({ block: blockNum, id: element.id, content: {} }));
+          dispatch(openViewAction({ block: blockNum, id: element.id }));
           makeCheckboxStateFalse[element.id] = false;
         }
         if (type === "packet") {
-          let telemetryShowed: string[] = [];
-          let tlms = getLatestTelemetries(selector)[element.compoName][element.name];
+          const telemetryShowed: string[] = [];
+          const tlms = getLatestTelemetries(selector)[element.compoName][element.name];
           tlms.forEach(tlm => {
             telemetryShowed.push(tlm.telemetryInfo.name);
           })
@@ -83,7 +83,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
     setCheckboxState({ ...checkboxState, [(event.target as HTMLInputElement).value]: event.target.checked });
   };
 
-  const handleChangeText = (e: any) => {
+  const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(() => e.target.value)
   }
 
@@ -110,7 +110,7 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
           />
         </div>
       </DialogTitle>
-      <DialogContent dividers sx={{height: "60vh"}}>
+      <DialogContent dividers sx={{ height: "60vh" }}>
         <FormGroup
           ref={formGroupRef}
           aria-label="ringtone"

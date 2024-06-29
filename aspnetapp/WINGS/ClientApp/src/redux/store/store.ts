@@ -13,7 +13,7 @@ import { RootState } from './RootState';
 interface ExtendedWindow extends Window {
   __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
 }
-declare var window: ExtendedWindow;
+declare let window: ExtendedWindow;
 
 const composeReduxDevToolsEnhancers = (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 

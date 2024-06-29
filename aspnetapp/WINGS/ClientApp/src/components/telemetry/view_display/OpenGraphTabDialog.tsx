@@ -41,7 +41,7 @@ const OpenGraphTabDialog = (props: OpenGraphTabDialogProps) => {
     [id: string]: boolean;
   }
 
-  let initCheckboxState: CheckboxState = {};
+  const initCheckboxState: CheckboxState = {};
   telemetryOptions.forEach(telemetryOption => {
     if (tab.selectedTelemetries.includes(telemetryOption.name) == true) {
       initCheckboxState[telemetryOption.id] = true;
@@ -65,7 +65,7 @@ const OpenGraphTabDialog = (props: OpenGraphTabDialogProps) => {
   };
 
   const handleOk = () => {
-    let telemetryActive: string[] = [];
+    const telemetryActive: string[] = [];
     telemetryOptions.forEach(telemetryOption => {
       if (checkboxState[telemetryOption.id] === true) {
         telemetryActive.push(telemetryOption.name);
@@ -79,12 +79,12 @@ const OpenGraphTabDialog = (props: OpenGraphTabDialogProps) => {
     setCheckboxState({ ...checkboxState, [(event.target as HTMLInputElement).value]: event.target.checked });
   };
 
-  const handleChangeText = (e: any) => {
+  const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(() => e.target.value)
   };
 
   const handleSelectAll = () => {
-    let checkboxStateTemp: CheckboxState = {};
+    const checkboxStateTemp: CheckboxState = {};
     telemetryOptions.forEach(telemetryOption => {
       checkboxStateTemp[telemetryOption.id] = true;
     });
@@ -92,7 +92,7 @@ const OpenGraphTabDialog = (props: OpenGraphTabDialogProps) => {
   };
 
   const handleClearAll = () => {
-    let checkboxStateTemp: CheckboxState = {};
+    const checkboxStateTemp: CheckboxState = {};
     telemetryOptions.forEach(telemetryOption => {
       checkboxStateTemp[telemetryOption.id] = false;
     });

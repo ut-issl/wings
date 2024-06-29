@@ -16,13 +16,12 @@ export const viewsSlice = createSlice({
         state.layoutList = action.payload;
       })
       .addCase(Actions.openViewAction, (state, action) => {
-        const { block, id, content } = action.payload;
+        const { block, id } = action.payload;
         const viewBlockInfo = state.currentView.allIndexes.find(index => index.id === id);
         if (viewBlockInfo != undefined) {
           state.currentView.blocks[block].tabs.push(viewBlockInfo);
         }
         state.currentView.blocks[block].activeTab = state.currentView.blocks[block].tabs.length - 1;
-        state.currentView.contents[id] = content;
       })
       .addCase(Actions.closeViewAction, (state, action) => {
         const { block, tab } = action.payload;

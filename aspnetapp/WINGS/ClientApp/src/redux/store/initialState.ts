@@ -1,5 +1,6 @@
 import { RootState } from './RootState';
 import { UNPLANNED_ID, TARGET_ALL, COMPONENT_ALL } from '../../constants';
+import { ViewBlockInfo } from '../../models';
 
 const initialState: RootState = {
   ui: {
@@ -94,16 +95,14 @@ const initialState: RootState = {
       blocks: Array(4).fill({
         tabs: [],
         activeTab: 0
-      }),
-      contents: {}
+      }) as ViewBlockInfo[]
     },
     tempStoredView:{
       allIndexes: [],
       blocks: Array(4).fill({
         tabs: [],
         activeTab: 0
-      }),
-      contents: {}
+      }) as ViewBlockInfo[]
     },
     layoutList: []
   }

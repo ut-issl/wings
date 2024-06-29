@@ -13,7 +13,7 @@ export const operationsSlice = createSlice({
         state.tlmCmdConfig = action.payload;
       })
       .addCase(Actions.joinOperationAction, (state, action) => {
-        const operation = action.payload as Operation;
+        const operation = action.payload;
         state.id = operation.id;
         state.pathNumber = operation.pathNumber;
         state.comment = operation.comment;
@@ -30,7 +30,7 @@ export const operationsSlice = createSlice({
         state.tlmCmdConfig = operation.tlmCmdConfig;
       })
       .addCase(Actions.leaveOperationAction, (state) => {
-        const operation = initialState.operation as Operation;
+        const operation = initialState.operation;
         state.id = operation.id;
         state.pathNumber = operation.pathNumber;
         state.comment = operation.comment;

@@ -10,8 +10,7 @@ import { editSelectedCommandAction, commitSelectedCommandAction, editSelectedTar
 import { getSelectedCommand } from '../../../redux/plans/selectors';
 import { TARGET_ALL, COMPONENT_ALL } from '../../../constants';
 import SetParamTable from './SetParamTable';
-import Select from 'react-select';
-import { SingleValue, ActionMeta } from 'react-select/dist/declarations/src';
+import Select, { SingleValue, ActionMeta, StylesConfig } from 'react-select';
 
 const execTypeOptions: SelectOption[] = ["RT", "TL", "BL", "UTL"].map(type => ({ id: type, name: type }));
 
@@ -25,9 +24,9 @@ const CommandSelectionArea = () => {
   const { component, target, command } = getSelectedCommand(selector);
 
   interface OptionType {
-    label: string,
-    value: string
-  };
+    label: string;
+    value: string;
+  }
 
   const [commandOptions, setCommandOptions] = useState<OptionType[]>([]);
 
@@ -36,17 +35,18 @@ const CommandSelectionArea = () => {
   const componentOptions: SelectOption[] = components.map(component => ({ id: component, name: component }));
 
   useEffect(() => {
-    let options: OptionType[] = [];
-    commands.map((command, i) => {
-      (target === TARGET_ALL || command.target === target) && (component === COMPONENT_ALL || command.component === component) &&
-        options.push({ label: command.name, value: String(i) })
+    const options: OptionType[] = [];
+    commands.forEach((command, i) => {
+      if ((target === TARGET_ALL || command.target === target) && (component === COMPONENT_ALL || command.component === component)) {
+        options.push({ label: command.name, value: String(i) });
+      }
     });
     setCommandOptions(options);
-  }, [component, target]);
+  }, [component, target, commands]);
 
   const handleComponentChange = (component: string) => {
     dispatch(editSelectedComponentAction(component));
-  }
+  };
 
   const handleIsViaMobcChange = (isViaMobc: boolean) => {
     const newSelectedCommand = {
@@ -54,7 +54,7 @@ const CommandSelectionArea = () => {
       isViaMobc: isViaMobc
     };
     dispatch(editSelectedCommandAction(newSelectedCommand));
-  }
+  };
 
   const handleExecTypeChange = (execType: string) => {
     const newSelectedCommand = {
@@ -69,10 +69,10 @@ const CommandSelectionArea = () => {
 
   const handleTargetChange = (target: string) => {
     dispatch(editSelectedTargetAction(target));
-  }
+  };
 
   const handleCommandChange = (newValue: SingleValue<OptionType>, actionMeta: ActionMeta<OptionType>) => {
-    if (newValue != null && actionMeta.action == 'select-option') {
+    if (newValue != null && actionMeta.action === 'select-option') {
       const index: number = +newValue.value;
       const newSelectedCommand = {
         ...commands[index],
@@ -81,31 +81,28 @@ const CommandSelectionArea = () => {
         execTimeDouble: command.execTimeDouble,
         execTimeStr: command.execTimeStr,
         isViaMobc: command.isViaMobc
-      }
+      };
       dispatch(editSelectedCommandAction(newSelectedCommand));
     }
-  }
+  };
 
-  const customStyles = {
-    control: (base: any) => ({
+  const customStyles: StylesConfig<OptionType, false> = {
+    control: (base) => ({
       ...base,
       background: '#A8A8A8',
       borderColor: '#424242',
-      boxShadow: null,
+      boxShadow: 'none',
     }),
-    menu: (base: any) => ({
+    menu: (base) => ({
       ...base,
       borderRadius: 0,
       marginTop: 0
     }),
-    menuList: (base: any) => ({
+    menuList: (base) => ({
       ...base,
       padding: 0,
       background: 'rgba(255, 255, 255, 0.7)',
       color: '#424242',
-      // "&:hover": {
-      //   background: '#000000'
-      // }
     })
   };
 
@@ -114,7 +111,7 @@ const CommandSelectionArea = () => {
     if (command.params.map(param => param.value).every(value => value)) {
       dispatch(commitSelectedCommandAction());
     }
-  }
+  };
 
   return (
     <div style={{ marginLeft: 20, width: 500 }}>
@@ -161,7 +158,7 @@ const CommandSelectionArea = () => {
         </Button>
       </form>
     </div>
-  )
-}
+  );
+};
 
 export default CommandSelectionArea;

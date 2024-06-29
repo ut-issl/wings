@@ -51,11 +51,22 @@ const ComponentList = (props: ComponentListProps) => {
   }
 
   const handleOkClick = async () => {
-    await fetch(`/api/components/${deleteCompo?.id}`, {
-      method: 'DELETE'
-    })
-    updateState();
-  }
+    if (deleteCompo === null) return;
+    try {
+      await fetch(`/api/components/${deleteCompo.id}`, {
+        method: 'DELETE'
+      });
+      updateState();
+    } catch (error) {
+      console.error("Error deleting component:", error);
+    }
+  };
+
+  const handleOk = () => {
+    handleOkClick().catch(error => {
+      console.error("Error executing handleOkClick:", error);
+    });
+  };
 
   const handleDialogClose = () => {
     setOpen(false);
@@ -80,51 +91,73 @@ const ComponentList = (props: ComponentListProps) => {
   };
 
   const updateComponent = async (i: number) => {
-    const compo = compos[i];
-    const res = await fetch(`/api/components/${compo.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        id: compo.id,
-        name: values.name,
-        localDirPath: values.localDirPath,
-        tcPacketKey: values.tcPacketKey,
-        tmPacketKey: values.tmPacketKey
-      })
+    try {
+      const compo = compos[i];
+      const res = await fetch(`/api/components/${compo.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: compo.id,
+          name: values.name,
+          localDirPath: values.localDirPath,
+          tcPacketKey: values.tcPacketKey,
+          tmPacketKey: values.tmPacketKey
+        })
+      });
+      if (res.status === 200) {
+        toggleEditMode(i);
+        updateState();
+      } else {
+        const json = await res.json() as { message: string };
+        const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
+        dispatch(openErrorDialogAction(message));
+      }
+    } catch (error) {
+      console.error("Error updating component:", error);
+      dispatch(openErrorDialogAction("Failed to update component. Please try again."));
+    }
+  }
+
+  const handleUpdateComponent = (i: number) => {
+    updateComponent(i).catch(error => {
+      console.error("Error executing updateComponent:", error);
     });
-    if (res.status === 200) {
-      toggleEditMode(i);
-      updateState();
-    } else {
-      const json = await res.json();
-      const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
-      dispatch(openErrorDialogAction(message));
+  }
+
+  const createComponent = async () => {
+    try {
+      const res = await fetch(`/api/components`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: values.name,
+          localDirPath: values.localDirPath,
+          tcPacketKey: values.tcPacketKey,
+          tmPacketKey: values.tmPacketKey
+        })
+      });
+      if (res.status === 201) {
+        toggleAddMode();
+        updateState();
+      } else {
+        const json = await res.json() as { message: string };
+        const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
+        dispatch(openErrorDialogAction(message));
+      }
+    } catch (error) {
+      console.error("Error creating component:", error);
     }
   };
 
-  const createComponent = async () => {
-    const res = await fetch(`/api/components`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      }, body: JSON.stringify({
-        name: values.name,
-        localDirPath: values.localDirPath,
-        tcPacketKey: values.tcPacketKey,
-        tmPacketKey: values.tmPacketKey
-      })
+  const handleCreateComponent = () => {
+    createComponent().catch(error => {
+      console.error("Error executing createComponent:", error);
     });
-    if (res.status === 201) {
-      toggleAddMode();
-      updateState();
-    } else {
-      const json = await res.json();
-      const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
-      dispatch(openErrorDialogAction(message));
-    }
-  }
+  };
 
   const toggleAddMode = () => {
     setIsAddMode(!isAddMode);
@@ -167,7 +200,7 @@ const ComponentList = (props: ComponentListProps) => {
                       {isEditModeArr[i] ? (
                         <>
                           <Tooltip title="Save">
-                            <IconButton className="t-row-icon-cell" onClick={() => updateComponent(i)}>
+                            <IconButton className="t-row-icon-cell" onClick={() => handleUpdateComponent(i)}>
                               <CheckIcon />
                             </IconButton>
                           </Tooltip>
@@ -203,7 +236,7 @@ const ComponentList = (props: ComponentListProps) => {
                   <EditableInputTableCell isEditMode={true} name="tmPacketKey" value={values.tmPacketKey} label="" onChange={handleChange} />
                   <TableCell>
                     <Tooltip title="Save">
-                      <IconButton className="t-row-icon-cell" onClick={createComponent}>
+                      <IconButton className="t-row-icon-cell" onClick={handleCreateComponent}>
                         <CheckIcon />
                       </IconButton>
                     </Tooltip>
@@ -221,7 +254,7 @@ const ComponentList = (props: ComponentListProps) => {
         </TableContainer>
       </div>
       <ConfirmationDialog
-        open={open} onOkClick={async () => await handleOkClick()}
+        open={open} onOkClick={() => handleOk()}
         labelOk="Delete" onClose={handleDialogClose}
       >
         <p>Are you sure to delete</p>

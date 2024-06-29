@@ -46,7 +46,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
       dispatch(editSelectedCommandAction(newSelectedCommand));
     }
     else if (command.execType == 'TL' || command.execType == 'BL') {
-      var execTimeInt = (execTime == undefined) ? '0' : execTime;
+      const execTimeInt = (execTime == undefined) ? '0' : execTime;
       const newSelectedCommand = {
         ...command,
         execTimeInt: parseInt(execTimeInt),
@@ -59,7 +59,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
       dispatch(editSelectedCommandAction(newSelectedCommand));
     }
     else if (command.execType == 'UTL') {
-      var execTimeDouble = (execTime == undefined) ? '0' : execTime;
+      const execTimeDouble = (execTime == undefined) ? '0' : execTime;
       if (execTimeDouble.slice(-1) !== '.') {
         const newSelectedCommand = {
           ...command,
@@ -77,7 +77,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
     }
   }
 
-  const handleExecTimeChange = (event: any) => {
+  const handleExecTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newSelectedCommand = {
       ...command,
       execTimeInt: parseInt(event.target.value),
@@ -88,13 +88,13 @@ const SetParamTable = (props: SetParamAreaProps) => {
     dispatch(editSelectedCommandAction(newSelectedCommand));
   };
 
-  const handleExecUnixTimeChange = (event: any) => {
+  const handleExecUnixTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.slice(-1) !== '.') {
       const newSelectedCommand = {
         ...command,
         execTimeInt: 0,
         execTimeDouble: parseFloat(event.target.value),
-        execTimeStr: event.target.value.toString()
+        execTimeStr: event.target.value
       }
       setExecTime(isNaN(parseFloat(event.target.value)) ? '0' : String(parseFloat(event.target.value)));
       dispatch(editSelectedCommandAction(newSelectedCommand));
@@ -104,7 +104,7 @@ const SetParamTable = (props: SetParamAreaProps) => {
     }
   };
 
-  const handleParamValueChange = (event: any, i: number) => {
+  const handleParamValueChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, i: number) => {
     const newSelectedCommand = {
       ...command,
       params: [

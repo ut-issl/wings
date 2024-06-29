@@ -28,21 +28,35 @@ const OperationHistory = () => {
   const [deleteOperation, setDeleteOperation] = useState<Operation | null>(null);
   const navigate = useNavigate();
 
-  const inputSearch = useCallback((event: any) => {
+  const inputSearch = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value)
   }, [setSearch]);
 
   const fetchOperations = async () => {
-    const response = await fetch(`/api/operations/history?page=${page}&size=${sizePerPage}&search=${search}`, {
-      method: 'GET'
-    });
-    if (response.status == 200) {
-      const json = await response.json();
-      const meta = json.meta as PaginationMeta;
-      const data = json.data as Operation[];
-      setMeta(meta);
-      setOperations(data);
+    try {
+      const response = await fetch(`/api/operations/history?page=${page}&size=${sizePerPage}&search=${search}`, {
+        method: 'GET'
+      });
+      if (response.status == 200) {
+        const json = await response.json() as { meta: PaginationMeta, data: Operation[] };
+        const meta = json.meta;
+        const data = json.data;
+        setMeta(meta);
+        setOperations(data);
+      } else {
+        // Handle non-200 responses
+        console.error(`Failed to fetch operations: ${response.statusText}`);
+      }
+    } catch (error) {
+      // Handle errors
+      console.error('An error occurred while fetching operations:', error);
     }
+  };
+
+  const fetchOperationsWrapper = () => {
+    fetchOperations().catch((error) => {
+      console.error('An unhandled error occurred:', error);
+    });
   }
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -55,7 +69,7 @@ const OperationHistory = () => {
 
   const confirmSearch = () => {
     setPage(1);
-    fetchOperations();
+    fetchOperationsWrapper();
   }
 
   const handelDeleteClick = (operation: Operation) => {
@@ -64,11 +78,26 @@ const OperationHistory = () => {
   }
 
   const handleOkClick = async () => {
-    await fetch(`/api/operations/${deleteOperation?.id}/history`, {
-      method: 'DELETE'
-    });
-    fetchOperations();
-  }
+    if (deleteOperation === null) return;
+    try {
+      const response = await fetch(`/api/operations/${deleteOperation.id}/history`, {
+        method: 'DELETE'
+      });
+      if (response.ok) {
+        await fetchOperations();
+      } else {
+        console.error(`Failed to delete operation: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('An error occurred while deleting the operation:', error);
+    }
+  };
+
+  const handleOkClickWrapper = () => {
+    handleOkClick().catch((error) => {
+      console.error('An unhandled error occurred:', error);
+    })
+  };
 
   const handleDialogClose = () => {
     setOpen(false);
@@ -76,7 +105,7 @@ const OperationHistory = () => {
   }
 
   useEffect(() => {
-    fetchOperations();
+    fetchOperationsWrapper();
   }, [page]);
 
   return (
@@ -141,7 +170,7 @@ const OperationHistory = () => {
         </TableContainer>
       </div>
       <ConfirmationDialog
-        open={open} onOkClick={async () => await handleOkClick()}
+        open={open} onOkClick={() => handleOkClickWrapper()}
         labelOk="Delete" onClose={handleDialogClose}
       >
         <p>Are you sure to delete log of</p>

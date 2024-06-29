@@ -32,7 +32,7 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
   const tlmColor = getTelemetryColor(selector);
   const theme: Theme = useTheme();
 
-  let tlmsDisplayed: Telemetry[] = [];
+  const tlmsDisplayed: Telemetry[] = [];
   tlms.forEach(tlm => {
     if (selectedTelemetries.indexOf(tlm.telemetryInfo.name) >= 0) {
       tlmsDisplayed.push(tlm);
@@ -154,7 +154,7 @@ const PacketTabPanel = (props: PacketTabPanelProps) => {
     } else {
       const thisTlmClasses: string[] = [];
       tlmClasses.forEach((tlmName, i) => {
-        let tlmClassesTmp = (i == 0) ? tlmName : tlmClasses.slice(0, i + 1).join(".");
+        const tlmClassesTmp = (i == 0) ? tlmName : tlmClasses.slice(0, i + 1).join(".");
         if (i == tlmClasses.length - 1) {
           tlmClassesDisplayed.push(
             <li key={tlm.telemetryInfo.name} style={tlmliStyle}>

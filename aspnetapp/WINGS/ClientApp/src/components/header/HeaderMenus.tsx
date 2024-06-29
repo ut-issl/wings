@@ -9,6 +9,7 @@ import { getOpid } from '../../redux/operations/selectors';
 import { RootState } from '../../redux/store/RootState';
 import { updateCommandLogAction } from '../../redux/commands/actions';
 import { grey } from '@mui/material/colors';
+import { CommandLogsJson } from '../../models';
 
 export interface HeaderMenusProps {
   handleDrawerToggle: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
@@ -39,9 +40,15 @@ const HeaderMenus = (props: HeaderMenusProps) => {
     const res = await fetch(`/api/operations/${opid}/cmd_fileline/log`, {
       method: 'GET'
     });
-    const json = await res.json();
+    const json = await res.json() as CommandLogsJson;
     const data = json.data;
     dispatch(updateCommandLogAction(data));
+  };
+
+  const handleCmdLogClick = () => {
+    handleCmdLog().catch((error) => {
+      console.error("Failed to fetch command log:", error);
+    });
   };
 
   return (
@@ -59,7 +66,7 @@ const HeaderMenus = (props: HeaderMenusProps) => {
       <Button color="inherit" sx={menuButtonStyle} onClick={() => navigate('/telemetry')}>
         Telemetry
       </Button>
-      <Button color="inherit" sx={menuButtonStyle} onClick={handleCmdLog}>
+      <Button color="inherit" sx={menuButtonStyle} onClick={handleCmdLogClick}>
         CmdLog
       </Button>
       <div style={{ flexGrow: 1 }} />

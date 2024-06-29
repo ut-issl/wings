@@ -13,7 +13,7 @@ import StopIcon from '@mui/icons-material/Stop';
 import UndoIcon from '@mui/icons-material/Undo';
 import { useDispatch, useSelector } from 'react-redux';
 import { getOpid } from '../../redux/operations/selectors';
-import { leaveOperationAction } from '../../redux/operations/actions';
+import { joinOperationAction, leaveOperationAction } from '../../redux/operations/actions';
 import { joinOperation } from '../../redux/operations/operations';
 import { Operation } from '../../models';
 import { RootState } from '../../redux/store/RootState';
@@ -40,8 +40,15 @@ const OperationList = (props: OperationListProps) => {
     setStopOperation(operation);
   }
 
-  const handleOkClick = async () => {
-    const res = await fetch(`/api/operations/${stopOperation?.id}`, {
+  const joinOperationWrapper = (operation: Operation) => {
+    dispatch(joinOperation(operation)).catch((error) => {
+      console.log("Error failed to join Operation: ", error);
+    })
+  };
+
+  const handleOk = async () => {
+    if (stopOperation === null) return;
+    const res = await fetch(`/api/operations/${stopOperation.id}`, {
       method: 'DELETE'
     })
     if (res.status === 204) {
@@ -54,6 +61,12 @@ const OperationList = (props: OperationListProps) => {
       dispatch(openErrorDialogAction(message));
     }
   }
+
+  const handleOkClick = () => {
+    handleOk().catch((error) => {
+      console.log("Error failed to fetch operation:", error);
+    })
+  };
 
   const handleDialogClose = () => {
     setOpen(false);
@@ -87,7 +100,7 @@ const OperationList = (props: OperationListProps) => {
                   <TableCell>{operation.component.name}</TableCell>
                   <TableCell>
                     <Tooltip title="Join">
-                      <IconButton className="t-row-icon-cell" onClick={() => dispatch(joinOperation(operation))}>
+                      <IconButton className="t-row-icon-cell" onClick={() => joinOperationWrapper(operation)}>
                         <InputIcon />
                       </IconButton>
                     </Tooltip>
@@ -113,7 +126,7 @@ const OperationList = (props: OperationListProps) => {
         </Table>
       </TableContainer>
       <ConfirmationDialog
-        open={open} onOkClick={async () => await handleOkClick()}
+        open={open} onOkClick={() => handleOkClick()}
         labelOk="Stop" onClose={handleDialogClose}
       >
         <p>Are your sure to stop</p>

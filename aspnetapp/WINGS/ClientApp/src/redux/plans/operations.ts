@@ -1,7 +1,20 @@
 import { AppThunk } from '../store/store';
-import { Request, CommandPlanLine } from '../../models';
+import { Request, CommandPlanLine, Command } from '../../models';
 import { openPlanAction, execRequestSuccessAction, execRequestErrorAction } from './actions';
 import * as UiActions from '../ui/actions';
+
+interface RequestJson {
+  data: {
+    content: Request[]
+  },
+  message: string
+}
+
+interface AckJson {
+  status: 200,
+  ack: boolean,
+  message: string
+}
 
 export const openPlan = (id: string): AppThunk => async (dispatch, getState) => {
   const opid = getState().operation.id;
@@ -11,9 +24,9 @@ export const openPlan = (id: string): AppThunk => async (dispatch, getState) => 
   const res = await fetch(`/api/operations/${opid}/cmd_plans/${cmdFileInfoIndex}/${fileId}`, {
     method: 'GET'
   });
-  const json = await res.json();
+  const json = await res.json() as RequestJson;
   if (res.status === 200) {
-    const data = json.data.content as Request[];
+    const data = json.data.content;
     dispatch(openPlanAction({ id: id, requests: data }));
   } else {
     const message = `Status Code: ${res.status}\n${json.message ? json.message : "unknown error"}`;
@@ -29,7 +42,7 @@ export const postCommand = (
   ret: boolean[]
 ): AppThunk => async (dispatch, getState) => {
   const opid = getState().operation.id;
-  const body = JSON.parse(JSON.stringify(req.body));
+  const body = JSON.parse(JSON.stringify(req.body)) as Command;
   if (paramsValue.length !== 0) {
     for (let i = 0; i < paramsValue.length; i++) {
       body.params[i].value = paramsValue[i];
@@ -46,14 +59,14 @@ export const postCommand = (
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ command: body })
+    body: JSON.stringify({ command: body }) as BodyInit
   });
-  const json = await res.json();
+  const json = await res.json() as AckJson;
   if (res.status === 200 && json.ack) {
-    await dispatch(execRequestSuccessAction(row));
+    dispatch(execRequestSuccessAction(row));
     ret[0] = true;
   } else {
-    await dispatch(execRequestErrorAction(row));
+    dispatch(execRequestErrorAction(row));
     ret[0] = false;
   }
 };

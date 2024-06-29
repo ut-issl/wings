@@ -41,8 +41,8 @@ const CmdLogTableRow = (props: CmdLogTableRowProps) => {
       return <p style={statusColor(status)}>{(content != "") ? content : errorMessage}</p>;
     }
     else {
-      let command = content.slice(0, commentIndex - 1);
-      let message = content.slice(commentIndex);
+      const command = content.slice(0, commentIndex - 1);
+      const message = content.slice(commentIndex);
       return (
         <p style={statusColor(status)}>
           {command}

@@ -24,7 +24,7 @@ import { setCmdTypeAction } from '../../../redux/plans/actions';
 import { styled } from '@mui/material';
 import { grey } from '@mui/material/colors';
 
-const a11yProps = (index: any) => {
+const a11yProps = (index: number) => {
   return {
     id: `vertical-tab-${index}`,
     'aria-controls': `vertical-tabpanel-${index}`,
@@ -90,7 +90,7 @@ const PlanDisplayArea = () => {
     setDialogOpen(false);
   };
 
-  const handleValueChange = (event: React.ChangeEvent<{}>, value: number) => {
+  const handleValueChange = (event: React.SyntheticEvent, value: number) => {
     // 自動実行中はタブ切り替えを受け付けない
     if (!inExecution) {
       dispatch(activatePlanAction(openedIds[value]));
@@ -98,7 +98,7 @@ const PlanDisplayArea = () => {
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    let cmdType = (event.target as HTMLInputElement).value
+    const cmdType = event.target.value
     setCmdType(cmdType);
     dispatch(setCmdTypeAction(cmdType));
   };

@@ -4,8 +4,8 @@ import { Checkbox, FormControlLabel } from "@mui/material"
 export interface CheckBoxProps {
   label: string,
   checked: boolean,
-  select: any
-};
+  select: (checked: boolean) => void
+}
 
 const CheckBox = (props: CheckBoxProps) => {
   return (

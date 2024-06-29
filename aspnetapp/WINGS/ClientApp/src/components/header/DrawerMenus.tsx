@@ -16,14 +16,14 @@ import Divider from '@mui/material/Divider';
 import { grey } from '@mui/material/colors';
 
 export interface DrawerMenusProps {
-  open: boolean,
-  onClose: (event: {}) => void
+  open: boolean;
+  onClose: (event: React.SyntheticEvent) => void;
 }
 
 const DrawerMenus = (props: DrawerMenusProps) => {
   const navigate = useNavigate();
 
-  const selectMenu = (event: {}, path: string) => {
+  const selectMenu = (event: React.SyntheticEvent, path: string) => {
     navigate(path);
     props.onClose(event);
   }
@@ -49,7 +49,7 @@ const DrawerMenus = (props: DrawerMenusProps) => {
         variant="temporary"
         anchor="left"
         open={props.open}
-        onClose={(event) => props.onClose(event)}
+        onClose={(event: React.SyntheticEvent) => props.onClose(event)}
         PaperProps={drawerPaperStyle}
         ModalProps={{ keepMounted: true }}
       >

@@ -7,8 +7,8 @@ export interface EditableInputTableCellProps {
   name: string,
   value: string
   label: string,
-  onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => any,
-};
+  onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void,
+}
 
 const EditableInputTableCell = (props: EditableInputTableCellProps) => {
   const { isEditMode, label, name, value, onChange } = props;
