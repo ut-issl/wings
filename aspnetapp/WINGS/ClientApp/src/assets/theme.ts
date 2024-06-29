@@ -13,6 +13,9 @@ export const theme = createTheme({
       dark: "#008AF2",
       contrastText: "#52ff33"
     },
+    error: {
+      main: red["A400"]
+    },
     info: {
       main: purple["A100"]
     },
