@@ -42,7 +42,7 @@ const OperationList = (props: OperationListProps) => {
 
   const joinOperationWrapper = (operation: Operation) => {
     dispatch(joinOperation(operation)).catch((error) => {
-      console.log("Error failed to join Operation: ", error);
+      console.error("Error failed to join Operation: ", error);
     })
   };
 
@@ -64,7 +64,7 @@ const OperationList = (props: OperationListProps) => {
 
   const handleOkClick = () => {
     handleOk().catch((error) => {
-      console.log("Error failed to fetch operation:", error);
+      console.error("Error failed to fetch operation:", error);
     })
   };
 

@@ -85,7 +85,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
 
   const saveLayoutClick = (text: string) => {
     saveLayoutAsync(text).catch(error => {
-      console.log("Error failed to save layout:", error);
+      console.error("Error failed to save layout:", error);
     })
   };
 
@@ -109,7 +109,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
 
   const deleteLayoutClick = () => {
     deleteLayoutAsync().catch(error => {
-      console.log("Error failed to delete layout:", error);
+      console.error("Error failed to delete layout:", error);
     })
   };
 
@@ -144,7 +144,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
 
   const renameLayoutClick = (text: string) => {
     renameLayoutAsync(text).catch(error => {
-      console.log("Error failed to rename layout:", error);
+      console.error("Error failed to rename layout:", error);
     })
   };
 

@@ -101,7 +101,7 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
 
   const startOperationClick = () => {
     startOperation().catch(error => {
-      console.log("Error failed to start operation:", error);
+      console.error("Error failed to start operation:", error);
     })
   };
 
