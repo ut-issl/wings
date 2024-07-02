@@ -323,7 +323,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         break;
 
       case "command":
-        const commandret = [false];
+        const commandret = false;
         const paramsValue: string[] = [];
         const command = req.body as Command;
 
@@ -370,7 +370,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
           }
         }
         dispatch(postCommand(row, cmdType, req, paramsValue, commandret));
-        exeret = commandret[0];
+        exeret = commandret;
         break;
 
       case "control":

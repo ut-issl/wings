@@ -39,7 +39,7 @@ export const postCommand = (
   cmdType: string,
   req: Request,
   paramsValue: string[],
-  ret: boolean[]
+  ret: boolean
 ): AppThunk => async (dispatch, getState) => {
   const opid = getState().operation.id;
   const body = JSON.parse(JSON.stringify(req.body)) as Command;
@@ -64,10 +64,10 @@ export const postCommand = (
   const json = await res.json() as AckJson;
   if (res.status === 200 && json.ack) {
     dispatch(execRequestSuccessAction(row));
-    ret[0] = true;
+    ret = true;
   } else {
     dispatch(execRequestErrorAction(row));
-    ret[0] = false;
+    ret = false;
   }
 };
 

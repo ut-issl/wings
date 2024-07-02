@@ -8,7 +8,7 @@ import { theme } from './assets/theme';
 import App from './App';
 import createStore from './redux/store/store';
 
-const history = History.createBrowserHistory();
+export const history = History.createBrowserHistory();
 export const store = createStore();
 
 const rootElement = document.getElementById('root');
