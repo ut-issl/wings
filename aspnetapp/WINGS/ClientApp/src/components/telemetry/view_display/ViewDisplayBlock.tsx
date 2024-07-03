@@ -32,7 +32,7 @@ const ViewDisplayContent = styled('div')(({ theme }) => ({
   borderWidth: "0px 1px 1px 1px"
 }));
 
-const DisplayTab = styled(Tab)(({}) => ({
+const DisplayTab = styled(Tab)({
   width: '100%',
   minHeight: "auto",
   textAlign: "left",
@@ -59,9 +59,9 @@ const DisplayTab = styled(Tab)(({}) => ({
     textOverflow: "ellipsis",
     overflow: "hidden",
     display: "inline-block",
-    flexGrow: 1,
+    flexGrow: 1
   },
-}))
+})
 
 const a11yProps = (index: number) => {
   return {
