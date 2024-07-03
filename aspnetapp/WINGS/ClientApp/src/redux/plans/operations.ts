@@ -1,4 +1,4 @@
-import { AppThunk } from '../store/store';
+import { AppDispatch, AppThunk } from '../store/store';
 import { Request, CommandPlanLine, Command } from '../../models';
 import { openPlanAction, execRequestSuccessAction, execRequestErrorAction } from './actions';
 import * as UiActions from '../ui/actions';
@@ -7,12 +7,6 @@ interface RequestJson {
   data: {
     content: Request[]
   },
-  message: string
-}
-
-interface AckJson {
-  status: 200,
-  ack: boolean,
   message: string
 }
 
@@ -34,26 +28,29 @@ export const openPlan = (id: string): AppThunk => async (dispatch, getState) => 
   }
 };
 
-export const postCommand = (
+export const postCommand = async (
   row: number,
   cmdType: string,
   req: Request,
   paramsValue: string[],
-  ret: boolean
-): AppThunk => async (dispatch, getState) => {
-  const opid = getState().operation.id;
+  opid: string,
+  dispatch: AppDispatch
+): Promise<boolean> => {
   const body = JSON.parse(JSON.stringify(req.body)) as Command;
+
   if (paramsValue.length !== 0) {
     for (let i = 0; i < paramsValue.length; i++) {
       body.params[i].value = paramsValue[i];
     }
   }
+
   let cmd_uri: string;
   if (cmdType === "Type-A") {
     cmd_uri = "cmd_typeA";
   } else {
     cmd_uri = "cmd";
   }
+
   const res = await fetch(`/api/operations/${opid}/${cmd_uri}`, {
     method: 'POST',
     headers: {
@@ -61,13 +58,15 @@ export const postCommand = (
     },
     body: JSON.stringify({ command: body }) as BodyInit
   });
-  const json = await res.json() as AckJson;
+
+  const json = await res.json() as { ack: boolean };
+
   if (res.status === 200 && json.ack) {
     dispatch(execRequestSuccessAction(row));
-    ret = true;
+    return true;
   } else {
     dispatch(execRequestErrorAction(row));
-    ret = false;
+    return false;
   }
 };
 
