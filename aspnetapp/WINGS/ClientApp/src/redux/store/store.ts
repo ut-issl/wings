@@ -28,7 +28,11 @@ export const rootReducer = combineReducers({
 
 const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger, thunk),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // ここでシリアライズチェックを無効にする
+      immutableCheck: false, // ここで不変性チェックを無効にする
+    }).concat(logger, thunk),
   // enhancers: composeReduxDevToolsEnhancers
 });
 
