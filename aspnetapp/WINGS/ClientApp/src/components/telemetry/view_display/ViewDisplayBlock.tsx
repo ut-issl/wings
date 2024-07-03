@@ -32,7 +32,7 @@ const ViewDisplayContent = styled('div')(({ theme }) => ({
   borderWidth: "0px 1px 1px 1px"
 }));
 
-const DisplayTab = styled(Tab)({
+const DisplayTab = styled(Tab)(({}) => ({
   width: '100%',
   minHeight: "auto",
   textAlign: "left",
@@ -41,31 +41,27 @@ const DisplayTab = styled(Tab)({
   padding: "0",
   border: 0,
   marginTop: 5,
-  "&.Mui-selected": {//選択されたタブのスタイル
+  "&.Mui-selected": {
     "& span": {
       color: "white"
     },
+    "& .MuiIconButton-root": {
+      color: "white"
+    }
+  },
   "& .MuiIconButton-root": {
-    color: "white"
-  }
-},
-"& .MuiIconButton-root": {//通常タブのスタイル
-  color: grey[300],
-  marginLeft: 0,
-},
-"& span": {//通常タブのスタイル
-  color: grey[300],
-  whiteSpace: "nowrap",
-  textOverflow: "ellipsis",
-  overflow: "hidden",
-  display: "inline-block",
-  flexGrow: 1,
-},
-});
-
-const StyledAddIcon = styled(AddIcon)({
-  marginTop: 5,
-});
+    color: grey[300],
+    marginLeft: 0,
+  },
+  "& span": {
+    color: grey[300],
+    whiteSpace: "nowrap",
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+    display: "inline-block",
+    flexGrow: 1,
+  },
+}))
 
 const a11yProps = (index: number) => {
   return {
@@ -127,9 +123,9 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
             />
           ))}
           <IconButtonInTabs onClick={handleDialogOpen}>
-            <StyledAddIcon
+            <AddIcon
               fontSize="small"
-              style={{ color: value === blockInfo.tabs.length ? "white" : grey[300] }}
+              style={{marginTop: 5, color: value === blockInfo.tabs.length ? "white" : grey[300] }}
               />
           </IconButtonInTabs>
         </Tabs>
