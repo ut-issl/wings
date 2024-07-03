@@ -1,5 +1,10 @@
 import { Component } from './Component';
 
+export type TlmCmdConfigInfoJson = {
+  data: TlmCmdConfigurationInfo[],
+  message: string
+}
+
 export type TlmCmdConfigurationInfo = {
   tlmApid: string,
   cmdApid: string,

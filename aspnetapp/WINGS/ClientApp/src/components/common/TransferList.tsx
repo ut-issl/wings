@@ -1,38 +1,16 @@
 import React, { useEffect } from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      justifyContent: "left",
-      "& .MuiListItem-root": {
-        height: 30
-      }
-    },
-    cardHeader: {
-      padding: theme.spacing(1, 2),
-    },
-    list: {
-      width: 200,
-      height: 230,
-      backgroundColor: theme.palette.background.paper,
-      overflow: 'auto',
-    },
-    button: {
-      margin: theme.spacing(0.5, 0),
-    },
-  }),
-);
+import { Theme, styled, useTheme } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Checkbox from '@mui/material/Checkbox';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import { grey } from '@mui/material/colors';
 
 const not = (a: string[], b: string[]) => {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -46,6 +24,12 @@ const union = (a: string[], b: string[]) => {
   return [...a, ...not(b, a)];
 }
 
+const GridButton = styled(Button)(({ theme }) => ({
+  margin: theme.spacing(0.5, 0),
+  color: grey[500],
+  borderColor: grey[600]
+}));
+
 export interface TransferListProps {
   data: string[],
   setSelected: (selected: string[]) => void
@@ -53,13 +37,29 @@ export interface TransferListProps {
 
 const TransferList = (props: TransferListProps) => {
   const { data, setSelected } = props;
-  const classes = useStyles();
   const [checked, setChecked] = React.useState<string[]>([]);
   const [left, setLeft] = React.useState<string[]>([]);
   const [right, setRight] = React.useState<string[]>([]);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
+  const theme: Theme = useTheme();
+
+  const rootStyle = {
+    justifyContent: "left",
+    "& .MuiListItem-root": {
+      height: 30
+    }
+  };
+  const cardHeaderStyle = {
+    padding: theme.spacing(1, 2),
+  };
+  const listStyle = {
+    width: 200,
+    height: 230,
+    backgroundColor: theme.palette.background.paper,
+    overflow: 'auto',
+  };
 
   useEffect(() => {
     setLeft(data);
@@ -107,7 +107,7 @@ const TransferList = (props: TransferListProps) => {
   const customList = (title: React.ReactNode, items: string[]) => (
     <Card>
       <CardHeader
-        className={classes.cardHeader}
+        sx={cardHeaderStyle}
         avatar={
           <Checkbox
             onClick={handleToggleAll(items)}
@@ -121,7 +121,7 @@ const TransferList = (props: TransferListProps) => {
         subheader={`${numberOfChecked(items)}/${items.length} selected`}
       />
       <Divider />
-      <List className={classes.list} dense component="div" role="list">
+      <List sx={listStyle} dense component="div" role="list">
         {items.map((value: string) => {
           const labelId = `transfer-list-all-item-${value}-label`;
 
@@ -145,30 +145,28 @@ const TransferList = (props: TransferListProps) => {
   );
 
   return (
-    <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
+    <Grid container spacing={2} alignItems="center" sx={rootStyle}>
       <Grid item>{customList('Not Selected', left)}</Grid>
       <Grid item>
         <Grid container direction="column" alignItems="center">
-          <Button
+          <GridButton
             variant="outlined"
             size="small"
-            className={classes.button}
             onClick={handleCheckedRight}
             disabled={leftChecked.length === 0}
             aria-label="move selected right"
           >
             &gt;
-          </Button>
-          <Button
+          </GridButton>
+          <GridButton
             variant="outlined"
             size="small"
-            className={classes.button}
             onClick={handleCheckedLeft}
             disabled={rightChecked.length === 0}
             aria-label="move selected left"
           >
             &lt;
-          </Button>
+          </GridButton>
         </Grid>
       </Grid>
       <Grid item>{customList('Selected', right)}</Grid>

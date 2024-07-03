@@ -1,4 +1,4 @@
-import { Command } from './Command';
+import { Command, CommandController } from './Command';
 import { FileIndex } from './FileIndex';
 
 export type CommandPlanIndex = FileIndex & {
@@ -6,10 +6,20 @@ export type CommandPlanIndex = FileIndex & {
   cmdFileInfoIndex: string
 }
 
+export type CommandPlanIndexJson = {
+  data: CommandPlanIndex[],
+  message: string
+}
+
+export type RequestJson = {
+  data: Request,
+  message: string
+}
+
 export type Request = {
   type: string,
   method: string | null,
-  body: string | Command | any,
+  body: string | Command | CommandController | any,
   inlineComment: string | null,
   stopFlag: boolean,
   syntaxError: boolean,

@@ -1,27 +1,14 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store/RootState';
 import { getCommandLogs } from '../../../redux/commands/selectors';
 import CmdLogTabPanel from './CmdLogTabPanel';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { getOpid } from '../../../redux/operations/selectors';
 import { updateCommandLogAction } from '../../../redux/commands/actions';
-
-const useStyles = makeStyles(
-  createStyles({
-    root: {
-      height: 700,
-      margin: '.3cm',
-    },
-    dialogPaper: {
-      width: '80%',
-      maxHeight: 435,
-    },
-}));
+import { CommandLogsJson } from '../../../models';
 
 const CmdLogDisplayArea = () => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const selector = useSelector((state: RootState) => state);
   const opid = getOpid(selector);
@@ -32,16 +19,22 @@ const CmdLogDisplayArea = () => {
     const res = await fetch(`/api/operations/${opid}/cmd_fileline/log`, {
       method: 'GET'
     });
-    const json = await res.json();
+    const json = await res.json() as CommandLogsJson;
     const data = json.data;
     dispatch(updateCommandLogAction(data));
   };
-  
+
+  const handleButtonClick = () => {
+    handleOk().catch(error => {
+      console.error("Failed to fetch command fileline logs:", error);
+    });
+  };
+
   return (
     <>
-      <div className={classes.root}>
+      <div style={{ height: 700, margin: '.3cm' }}>
         <CmdLogTabPanel content={commandLogs} />
-        <Button onClick={handleOk} color="primary">
+        <Button onClick={handleButtonClick} color="primary">
           RELOAD
         </Button>
       </div>

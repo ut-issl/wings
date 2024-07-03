@@ -1,11 +1,11 @@
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import { Typography } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store/RootState';
 import { getErrorDialogState } from '../../redux/ui/selectors';
@@ -27,7 +27,6 @@ const ErrorDialog = () => {
 
   return (
     <Dialog
-      disableBackdropClick
       disableEscapeKeyDown
       maxWidth="xs"
       aria-labelledby="confirmation-dialog-title"
@@ -37,7 +36,7 @@ const ErrorDialog = () => {
       <DialogTitle id="confirmation-dialog-title">
         <div className="p-grid__row">
           <ErrorOutlineIcon />
-          <Typography style={{marginLeft: "10px"}}>エラー</Typography>
+          <Typography style={{ marginLeft: "10px" }}>エラー</Typography>
         </div>
       </DialogTitle>
       <DialogContent dividers>

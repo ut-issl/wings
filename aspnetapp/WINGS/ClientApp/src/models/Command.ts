@@ -6,6 +6,16 @@ export type CommandParam = {
   description: string |  null
 }
 
+export type CommandJson = {
+  data: Command,
+  message: string
+}
+
+export type CommandsJson = {
+  data: Command[],
+  message: string
+}
+
 export type Command = {
   component: string,
   execType: string,
@@ -22,6 +32,18 @@ export type Command = {
   description: string
 }
 
+export type CommandController = {
+  fileName: string,
+  time: number,
+  timeoutsec: string | number
+  variable: string,
+  compare: string,
+  value: string
+  equation: string,
+  statement: string,
+  equal: string,
+}
+
 export type CommandState = {
   list: Command[],
   targets: string[],
@@ -34,4 +56,9 @@ export type CommandFileLineLogs = {
   commander: string,
   content: string,
   status: string
+}
+
+export type CommandLogsJson = {
+  data: CommandFileLineLogs[],
+  message: string
 }

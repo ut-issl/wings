@@ -18,11 +18,6 @@ export const getBlockInfos = createSelector(
   state => state.currentView.blocks
 );
 
-export const getViewContents = createSelector(
-  [viewsSelector],
-  state => state.currentView.contents
-);
-
 export const getViewLayout = createSelector(
   [viewsSelector],
   state => state.currentView

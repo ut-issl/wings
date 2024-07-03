@@ -1,33 +1,20 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Button, TextField } from '@material-ui/core';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
+import { Button, TextField } from '@mui/material';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store/RootState';
 import SelectBox, { SelectOption } from '../../common/SelectBox';
 import { getViewLayout, getLayouts } from '../../../redux/views/selectors';
 import { useState } from 'react';
 import { startLoadingAction, endLoadingAction, openErrorDialogAction } from '../../../redux/ui/actions';
-import { fetchLayoutsAction, backViewAction, selectedLayoutCommitAction, tempStoreViewAction } from '../../../redux/views/actions';
+import { fetchLayoutsAction, backViewAction, commitSelectedLayoutAction, tempStoreViewAction } from '../../../redux/views/actions';
 import { getOpid } from '../../../redux/operations/selectors';
-import { Layout } from '../../../models/TelemetryView';
-
-const useStyles = makeStyles(
-  createStyles({
-    button: {
-      width: 120
-    },
-    paper: {
-      height: '80vh',
-      width: 500
-    }
-}));
+import { Layout, LayoutJson, TelemetryView } from '../../../models/TelemetryView';
 
 export interface OpenLayoutDialogProps {
-  classes: Record<'paper', string>;
   keepMounted: boolean;
   open: boolean;
   onClose: () => void;
@@ -35,14 +22,15 @@ export interface OpenLayoutDialogProps {
 
 const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
   const { onClose, open } = props;
-  const classes = useStyles();
   const selector = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
   const [value, setValue] = useState("");
   const radioGroupRef = React.useRef<HTMLElement>(null);
-  const layouts = (getLayouts(selector)!=undefined)?getLayouts(selector):[];
+  const layouts = (getLayouts(selector) != undefined) ? getLayouts(selector) : [];
   const layoutOptions: SelectOption[] = layouts.map(layout => ({ id: layout.id, name: layout.name }));
   const templayout = getViewLayout(selector);
+
+  const buttonStyle = { width: 120 };
 
   const tempStoreView = () => {
     dispatch(tempStoreViewAction(templayout));
@@ -55,30 +43,29 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
 
   const opid = getOpid(selector);
   const saveLayoutAsync = async (text: string) => {
-    var names: string[] = [];
-    var views: any[] = [];
-    for (var layout of layouts){
+    const names: string[] = [];
+    const views: TelemetryView[] = [];
+    for (const layout of layouts) {
       names.push(layout.name);
       views.push(layout.telemetryView);
     }
-    if (names.includes(text)||text==""){
+    if (names.includes(text) || text == "") {
       setText(() => "");
       dispatch(openErrorDialogAction("invalid layout name"));
     }
-    else if (views.includes(templayout)){
+    else if (views.includes(templayout)) {
       setText(() => "");
       dispatch(openErrorDialogAction("invalid layout name"));
     }
     else {
-      const res = await fetch(`/api/operations/${opid}/lyt`,{
+      const res = await fetch(`/api/operations/${opid}/lyt`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        },        body: JSON.stringify({
+        }, body: JSON.stringify({
           telemetryView: {
             allIndexes: templayout.allIndexes,
-            blocks: templayout.blocks,
-            contents: templayout.contents
+            blocks: templayout.blocks
           },
           id: layouts.length,
           name: text
@@ -86,21 +73,27 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
       });
       dispatch(endLoadingAction());
       setText(() => "");
-      const res_lyts = await fetch(`/api/operations/${opid}/lyt`,{
+      const res_lyts = await fetch(`/api/operations/${opid}/lyt`, {
         method: 'GET'
       });
-      const json_lyts = await res_lyts.json();
-      const lyts = json_lyts.data as Layout[];
+      const json_lyts = await res_lyts.json() as LayoutJson;
+      const lyts = json_lyts.data;
       dispatch(fetchLayoutsAction(lyts));
     }
     onClose();
   }
 
+  const saveLayoutClick = (text: string) => {
+    saveLayoutAsync(text).catch(error => {
+      console.error("Error failed to save layout:", error);
+    })
+  };
+
   const deleteLayoutAsync = async () => {
     const index = handleLayoutIndexChange(layoutIndex);
     const name = layouts[index].name;
     dispatch(startLoadingAction());
-    const res = await fetch(`/api/operations/${opid}/lyt/${name}`,{
+    const res = await fetch(`/api/operations/${opid}/lyt/${name}`, {
       method: 'DELETE'
     });
     dispatch(endLoadingAction());
@@ -108,44 +101,56 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
     const res_lyts = await fetch(`/api/operations/${opid}/lyt`, {
       method: 'GET'
     });
-    const json_lyts = await res_lyts.json();
-    const lyts = json_lyts.data as Layout[];
+    const json_lyts = await res_lyts.json() as LayoutJson;
+    const lyts = json_lyts.data;
     dispatch(fetchLayoutsAction(lyts));
     onClose();
   }
 
+  const deleteLayoutClick = () => {
+    deleteLayoutAsync().catch(error => {
+      console.error("Error failed to delete layout:", error);
+    })
+  };
+
   const renameLayoutAsync = async (text: string) => {
-    var names: string[] = [];
-    var views: any[] = [];
-    for (var layout of layouts){
+    const names: string[] = [];
+    const views: TelemetryView[] = [];
+    for (const layout of layouts) {
       names.push(layout.name);
       views.push(layout.telemetryView);
     }
-    if (names.includes(text)||text==""){
+    if (names.includes(text) || text == "") {
       setText(() => "");
       dispatch(openErrorDialogAction("invalid layout name"));
     }
-    else{
+    else {
       const index = handleLayoutIndexChange(layoutIndex);
       dispatch(startLoadingAction());
-      const res = await fetch(`/api/operations/${opid}/lyt/${index}/${text}`,{
+      const res = await fetch(`/api/operations/${opid}/lyt/${index}/${text}`, {
         method: 'PUT'
       });
       dispatch(endLoadingAction());
       setText(() => "");
-      const res_lyts = await fetch(`/api/operations/${opid}/lyt`,{
+      const res_lyts = await fetch(`/api/operations/${opid}/lyt`, {
         method: 'GET'
       });
-      const json_lyts = await res_lyts.json();
-      const lyts = json_lyts.data as Layout[];
+      const json_lyts = await res_lyts.json() as LayoutJson;
+      const lyts = json_lyts.data;
       dispatch(fetchLayoutsAction(lyts));
     }
     onClose();
   }
 
+  const renameLayoutClick = (text: string) => {
+    renameLayoutAsync(text).catch(error => {
+      console.error("Error failed to rename layout:", error);
+    })
+  };
+
 
   const [text, setText] = useState('');
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(() => e.target.value)
   }
 
@@ -160,7 +165,7 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
     setValue("");
   };
 
-  var [layoutIndex, setLayoutIndex] = useState('');
+  const [layoutIndex, setLayoutIndex] = useState('');
 
   const handleLayoutIndexChange = (layoutIndex: string) => {
     setLayoutIndex(layoutIndex);
@@ -168,82 +173,80 @@ const OpenLayoutDialog = (props: OpenLayoutDialogProps) => {
     return index;
   }
 
-  const handleOk = async () => {
+  const handleOk = () => {
     const index = handleLayoutIndexChange(layoutIndex);
-    dispatch(selectedLayoutCommitAction(index));
-    layoutIndex = '';
+    dispatch(commitSelectedLayoutAction(index));
+    setLayoutIndex('');
     onClose();
   };
 
   return (
     <Dialog
-      disableBackdropClick
       disableEscapeKeyDown
       maxWidth="xs"
-      onEntering={handleEntering}
+      // onEntering={handleEntering}
       aria-labelledby="open-plan-dialog-title"
       open={open}
-      classes={{ paper: classes.paper }}
     >
       <DialogTitle id="open-plan-dialog-title">Temporary Save and Restore</DialogTitle>
       <DialogContent dividers>
         <div>
-      <Button
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => tempStoreView()}
-        >
-          Save
-        </Button>
-        <Button
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => backLayout()}
-        >
-          Restore
-        </Button>
-      </div>
+          <Button
+            variant="contained" color="primary" sx={buttonStyle}
+            onClick={() => tempStoreView()}
+          >
+            Save
+          </Button>
+          <Button
+            variant="contained" color="primary" sx={buttonStyle}
+            onClick={() => backLayout()}
+          >
+            Restore
+          </Button>
+        </div>
       </DialogContent>
       <DialogTitle id="open-plan-dialog-title">Save and Select</DialogTitle>
       <DialogContent>
-      <div>
-        <SelectBox
-          label="Select from Saved Layouts" options={layoutOptions}
-          select={handleLayoutIndexChange} value={layoutIndex}
-        />
-      </div>
-      <div>
-        <TextField
+        <div>
+          <SelectBox
+            label="Select from Saved Layouts" options={layoutOptions}
+            select={handleLayoutIndexChange} value={layoutIndex}
+          />
+        </div>
+        <div>
+          <TextField
             label="Save As" onChange={handleChange}
             value={text} type="text"
           />
-      </div>
-      <div>
-        <Button
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => saveLayoutAsync(text)}
-        >
-          Save
-        </Button>
-        <Button 
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => renameLayoutAsync(text)}
-        >
-          Rename
-        </Button>
-      </div>
-      <div>
-        <Button 
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => handleOk()}
-        >
-          Restore
-        </Button>
-        <Button 
-          variant="contained" color="primary" className={classes.button}
-          onClick={() => deleteLayoutAsync()}
-        >
-          Delete
-        </Button>
-      </div>
+        </div>
+        <div>
+          <Button
+            variant="contained" color="primary" sx={buttonStyle}
+            onClick={() => saveLayoutClick(text)}
+          >
+            Save
+          </Button>
+          <Button
+            variant="contained" color="primary" sx={buttonStyle}
+            onClick={() => renameLayoutClick(text)}
+          >
+            Rename
+          </Button>
+        </div>
+        <div>
+          <Button
+            variant="contained" color="primary" sx={buttonStyle}
+            onClick={() => handleOk()}
+          >
+            Restore
+          </Button>
+          <Button
+            variant="contained" color="primary" sx={buttonStyle}
+            onClick={() => deleteLayoutClick()}
+          >
+            Delete
+          </Button>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={handleCancel} color="primary">

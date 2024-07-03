@@ -1,53 +1,13 @@
 import React, { useState } from 'react';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
-import TreeView from '@material-ui/lab/TreeView';
-import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
-import Typography from '@material-ui/core/Typography';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import DescriptionIcon from '@material-ui/icons/Description';
-import FolderIcon from '@material-ui/icons/Folder';
-import { SvgIconProps } from '@material-ui/core/SvgIcon';
+import { Theme, useTheme } from '@mui/material/styles';
+import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
+import { TreeItem, TreeItemProps } from '@mui/x-tree-view/TreeItem';
+import Typography from '@mui/material/Typography';
+import DescriptionIcon from '@mui/icons-material/Description';
+import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone';
+import FolderIcon from '@mui/icons-material/Folder';
+import { SvgIconProps } from '@mui/material/SvgIcon';
 import { FileIndex } from '../../models';
-
-const useTreeItemStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    content: {
-      color: theme.palette.text.secondary,
-      borderTopRightRadius: theme.spacing(2),
-      borderBottomRightRadius: theme.spacing(2),
-      paddingRight: theme.spacing(1),
-      fontWeight: theme.typography.fontWeightMedium,
-      '$expanded > &': {
-        fontWeight: theme.typography.fontWeightRegular,
-      },
-    },
-    group: {
-      marginLeft: 0,
-      '& $content': {
-        paddingLeft: theme.spacing(2),
-      },
-    },
-    expanded: {},
-    selected: {},
-    label: {
-      fontWeight: 'inherit',
-      color: 'inherit',
-    },
-    labelRoot: {
-      display: 'flex',
-      alignItems: 'center',
-      padding: theme.spacing(0.5, 0),
-    },
-    labelIcon: {
-      marginRight: theme.spacing(1),
-    },
-    labelText: {
-      fontWeight: 'inherit',
-      flexGrow: 1,
-    },
-  }),
-);
 
 interface StyledTreeItemProps extends TreeItemProps {
   labelIcon: React.ElementType<SvgIconProps>;
@@ -55,38 +15,36 @@ interface StyledTreeItemProps extends TreeItemProps {
 }
 
 const StyledTreeItem = (props: StyledTreeItemProps) => {
-  const classes = useTreeItemStyles();
-  const { labelText, labelIcon: LabelIcon, color,  ...other } = props;
+  const { labelText, labelIcon: LabelIcon, color, ...other } = props;
+  const theme: Theme = useTheme();
+
+  const labelRootStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(0.5, 0),
+  };
+  const labelIconStyle = {
+    marginRight: theme.spacing(1),
+  };
+  const labelTextStyle = {
+    fontWeight: 'inherit',
+    flexGrow: 1,
+  };
 
   return (
     <TreeItem
       label={
-        <div className={classes.labelRoot}>
-          <LabelIcon color="inherit" className={classes.labelIcon} fontSize="small"/>
-          <Typography variant="body2" className={classes.labelText}>
+        <div style={labelRootStyle}>
+          <LabelIcon color="inherit" sx={labelIconStyle} fontSize="small" />
+          <Typography variant="body2" sx={labelTextStyle}>
             {labelText}
           </Typography>
         </div>
       }
-      classes={{
-        content: classes.content,
-        expanded: classes.expanded,
-        selected: classes.selected,
-        group: classes.group,
-        label: classes.label,
-      }}
       {...other}
     />
   );
 }
-
-const useStyles = makeStyles({
-  root: {
-    height: 240,
-    flexGrow: 1,
-    maxWidth: 400,
-  },
-});
 
 export interface FileTreeViewProps {
   files: FileIndex[],
@@ -96,23 +54,26 @@ export interface FileTreeViewProps {
 }
 
 const FileTreeView = (props: FileTreeViewProps) => {
-  const classes = useStyles();
   const { files, rootPath, select, defaultExpandedFolder } = props
   const [selected, setSelected] = useState<string[]>([]);
 
-  const handleSelect = (event: React.ChangeEvent<{}>, nodeIds: string[]) => {
-    if (nodeIds.includes("folder--")) {
-      setSelected([]);
-    } else {
-      setSelected(nodeIds);
-      select(nodeIds);
-    }
+  const handleSelect = (label: string) => {
+    setSelected([label]);
+    select([label]);
   };
+
+  const handleClear = () => {
+    setSelected([]);
+    select([]);
+  }
+
+  var convertedRootPath = rootPath.replaceAll("\\", "/");
 
   var tree: any = {};
   files.forEach((file: FileIndex) => {
     var currentNode = tree;
-    const filePath = file.filePath.replace(rootPath, "");
+    var convertedFilePath = file.filePath.replaceAll("\\", "/");
+    const filePath = convertedFilePath.replace(convertedRootPath, "");
     filePath.split('/').forEach((segment: string) => {
       if (currentNode[segment] === undefined) {
         if (segment.includes(".ops")) {
@@ -143,10 +104,15 @@ const FileTreeView = (props: FileTreeViewProps) => {
         data.length > 0 && data.map((child: any) => {
           const label = child.label;
           if ('file' in child) {
-            return <StyledTreeItem key={label} nodeId={child.file.id} labelText={label} labelIcon={DescriptionIcon}/>
+            if (selected.includes(label)) {
+              return <StyledTreeItem key={label} itemId={child.file.id} labelText={label} labelIcon={DescriptionIcon} onClick={() => handleSelect(label)} />
+            }
+            else {
+              return <StyledTreeItem key={label} itemId={child.file.id} labelText={label} labelIcon={DescriptionTwoToneIcon} onClick={() => handleSelect(label)} />
+            }
           } else {
             return (
-              <StyledTreeItem key={label} nodeId={`folder--${label}`} labelText={label} labelIcon={FolderIcon}>
+              <StyledTreeItem key={label} itemId={`folder--${label}`} labelText={label} labelIcon={FolderIcon} onClick={handleClear}>
                 {showTreeItem(child.children)}
               </StyledTreeItem>
             )
@@ -157,17 +123,11 @@ const FileTreeView = (props: FileTreeViewProps) => {
   };
 
   return (
-    <TreeView
-      className={classes.root}
-      defaultCollapseIcon={<ArrowDropDownIcon />}
-      defaultExpandIcon={<ArrowRightIcon />}
-      defaultExpanded={defaultExpandedFolder && defaultExpandedFolder.map(name => "folder--"+name)}
-      defaultEndIcon={<div style={{ width: 24 }} />}
-      selected={selected}
-      onNodeSelect={handleSelect}
+    <SimpleTreeView
+      sx={{ height: 240, flexGrow: 1, maxWidth: 400 }}
     >
       {showTreeItem(toTreeData(tree))}
-    </TreeView>
+    </SimpleTreeView>
   )
 };
 

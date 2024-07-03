@@ -1,56 +1,40 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import { Command } from '../../../models';
 import { useDispatch } from 'react-redux';
-import { selectedCommandEditAction } from '../../../redux/plans/actions';
-
-const useStyles = makeStyles(
-  createStyles({
-    table: {
-      "& .MuiTableCell-root": {
-        padding: 8
-      }
-    },
-    nameCell: {
-      width: 50
-    },
-    valueCell: {
-      width: 150
-    },
-    typeCell: {
-      width: 60
-    },
-    valueInput: {
-      "& input": {
-        padding: 8
-      }
-    },
-}));
+import { editSelectedCommandAction } from '../../../redux/plans/actions';
 
 export interface SetParamAreaProps {
   command: Command
 }
 
 const SetParamTable = (props: SetParamAreaProps) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const { command } = props;
   const [execTime, setExecTime] = React.useState<string>();
   const [execType, setExecType] = React.useState<string>();
 
-  if (command.execType != execType)
-  {
-    if (command.execType == "RT")
-    {
+  const tableStyle = {
+    "& .MuiTableCell-root": {
+      padding: 1
+    }
+  };
+  const nameCellStyle = { width: 50, padding: 0 };
+  const valueCellStyle = { width: 100, padding: 0 };
+  const typeCellStyle = { width: 60, padding: 0 };
+  const descriptionCellStyle = { width: 60, padding: 0 };
+  const valueInputStyle = { "& input": { padding: 0.5 }, padding: 0 };
+
+  if (command.execType != execType) {
+    if (command.execType == "RT") {
       const newSelectedCommand = {
         ...command,
         execTimeInt: 0,
@@ -59,11 +43,10 @@ const SetParamTable = (props: SetParamAreaProps) => {
       }
       setExecTime('0');
       setExecType(command.execType);
-      dispatch(selectedCommandEditAction(newSelectedCommand));
+      dispatch(editSelectedCommandAction(newSelectedCommand));
     }
-    else if (command.execType == 'TL' || command.execType == 'BL')
-    {
-      var execTimeInt = (execTime==undefined)?'0':execTime;
+    else if (command.execType == 'TL' || command.execType == 'BL') {
+      const execTimeInt = (execTime == undefined) ? '0' : execTime;
       const newSelectedCommand = {
         ...command,
         execTimeInt: parseInt(execTimeInt),
@@ -71,74 +54,69 @@ const SetParamTable = (props: SetParamAreaProps) => {
         execTimeStr: execTimeInt
       }
       setExecTime('0');
-      setExecTime(isNaN(parseInt(execTimeInt))?'0':String(parseInt(execTimeInt)));
+      setExecTime(isNaN(parseInt(execTimeInt)) ? '0' : String(parseInt(execTimeInt)));
       setExecType(command.execType);
-      dispatch(selectedCommandEditAction(newSelectedCommand));
+      dispatch(editSelectedCommandAction(newSelectedCommand));
     }
-    else if (command.execType == 'UTL')
-    {
-      var execTimeDouble = (execTime==undefined)?'0':execTime;
-      if (execTimeDouble.slice(-1) !== '.')
-      {
+    else if (command.execType == 'UTL') {
+      const execTimeDouble = (execTime == undefined) ? '0' : execTime;
+      if (execTimeDouble.slice(-1) !== '.') {
         const newSelectedCommand = {
           ...command,
           execTimeInt: 0,
           execTimeDouble: parseFloat(execTimeDouble),
           execTimeStr: execTimeDouble
         }
-        setExecTime(isNaN(parseFloat(execTimeDouble))?'0':String(parseFloat(execTimeDouble)));
-        dispatch(selectedCommandEditAction(newSelectedCommand));
+        setExecTime(isNaN(parseFloat(execTimeDouble)) ? '0' : String(parseFloat(execTimeDouble)));
+        dispatch(editSelectedCommandAction(newSelectedCommand));
       }
-      else if (execTimeDouble.slice(-2) !== '.')
-      {
+      else if (execTimeDouble.slice(-2) !== '.') {
         setExecTime(execTimeDouble);
       }
       setExecType(command.execType);
     }
   }
 
-  const handleExecTimeChange = (event: any) => {
+  const handleExecTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newSelectedCommand = {
       ...command,
       execTimeInt: parseInt(event.target.value),
       execTimeDouble: 0,
       execTimeStr: event.target.value.toString()
     }
-    setExecTime(isNaN(parseInt(event.target.value))?'0':String(parseInt(event.target.value)));
-    dispatch(selectedCommandEditAction(newSelectedCommand));
+    setExecTime(isNaN(parseInt(event.target.value)) ? '0' : String(parseInt(event.target.value)));
+    dispatch(editSelectedCommandAction(newSelectedCommand));
   };
 
-  const handleExecUnixTimeChange = (event: any) => {
-    if (event.target.value.slice(-1) !== '.')
-    {
+  const handleExecUnixTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.value.slice(-1) !== '.') {
       const newSelectedCommand = {
         ...command,
         execTimeInt: 0,
         execTimeDouble: parseFloat(event.target.value),
-        execTimeStr: event.target.value.toString()
+        execTimeStr: event.target.value
       }
-      setExecTime(isNaN(parseFloat(event.target.value))?'0':String(parseFloat(event.target.value)));
-      dispatch(selectedCommandEditAction(newSelectedCommand));
+      setExecTime(isNaN(parseFloat(event.target.value)) ? '0' : String(parseFloat(event.target.value)));
+      dispatch(editSelectedCommandAction(newSelectedCommand));
     }
-    else if (event.target.value.indexOf('.') == event.target.value.length-1) 
-    {
+    else if (event.target.value.indexOf('.') == event.target.value.length - 1) {
       setExecTime(event.target.value);
     }
   };
 
-  const handleParamValueChange = (event: any, i: number) => {
+  const handleParamValueChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, i: number) => {
     const newSelectedCommand = {
       ...command,
       params: [
-        ...command.params.slice(0,i),
+        ...command.params.slice(0, i),
         {
           ...command.params[i],
           value: event.target.value
         },
-        ...command.params.slice(i+1)
+        ...command.params.slice(i + 1)
       ]
     }
-    dispatch(selectedCommandEditAction(newSelectedCommand));
+    dispatch(editSelectedCommandAction(newSelectedCommand));
   };
 
   return (
@@ -146,58 +124,58 @@ const SetParamTable = (props: SetParamAreaProps) => {
       <Typography>
         Parameters
       </Typography>
-      <div className="module-spacer--extra-extra-small"/>
+      <div className="module-spacer--extra-extra-small" />
       <TableContainer component={Paper}>
-        <Table className={classes.table}>
+        <Table sx={tableStyle}>
           <TableHead>
             <TableRow>
-              <TableCell className={classes.nameCell}>Name</TableCell>
-              <TableCell className={classes.valueCell}>Value</TableCell>
-              <TableCell className={classes.typeCell}>Type</TableCell>
-              <TableCell>Description</TableCell>
+              <TableCell sx={nameCellStyle}>Name</TableCell>
+              <TableCell sx={valueCellStyle}>Value</TableCell>
+              <TableCell sx={typeCellStyle}>Type</TableCell>
+              <TableCell sx={descriptionCellStyle}>Description</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-          {(command.execType === "TL" || command.execType === "BL") && (
+            {(command.execType === "TL" || command.execType === "BL") && (
               <TableRow>
-                <TableCell className={classes.nameCell}>Time</TableCell>
-                <TableCell className={classes.valueCell} style={{padding: 0}}>
+                <TableCell sx={nameCellStyle}>Time</TableCell>
+                <TableCell sx={valueCellStyle}>
                   <TextField
                     label="" onChange={handleExecTimeChange}
                     value={(execTime === '') ? '0' : (execTime || '')} type="text"
-                    className={classes.valueInput}
+                    sx={valueInputStyle}
                   />
                 </TableCell>
-                <TableCell className={classes.typeCell}>int32_t</TableCell>
+                <TableCell sx={typeCellStyle}>int32_t</TableCell>
                 <TableCell>TI</TableCell>
               </TableRow>
             )}
             {(command.execType === "UTL") && (
               <TableRow>
-                <TableCell className={classes.nameCell}>Time</TableCell>
-                <TableCell className={classes.valueCell} style={{padding: 0}}>
+                <TableCell sx={nameCellStyle}>Time</TableCell>
+                <TableCell sx={valueCellStyle}>
                   <TextField
                     label="" onChange={handleExecUnixTimeChange}
                     value={(execTime === '') ? '0' : (execTime || '')} type="text"
-                    className={classes.valueInput}
+                    sx={valueInputStyle}
                   />
                 </TableCell>
-                <TableCell className={classes.typeCell}>int32_t</TableCell>
+                <TableCell sx={typeCellStyle}>int32_t</TableCell>
                 <TableCell>UnixTime</TableCell>
               </TableRow>
             )}
             {command.params.length > 0 && (
-              command.params.map((param,i) => 
+              command.params.map((param, i) =>
                 <TableRow key={i}>
-                  <TableCell className={classes.nameCell}>{param.name}</TableCell>
-                  <TableCell className={classes.valueCell} style={{padding: 0}}>
+                  <TableCell sx={nameCellStyle}>{param.name}</TableCell>
+                  <TableCell sx={valueCellStyle}>
                     <TextField
                       label="" onChange={(event) => handleParamValueChange(event, i)}
                       value={param.value || ""} type="text"
-                      className={classes.valueInput}
+                      sx={valueInputStyle}
                     />
                   </TableCell>
-                  <TableCell className={classes.typeCell}>{param.type}</TableCell>
+                  <TableCell sx={typeCellStyle}>{param.type}</TableCell>
                   <TableCell>{param.description}</TableCell>
                 </TableRow>
               )

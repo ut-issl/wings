@@ -1,29 +1,18 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import TableCell from '@material-ui/core/TableCell';
-
-const useStyles = makeStyles(
-  createStyles({
-    valueInput: {
-      "& input": {
-        padding: 8,
-        maxWidth: 120
-      }
-    },
-}));
+import TextField from '@mui/material/TextField';
+import TableCell from '@mui/material/TableCell';
 
 export interface EditableInputTableCellProps {
   isEditMode: boolean,
   name: string,
   value: string
   label: string,
-  onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => any,
-};
+  onChange: (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => void,
+}
 
 const EditableInputTableCell = (props: EditableInputTableCellProps) => {
   const { isEditMode, label, name, value, onChange } = props;
-  const classes = useStyles();
+  const valueInputStyle = { "& input": { padding: 8, maxWidth: 120 } };
 
   return (
     <TableCell>
@@ -31,7 +20,7 @@ const EditableInputTableCell = (props: EditableInputTableCellProps) => {
         <TextField
           label="" onChange={(event) => onChange(event)}
           name={name} value={value} type="text"
-          className={classes.valueInput}
+          sx={valueInputStyle}
         />
       ) : (
         label

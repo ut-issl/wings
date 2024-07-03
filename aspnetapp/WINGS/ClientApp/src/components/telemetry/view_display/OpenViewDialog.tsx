@@ -1,13 +1,12 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core/styles';
-import { Button, TextField } from '@material-ui/core';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Dialog from '@material-ui/core/Dialog';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { Button, TextField } from '@mui/material';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Dialog from '@mui/material/Dialog';
+import Checkbox from '@mui/material/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store/RootState';
 import { getAllIndexes } from '../../../redux/views/selectors';
@@ -16,17 +15,8 @@ import SelectBox, { SelectOption } from '../../common/SelectBox';
 import { getLatestTelemetries } from '../../../redux/telemetries/selectors';
 import { selectTelemetryAction } from '../../../redux/views/actions';
 
-const useStyles = makeStyles(
-  createStyles({
-    paper: {
-      height: '80vh',
-      width: 500
-    }
-}));
-
 export interface OpenViewDialogProps {
   blockNum: number,
-  classes: Record<'paper', string>;
   keepMounted: boolean;
   open: boolean;
   onClose: () => void;
@@ -34,7 +24,6 @@ export interface OpenViewDialogProps {
 
 const OpenViewDialog = (props: OpenViewDialogProps) => {
   const { onClose, blockNum, open } = props;
-  const classes = useStyles();
   const selector = useSelector((state: RootState) => state);
   const dispatch = useDispatch();
 
@@ -42,26 +31,26 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
   const [type, setType] = React.useState("packet");
   const indexes = getAllIndexes(selector);
   const [text, setText] = React.useState("");
-  
+
   interface CheckboxState {
-    [id: string] : boolean;
+    [id: string]: boolean;
   }
 
-  let initCheckboxState : CheckboxState = {};
+  const initCheckboxState: CheckboxState = {};
   indexes.forEach(element => initCheckboxState[element.id] = false);
   const [checkboxState, setCheckboxState] = React.useState(initCheckboxState);
 
   const handleEntering = () => {
-    if(formGroupRef.current != null){
+    if (formGroupRef.current != null) {
       formGroupRef.current.focus();
     }
   };
 
   const handleCancel = () => {
     onClose();
-    let makeCheckboxStateFalse = {...checkboxState};
+    const makeCheckboxStateFalse = { ...checkboxState };
     indexes.forEach(element => {
-      if (checkboxState[element.id] === true){
+      if (checkboxState[element.id] === true) {
         makeCheckboxStateFalse[element.id] = false;
       }
       setCheckboxState(makeCheckboxStateFalse);
@@ -69,20 +58,20 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
   };
 
   const handleOk = () => {
-    let makeCheckboxStateFalse = {...checkboxState};
+    const makeCheckboxStateFalse = { ...checkboxState };
     indexes.forEach(element => {
-      if (checkboxState[element.id] === true){
-        if (type === "packet" || "graph" && element.type === type){
-          dispatch(openViewAction(blockNum, element.id, {}));
+      if (checkboxState[element.id] === true) {
+        if (type === "packet" || "graph" && element.type === type) {
+          dispatch(openViewAction({ block: blockNum, id: element.id }));
           makeCheckboxStateFalse[element.id] = false;
         }
-        if (type === "packet"){
-          let telemetryShowed :string[] = [];
-          let tlms = getLatestTelemetries(selector)[element.compoName][element.name];
+        if (type === "packet") {
+          const telemetryShowed: string[] = [];
+          const tlms = getLatestTelemetries(selector)[element.compoName][element.name];
           tlms.forEach(tlm => {
             telemetryShowed.push(tlm.telemetryInfo.name);
           })
-          dispatch(selectTelemetryAction(blockNum, telemetryShowed));
+          dispatch(selectTelemetryAction({ block: blockNum, tlmName: telemetryShowed }));
         }
       }
     });
@@ -91,24 +80,22 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckboxState({...checkboxState, [(event.target as HTMLInputElement).value]:event.target.checked});
+    setCheckboxState({ ...checkboxState, [(event.target as HTMLInputElement).value]: event.target.checked });
   };
 
-  const handleChangeText = (e: any) => {
+  const handleChangeText = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(() => e.target.value)
   }
 
-  const typeOptions: SelectOption[] = ["packet", "character", "graph"].map(type => ({id: type, name: type}));
+  const typeOptions: SelectOption[] = ["packet", "character", "graph"].map(type => ({ id: type, name: type }));
 
   return (
     <Dialog
-      disableBackdropClick
       disableEscapeKeyDown
       maxWidth="xs"
-      onEntering={handleEntering}
+      // onEntering={handleEntering}
       aria-labelledby="open-plan-dialog-title"
       open={open}
-      classes={{ paper: classes.paper }}
     >
       <DialogTitle id="open-plan-dialog-title">
         <div style={{ display: "flex" }}>
@@ -119,22 +106,22 @@ const OpenViewDialog = (props: OpenViewDialogProps) => {
           <TextField
             label="search" onChange={handleChangeText}
             value={text} type="text"
-            style={{marginLeft: 20, width: "100%"}}
+            style={{ marginLeft: 20, width: "100%" }}
           />
         </div>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers sx={{ height: "60vh" }}>
         <FormGroup
           ref={formGroupRef}
           aria-label="ringtone"
           onChange={handleChange}
         >
-        {indexes.length > 0 && (
+          {indexes.length > 0 && (
             indexes.map(index => {
               if (index.id.toUpperCase().includes(type.toUpperCase()) && type != "" && index.id.toUpperCase().includes(text.toUpperCase())) {
                 return <FormControlLabel key={index.id} value={index.id}
-                control={<Checkbox checked={checkboxState[index.id]} />}
-                label={index.name}
+                  control={<Checkbox checked={checkboxState[index.id]} />}
+                  label={index.name}
                 />
               }
             })

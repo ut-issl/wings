@@ -1,4 +1,5 @@
-import { Switch, Route } from 'react-router';
+import React from 'react';
+import {  Routes, Route } from 'react-router-dom';
 import Home from './components/home/Home';
 import CommandSender from './components/command/CommandSender';
 import CommandLog from './components/command/CommandLog';
@@ -10,15 +11,15 @@ import ComponentManage from './components/compo/ComponentManage';
 
 const Router = () => {
   return (
-    <Switch>
-      <Route exact path='/'                        component={Home} />
-      <Route exact path='/command'                 component={CommandSender} />
-      <Route exact path='/telemetry'               component={TelemetryViewer} />
-      <Route exact path='/command_log'             component={CommandLog} />
-      <Route exact path='/history'                 component={OperationHistory} />
-      <Route exact path='/history/:id'             component={HistoryDetail} />
-      <Route exact path='/settings/components'     component={ComponentManage} />
-    </Switch>
+    <Routes>
+      <Route path='/'                        element={<Home />} />
+      <Route path='/command'                 element={<CommandSender />} />
+      <Route path='/telemetry'               element={<TelemetryViewer />} />
+      <Route path='/command_log'             element={<CommandLog />} />
+      <Route path='/history'                 element={<OperationHistory />} />
+      <Route path='/history/:id'             element={<HistoryDetail />} />
+      <Route path='/settings/components'     element={<ComponentManage />} />
+    </Routes>
   )
 };
 

@@ -35,6 +35,11 @@ export type TelemetryValue = {
   TI: string
 }
 
+export type TelemetryPacketJson = {
+  data: TelemetryPacket[],
+  latestTlmTime: string
+}
+
 export type TelemetryPacket = {
   packetInfo: {
     tlmApid: string,

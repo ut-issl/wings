@@ -20,9 +20,11 @@ export type ViewBlockInfo = {
 export type TelemetryView = {
   allIndexes: TelemetryViewIndex[],
   blocks: ViewBlockInfo[],
-  contents: {
-    [id: string]: any
-  },
+}
+
+export type LayoutJson = {
+  data: Layout[],
+  message: string
 }
 
 export type Layout = {
