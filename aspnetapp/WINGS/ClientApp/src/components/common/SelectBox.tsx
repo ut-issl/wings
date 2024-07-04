@@ -1,35 +1,34 @@
 import React from 'react';
-import {InputLabel, MenuItem, FormControl, Select, makeStyles, createStyles} from "@material-ui/core"
-
-const useStyles = makeStyles(createStyles({
-  formControl: {
-    marginBottom: 16,
-    minWidth: 128,
-    width: '100%'
-  }
-}));
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 export interface SelectOption {
-  id: any,
+  id: string | number,
   name: string
-};
+}
 
 export interface SelectBoxProps {
   label: string,
-  value: any,
-  select: any,
+  value: string,
+  select: (selected: string) => void,
   options: SelectOption[]
-};
+}
 
 const SelectBox = (props: SelectBoxProps) => {
-  const classes = useStyles();
+  const formControlStyle = {
+    minWidth: 128,
+    width: '100%'
+  };
 
   return (
-    <FormControl className={classes.formControl}>
+    <FormControl sx={formControlStyle}>
       <InputLabel>{props.label}</InputLabel>
       <Select
         value={props.value}
-        onChange={(event) => {props.select(event.target.value)}}
+        label={props.label}
+        onChange={(event: SelectChangeEvent) => { props.select(event.target.value) }}
       >
         {props.options.map((option: SelectOption) => (
           <MenuItem key={option.id} value={option.id}>{option.name}</MenuItem>

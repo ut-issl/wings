@@ -1,5 +1,5 @@
 import React from 'react';
-import TableCell from '@material-ui/core/TableCell';
+import TableCell from '@mui/material/TableCell';
 import SelectBox, { SelectOption } from './SelectBox';
 
 export interface EditableSelectTableCellProps {

@@ -211,15 +211,14 @@ namespace WINGS.Services
     }
     private bool GetRealTimeFlag(byte[] packet)
     {
-      //packet : CCSDS Packet
-      int pos = 10;
-      if ((packet[pos] & 0b_1110_0000) == 0b_0000_0000) // rp
-      {
-        return false;
-      }
-      else  // HK or MS( or stored)
+      int pos = 24;
+      if ((packet[pos] & 0b00000011) != 0)
       {
         return true;
+      }
+      else  // 0b00000001 or 0b00000010 -> realtime telemetry
+      {
+        return false;
       }
     }
     private UInt32 GetTI(byte[] packet)

@@ -1,59 +1,15 @@
 import React from 'react';
-import { Command, CommandPlanLine, Request, RequestStatus } from '../../../models';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import StopIcon from '@material-ui/icons/Stop';
-import { ArrowUpward, ArrowDownward, Delete} from '@material-ui/icons';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { Command, CommandController, CommandPlanLine, Request, RequestStatus } from '../../../models';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import StopIcon from '@mui/icons-material/Stop';
+import { ArrowUpward, ArrowDownward, Delete } from '@mui/icons-material';
+import { Theme, useTheme } from '@mui/material';
 import { deleteUnplannedCommandAction, moveUpUnplannedCommandAction, moveDownUnplannedCommandAction } from '../../../redux/plans/actions';
 import { getActivePlanId } from '../../../redux/plans/selectors';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../../redux/store/RootState';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    row: {
-      height: 20
-    },
-    lineNumCell: {
-      width: 24,
-      padding: "6px 6px 6px 10px"
-    },
-    stopCell: {
-      width: 10,
-      padding: 6
-    },
-    stopIcon: {
-      fill: theme.palette.primary.light,
-      width: "15px",
-      height: "15px",
-      verticalAlign: "middle"
-    },
-    requestCell: {
-      padding: 6
-    },
-    isSelected: {
-      backgroundColor: theme.palette.grey[800]
-    },
-    execSuccess: {
-      color: theme.palette.success.main
-    },
-    comment: {
-      color: theme.palette.info.main
-    },
-    error: {
-      color: theme.palette.error.main
-    },
-    delete: {
-      width: 40
-    },
-    arrowUpward: {
-      width: 40
-    },
-    arrowDownward: {
-      width: 40
-    }
-}));
+import { grey } from '@mui/material/colors';
 
 export interface RequestTableRowProps {
   line: CommandPlanLine,
@@ -64,18 +20,49 @@ export interface RequestTableRowProps {
 }
 
 const RequestTableRow = (props: RequestTableRowProps) => {
-  const classes = useStyles();
+  const theme: Theme = useTheme();
   const spacer = <span style={{ marginRight: "10px" }}></span>;
   const dispatch = useDispatch();
   const selector = useSelector((state: RootState) => state);
   const activePlanId = getActivePlanId(selector);
+
+  const tableRowStyle = (isSelected: boolean) => {
+    if (isSelected) {
+      return {
+        height: 20,
+        padding: 0,
+        backgroundColor: theme.palette.grey[800]
+      };
+    }
+    else {
+      return {
+        height: 20,
+        padding: 0,
+      };
+    }
+  }
+
+  const lineNumCellStyle = { width: 24, padding: 1 };
+  const stopCellStyle = { width: 10, padding: 1 };
+  const stopIconStyle = {
+    fill: theme.palette.primary.light,
+    width: "15px",
+    height: "15px",
+    verticalAlign: "middle",
+    padding: 0
+  };
+  const requestCellStyle = { padding: 0 };
+  const commentStyle = { color: theme.palette.info.main, padding: 0 };
+  const deleteStyle = { width: 40, paddingButtom: 1, paddingTop: 1 };
+  const arrowUpwardStyle = { width: 40, paddingButtom: 1, paddingTop: 1 };
+  const arrowDownwardStyle = { width: 40, paddingButtom: 1, paddingTop: 1 };
 
   const showCommandParam = (command: Command) => {
     return (
       <>
         {command.execType !== "RT" && (<>{spacer}{command.execTimeStr}</>)}
         {command.params.length > 0 && (
-          command.params.map((param,i) => (
+          command.params.map((param, i) => (
             <React.Fragment key={i}>
               {spacer}{param.value}
             </React.Fragment>
@@ -86,36 +73,37 @@ const RequestTableRow = (props: RequestTableRowProps) => {
   };
 
   const showControlBody = (request: Request) => {
-    const { method, body } = request;
+    const method = request.method;
+    const body = request.body as CommandController;
 
     switch (method) {
       case "wait_sec":
         return <>{body.time}</>
-      
+
       case "wait_until":
         return <>{body.variable}{spacer}{body.compare}{spacer}{body.value}{spacer}{body.statement}{spacer}{body.timeoutsec}</>
-      
+
       case "call":
         return <>{body.fileName}</>
 
       case "check_value":
         return <>{body.variable}{spacer}{body.compare}{spacer}{body.value}</>
-      
+
       case "let":
         return <>{body.variable}{spacer}{body.equal}{spacer}{body.equation}</>
-      
+
       case "get":
         return <>{body.variable}{spacer}{body.value}</>
-    
+
       default:
         return;
     }
   }
 
   const statusColor = (status: RequestStatus) => {
-    if (status.error) return classes.error;
-    if (status.success) return classes.execSuccess;
-    return "";
+    if (status.error) return { margin: 0, color: theme.palette.error.main };
+    if (status.success) return { margin: 0, color: theme.palette.success.main };
+    return { margin: 0 };
   }
   const deleteUnplannedCommand = () => {
     dispatch(deleteUnplannedCommandAction(props.index));
@@ -134,68 +122,68 @@ const RequestTableRow = (props: RequestTableRowProps) => {
     const status = props.line.status;
 
     if (req.syntaxError) {
-      return <p style={{margin: 0}} className={classes.error}>{req.errorMessage}</p>;
+      return <p style={{ margin: 0, color: theme.palette.error.main }}>{req.errorMessage}</p>;
     }
-    
+
     switch (req.type) {
       case "comment":
-        return <p style={{margin: 0}} className={classes.comment}>{req.body}</p>;
-      
+        return <p style={{ margin: 0, color: theme.palette.info.main }}>{req.body}</p>;
+
       case "command":
-        const command = req.body;
+        const command = req.body as Command;
         return (
-          <p style={{margin: 0}} className={`${statusColor(status)}`}>
-            {(command.component) ? ((command.isViaMobc) ? "MOBC_" + command.execType + "_" + command.component + "_RT." : command.component + "_" + command.execType + "." ) : command.execType + "." }
+          <p style={statusColor(status)}>
+            {(command.component) ? ((command.isViaMobc) ? "MOBC_" + command.execType + "_" + command.component + "_RT." : command.component + "_" + command.execType + ".") : command.execType + "."}
             {command.name}
             {showCommandParam(command)}
             {spacer}
-            <span className={classes.comment}>{req.inlineComment}</span>
+            <span style={{ color: theme.palette.info.main }}>{req.inlineComment}</span>
           </p>
         );
-      
+
       case "control":
         return (
-          <p style={{margin: 0}} className={`${statusColor(status)}`}>
+          <p style={statusColor(status)}>
             {req.method}
             {spacer}
             {showControlBody(req)}
             {spacer}
-            <span className={classes.comment}>{req.inlineComment}</span>
+            <span style={commentStyle}>{req.inlineComment}</span>
           </p>
         )
-    
+
       default:
         return;
-    };
+    }
   }
 
-  if (activePlanId == '_unplanned'){
+  if (activePlanId == '_unplanned') {
     return (
       <TableRow
-        className={`${classes.row} ${props.isSelected ? classes.isSelected : ''}`}
+        sx={tableRowStyle(props.isSelected)}
         onClick={props.onClick}
       >
-        <TableCell className={classes.lineNumCell} align="right">
-          {props.index+1}
+        <TableCell sx={lineNumCellStyle} align="right">
+          {props.index + 1}
         </TableCell>
-        <TableCell className={classes.stopCell}>
-          {props.line.request.stopFlag && <StopIcon className={classes.stopIcon} />}
+        <TableCell sx={stopCellStyle}>
+          {props.line.request.stopFlag && <StopIcon sx={stopIconStyle} />}
         </TableCell>
-        <TableCell className={classes.requestCell} >
+        <TableCell sx={requestCellStyle} >
           {showRequestContent()}
         </TableCell>
         <ArrowUpward
-          className={classes.arrowUpward}
+          sx={arrowUpwardStyle}
           onClick={moveUpUnplannedCommand}
         >
         </ArrowUpward>
         <ArrowDownward
-          className={classes.arrowDownward}
+          sx={arrowDownwardStyle}
           onClick={moveDownUnplannedCommand}
         >
         </ArrowDownward>
         <Delete
-          className={classes.delete}
+          sx={deleteStyle}
           onClick={deleteUnplannedCommand}
         >
         </Delete>
@@ -204,22 +192,22 @@ const RequestTableRow = (props: RequestTableRowProps) => {
   } else {
     return (
       <>
-      <TableRow
-        className={`${classes.row} ${props.isSelected ? classes.isSelected : ''}`}
-        onClick={props.onClick}
-        onDoubleClick={props.onDoubleClick}
-      >
-        <TableCell className={classes.lineNumCell} align="right">
-          {props.index+1}
-        </TableCell>
-        <TableCell className={classes.stopCell}>
-          {props.line.request.stopFlag && <StopIcon className={classes.stopIcon} />}
-        </TableCell>
-        <TableCell className={classes.requestCell} >
-          {showRequestContent()}
-        </TableCell>
-        <TableCell />
-      </TableRow>
+        <TableRow
+          sx={tableRowStyle(props.isSelected)}
+          onClick={props.onClick}
+          onDoubleClick={props.onDoubleClick}
+        >
+          <TableCell sx={lineNumCellStyle} align="right">
+            {props.index + 1}
+          </TableCell>
+          <TableCell sx={stopCellStyle}>
+            {props.line.request.stopFlag && <StopIcon sx={stopIconStyle} />}
+          </TableCell>
+          <TableCell sx={requestCellStyle} >
+            {showRequestContent()}
+          </TableCell>
+          <TableCell />
+        </TableRow>
       </>
     );
   }

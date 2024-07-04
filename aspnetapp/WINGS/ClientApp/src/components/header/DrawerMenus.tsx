@@ -1,76 +1,72 @@
 import React from 'react';
-import { createStyles, makeStyles } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
-import { push } from 'connected-react-router';
-import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
-import HomeIcon from '@material-ui/icons/Home';
-import HistoryIcon from '@material-ui/icons/History';
-import SettingsIcon from '@material-ui/icons/Settings';
-import ComputerIcon from '@material-ui/icons/Computer';
-import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
-
-const useStyles = makeStyles(
-  createStyles({
-    drawer: {
-      flexShrink: 0,
-      width: 256
-    },
-    drawerPaper: {
-      width: 256
-    }
-}));
+import { useNavigate } from 'react-router-dom';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import HomeIcon from '@mui/icons-material/Home';
+import HistoryIcon from '@mui/icons-material/History';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ComputerIcon from '@mui/icons-material/Computer';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+import { grey } from '@mui/material/colors';
 
 export interface DrawerMenusProps {
-  open: boolean,
-  onClose: (event: {}) => void
+  open: boolean;
+  onClose: (event: React.SyntheticEvent) => void;
 }
 
 const DrawerMenus = (props: DrawerMenusProps) => {
-  const classes = useStyles();
-  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const selectMenu = (event: {}, path: string) => {
-    dispatch(push(path));
+  const selectMenu = (event: React.SyntheticEvent, path: string) => {
+    navigate(path);
     props.onClose(event);
   }
 
+  const drawerPaperStyle = { width: 256 };
+
+  const ListItemButtonStyle = {
+    "&:hover": {
+      backgroundColor: grey[700]
+    }
+  }
+
   const menus = [
-    {id: "home", label: "Home", icon: <HomeIcon />, value: "/"},
-    {id: "history", label: "Operation History", icon: <HistoryIcon />, value: "/history"},
-    {id: "compo", label: "Components", icon: <ComputerIcon />, value: "/settings/components"},
-    {id: "setting", label: "Settings", icon: <SettingsIcon />, value: "/settings"}
+    { id: "home", label: "Home", icon: <HomeIcon />, value: "/" },
+    { id: "history", label: "Operation History", icon: <HistoryIcon />, value: "/history" },
+    { id: "compo", label: "Components", icon: <ComputerIcon />, value: "/settings/components" },
+    { id: "setting", label: "Settings", icon: <SettingsIcon />, value: "/settings" }
   ];
 
   return (
-    <nav className={classes.drawer}>
+    <nav style={{ flexShrink: 0, width: 256 }}>
       <Drawer
         variant="temporary"
         anchor="left"
         open={props.open}
-        onClose={(event) => props.onClose(event)}
-        classes={{paper: classes.drawerPaper}}
-        ModalProps={{keepMounted: true}}
+        onClose={(event: React.SyntheticEvent) => props.onClose(event)}
+        PaperProps={drawerPaperStyle}
+        ModalProps={{ keepMounted: true }}
       >
         <List>
           <ListItem>
-            <IconButton onClick={(event) => props.onClose(event)} style={{marginLeft: "auto"}}>
-              <ArrowBackIosIcon fontSize="small"/>
+            <IconButton onClick={(event) => props.onClose(event)} style={{ marginLeft: "auto" }}>
+              <ArrowBackIosIcon fontSize="small" />
             </IconButton>
           </ListItem>
-          <Divider　/>
+          <Divider />
           {menus.map(menu => (
-            <ListItem button key={menu.id} onClick={(event) => selectMenu(event, menu.value)}>
-              <ListItemIcon>
+            <ListItemButton key={menu.id} onClick={(event) => selectMenu(event, menu.value)} sx={ListItemButtonStyle}>
+              <ListItemIcon sx={{ color: grey[400] }}>
                 {menu.icon}
               </ListItemIcon>
-              <ListItemText primary={menu.label}/>
-            </ListItem>
+              <ListItemText primary={menu.label} />
+            </ListItemButton>
           ))}
         </List>
       </Drawer>
