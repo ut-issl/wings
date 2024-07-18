@@ -1,4 +1,7 @@
 [
   {"tlmApid": "0x123", "cmdApid": "0x456", "compoName": "ISSL_OBC"},
-  {"tlmApid": "0x456", "cmdApid": "0x123", "compoName": "ISSL_SECONDARY_OBC"}
+  {"tlmApid": "0x456", "cmdApid": "0x123", "compoName": "ISSL_SECONDARY_OBC"},
+  {"tlmApid": "0x510", "cmdApid": "0x210", "compoName": "MOBC"},
+  {"tlmApid": "0x511", "cmdApid": "0x211", "compoName": "AOBC"},
+  {"tlmApid": "0x512", "cmdApid": "0x212", "compoName": "TOBC"}
 ]
