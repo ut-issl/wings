@@ -225,9 +225,11 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
 
   const executeMultipleRequests = async () => {
     let row = selectedRow;
+    let currentVariables = [...cmdFileVariables];
     do {
-      const exeret = await executeRequest(row, cmdType);
-      sendCmdFileLine(row, exeret);
+      const exeret = await executeRequest(row, cmdType, currentVariables);
+      sendCmdFileLine(row, exeret.exeret);
+      currentVariables = exeret.updatedVariables;
       if (content[row].request.method === "call") {
         break;
       }
@@ -237,17 +239,18 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
     if (row === content.length) {
       dispatch(selectedPlanRowAction(-1));
     }
+    setCmdFileVariables(currentVariables);
   }
 
-  const getVariableValue = (variableName: string): GetVariable => {
+  const getVariableValue = (variables: CmdFileVariable[], variableName: string): GetVariable => {
     let variableIndex = -1;
     const outcome: GetVariable = { value: 0, isSuccess: false, convType: "" };
     if (variableName.toLowerCase() === "unixtime_now") {
       outcome.value = Math.floor(new Date().getTime() / 1000);
       outcome.isSuccess = true;
-    } else if (cmdFileVariables.findIndex(index => index.variable === variableName) >= 0) {
-      variableIndex = cmdFileVariables.findIndex(index => index.variable === variableName);
-      outcome.value = cmdFileVariables[variableIndex].value;
+    } else if (variables.findIndex(index => index.variable === variableName) >= 0) {
+      variableIndex = variables.findIndex(index => index.variable === variableName);
+      outcome.value = variables[variableIndex].value;
       outcome.isSuccess = true;
     } else if (variableName.indexOf('.') > -1) {
       let tlms: Telemetry[] = [];
@@ -280,9 +283,9 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
     return outcome;
   }
 
-  const compareValue = (compare: string, variable: GetVariable, refValue: string) => {
+  const compareValue = (compare: string, variable: GetVariable, refValue: string, variables: CmdFileVariable[]) => {
     const comparedValue = (refValue.indexOf("{") === -1) ? refValue
-      : getVariableValue(refValue.substring(refValue.indexOf("{") + 1, refValue.indexOf("}"))).value.toString();
+      : getVariableValue(variables, refValue.substring(refValue.indexOf("{") + 1, refValue.indexOf("}"))).value.toString();
     switch (compare) {
       case "==":
         return variable.value === parseTlmValue(comparedValue, variable.convType);
@@ -299,7 +302,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       case "in":
         while (refValue.indexOf("{") !== -1) {
           const cmdFileVar = refValue.substring(refValue.indexOf("{") + 1, refValue.indexOf("}"));
-          const varValue = getVariableValue(cmdFileVar);
+          const varValue = getVariableValue(variables, cmdFileVar);
           if (!varValue.isSuccess) {
             return false;
           }
@@ -313,9 +316,10 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
     }
   }
 
-  const executeRequest = async (row: number, cmdType: string): Promise<boolean> => {
+  const executeRequest = async (row: number, cmdType: string, variables: CmdFileVariable[]): Promise<{ exeret: boolean, updatedVariables: CmdFileVariable[] }> => {
     const req = content[row].request;
     let exeret = false;
+    let updatedVariables = [...variables];
     switch (req.type) {
       case "comment":
         dispatch(execRequestSuccessAction(row));
@@ -329,11 +333,11 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         if ((command.execTimeStr != null) && (command.execTimeStr.indexOf("{") !== -1)) {
           const varTi = command.execTimeStr.substring(command.execTimeStr.indexOf("{") + 1,
             command.execTimeStr.indexOf("}"));
-          const tiValue = getVariableValue(varTi);
+          const tiValue = getVariableValue(variables, varTi);
 
           if (!tiValue.isSuccess) {
             dispatch(execRequestErrorAction(row));
-            return false;
+            return { exeret, updatedVariables };
           }
 
           if (command.execType === "TL" || command.execType === "BL") {
@@ -342,7 +346,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
             command.execTimeDouble = Number(tiValue.value);
           } else {
             dispatch(execRequestErrorAction(row));
-            return false;
+            return { exeret, updatedVariables };
           }
         }
 
@@ -354,11 +358,11 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
               const varStart = commandValue.indexOf("{") + 1;
               const varEnd = commandValue.indexOf("}");
               const varParam = commandValue.substring(varStart, varEnd);
-              const varValue = getVariableValue(varParam);
+              const varValue = getVariableValue(variables, varParam);
 
               if (!varValue.isSuccess) {
                 dispatch(execRequestErrorAction(row));
-                return false;
+                return { exeret, updatedVariables };
               } else {
                 paramsValue.push(varValue.value.toString());
               }
@@ -373,21 +377,23 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         break;
 
       case "control":
-        const controlret = await executeControlRequest(row);
-        exeret = controlret;
+        const controlret = await executeControlRequest(row, updatedVariables);
+        exeret = controlret.exeret;
+        updatedVariables = controlret.updatedVariables;
         break;
 
       default:
         break;
     }
-    return exeret;
+    return { exeret, updatedVariables };
   }
 
-  const executeControlRequest = async (row: number): Promise<boolean> => {
+  const executeControlRequest = async (row: number, variables: CmdFileVariable[]): Promise<{ exeret: boolean, updatedVariables: CmdFileVariable[] }> => {
     const req = content[row].request;
     const method = req.method as string;
     const contollerBody = req.body as CommandController;
     let reqret = false;
+    let updatedVariables = [...variables];
     switch (method) {
       case "wait_sec":
         await _sleep(contollerBody.time * 1000);
@@ -412,13 +418,13 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         let timer = 0;
         const timeoutsec = (contollerBody.timeoutsec === "" || isNaN(contollerBody.timeoutsec as number)) ? 10 : Number(contollerBody.timeoutsec);
         while (!reqret && timer < timeoutsec) {
-          const latestTlmValue = getVariableValue(contollerBody.variable);
+          const latestTlmValue = getVariableValue(variables, contollerBody.variable);
           if (!latestTlmValue.isSuccess) {
             dispatch(execRequestErrorAction(row));
             break;
           }
 
-          if (compareValue(contollerBody.compare, latestTlmValue, contollerBody.value)) {
+          if (compareValue(contollerBody.compare, latestTlmValue, contollerBody.value, variables)) {
             reqret = true;
           } else {
             await _sleep(1000);
@@ -433,13 +439,13 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         break;
 
       case "check_value":
-        const tlmValue = getVariableValue(contollerBody.variable);
+        const tlmValue = getVariableValue(variables, contollerBody.variable);
         if (!tlmValue.isSuccess) {
           dispatch(execRequestErrorAction(row));
           break;
         }
 
-        if (compareValue(contollerBody.compare, tlmValue, contollerBody.value)) {
+        if (compareValue(contollerBody.compare, tlmValue, contollerBody.value, variables)) {
           dispatch(execRequestSuccessAction(row));
           reqret = true;
         } else {
@@ -449,40 +455,19 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
         break;
 
       case "let":
-        let equ = contollerBody.equation;
-        // const innerVar = tlms[tlmidx];
-        // const val = parseTlmValue(innerVar.telemetryValue.value, innerVar.telemetryInfo.convType);
-        reqret = true;
-        while (equ.indexOf("{") !== -1) {
-          const cmdFileVar = equ.substring(equ.indexOf("{") + 1, equ.indexOf("}"));
-          const varValue = getVariableValue(cmdFileVar);
-          if (!varValue.isSuccess) {
-            dispatch(execRequestErrorAction(row));
-            return false;
-          }
-          equ = equ.replace("{" + cmdFileVar + "}", varValue.value.toString());
-        }
-        let equAns = "";
-        try {
-          equAns = (eval(equ) as string | number).toString();
-        }
-        catch (e) {
-          equAns = equ;
-        }
-        const cmdFileVariablesTemp = [...cmdFileVariables];
-        const varIndex = cmdFileVariables.findIndex(index => index.variable === contollerBody.variable);
-        if (varIndex >= 0) {
-          cmdFileVariablesTemp[varIndex].value = equAns;
+        const equ = contollerBody.equation;
+        const updatedVariablesTemp = setNewVariable(contollerBody.variable, equ, variables);
+        if (updatedVariablesTemp.isSuccess) {
+          dispatch(execRequestSuccessAction(row));
+          updatedVariables = updatedVariablesTemp.variables;
+          dispatch(editCmdFileVariableAction(updatedVariables));
         } else {
-          cmdFileVariablesTemp.push({ variable: contollerBody.variable, value: equAns });
+          dispatch(execRequestErrorAction(row));
         }
-        setCmdFileVariables(cmdFileVariablesTemp);
-        dispatch(execRequestSuccessAction(row));
-        dispatch(editCmdFileVariableAction(cmdFileVariablesTemp));
         break;
 
       case "get":
-        const reqValue = getVariableValue(contollerBody.variable);
+        const reqValue = getVariableValue(variables, contollerBody.variable);
         const newText = (req.stopFlag ? "." : " ") + `${method} ${contollerBody.variable} ${reqValue.value}`;
         await setCmdline(row, newText);
         if (!reqValue.isSuccess) {
@@ -496,8 +481,61 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       default:
         break;
     }
-    return reqret;
+    return { exeret: reqret, updatedVariables };
   };
+
+  interface SetVariable {
+    isSuccess: boolean,
+    variables: CmdFileVariable[]
+  }
+
+  const calculateEquation = (variables: CmdFileVariable[], equ: string): (string | number) => {
+    while (equ.indexOf("{") != -1) {
+      const cmdFileVar = equ.substring(equ.indexOf("{") + 1, equ.indexOf("}"));
+      const varValue = getVariableValue(variables, cmdFileVar);
+      if (!varValue.isSuccess) {
+        // dispatch(execRequestErrorAction(row));
+        return NaN;
+      }
+      equ = equ.replace("{" + cmdFileVar + "}", varValue.value.toString());
+    }
+    try {
+      if (equ.includes("Math.norm")) {
+        const values = equ.substring(equ.indexOf("Math.norm([") + 11, equ.indexOf("])")).split(",");
+        let ansTemp = 0;
+        values.forEach(value => { ansTemp += parseFloat(value) ** 2; });
+        equ = equ.replace(equ.substring(equ.indexOf("Math.norm(["), equ.indexOf("])") + 2), Math.sqrt(ansTemp).toString());
+      }
+      if (equ.includes("Math.degrees")) {
+        const value = equ.substring(equ.indexOf("Math.degrees(") + 13, equ.indexOf(")"));
+        const valueDegree = Number(value) * 180 / Math.PI;
+        equ = equ.replace(equ.substring(equ.indexOf("Math.degrees("), equ.indexOf(")") + 1), valueDegree.toString());
+      } else if (equ.includes("Math.radians")) {
+        const value = equ.substring(equ.indexOf("Math.radians(") + 13, equ.indexOf(")"));
+        const valueRadian = Number(value) * Math.PI / 180;
+        equ = equ.replace(equ.substring(equ.indexOf("Math.radians("), equ.indexOf(")") + 1), valueRadian.toString());
+      }
+      return eval(equ) as string;
+    } catch (e) {
+      return equ; // 文字列の場合はそのまま出力
+    }
+  }
+
+  const setNewVariable = (variableName: string, equ: string, variables: CmdFileVariable[]): SetVariable => {
+    const equAns = calculateEquation(variables, equ);
+    if (typeof equAns == "number" && isNaN(equAns)) {
+      return { isSuccess: false, variables };
+    }
+    if (variables.findIndex(index => index.variable === variableName) >= 0) {
+      const varIndex = variables.findIndex(index => index.variable === variableName);
+      const updateValue: CmdFileVariable = { variable: variableName, value: equAns };
+      variables[varIndex] = updateValue;
+    } else {
+      const newValue: CmdFileVariable = { variable: variableName, value: equAns };
+      variables = [...variables, newValue];
+    }
+    return { isSuccess: true, variables };
+  }
 
   const parseTlmValue = (value: string, convType: string): number | string => {
     switch (convType) {
