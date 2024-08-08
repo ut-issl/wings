@@ -58,7 +58,7 @@ namespace WINGS.Data
         {
           var cols = parser.ReadFields();
           if (parser.LineNumber == 1) { ComponentName = cols[0]; continue; }
-          else if (parser.LineNumber < 5) { continue; }
+          else if (parser.LineNumber < 3) { continue; }
           if (cols.All(x => x == "")) { break; }
           if (cols[0] != "" && cols[0][0] == '*')
           {
