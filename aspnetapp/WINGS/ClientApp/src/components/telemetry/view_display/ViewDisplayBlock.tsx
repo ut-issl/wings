@@ -40,10 +40,18 @@ const DisplayTab = styled(Tab)({
   textOverflow: "ellipsis",
   padding: "0",
   border: 0,
+  marginTop: 5,
   "&.Mui-selected": {
     "& span": {
       color: "white"
+    },
+    "& .MuiIconButton-root": {
+      color: "white"
     }
+  },
+  "& .MuiIconButton-root": {
+    color: grey[300],
+    marginLeft: 0,
   },
   "& span": {
     color: grey[300],
@@ -51,16 +59,8 @@ const DisplayTab = styled(Tab)({
     textOverflow: "ellipsis",
     overflow: "hidden",
     display: "inline-block",
-    flexGrow: 0
+    flexGrow: 1
   },
-  "& .MuiTab-wrapper > *:first-child": {
-    marginBottom: 0,
-    padding: 0,
-    marginRight: 15,
-    marginLeft: 5,
-    width: 20,
-    height: 20
-  }
 })
 
 const a11yProps = (index: number) => {
@@ -123,7 +123,10 @@ const ViewDisplayBlock = (props: ViewDisplayBlockProps) => {
             />
           ))}
           <IconButtonInTabs onClick={handleDialogOpen}>
-            <AddIcon fontSize="small" />
+            <AddIcon
+              fontSize="small"
+              style={{marginTop: 5, color: value === blockInfo.tabs.length ? "white" : grey[300] }}
+              />
           </IconButtonInTabs>
         </Tabs>
       </AppBar>
