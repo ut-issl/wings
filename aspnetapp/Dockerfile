@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 5001
 RUN curl -sL https://deb.nodesource.com/setup_20.x |  bash -
@@ -6,7 +6,7 @@ RUN apt-get update
 RUN apt-get install -y nodejs
 ENV TZ=Asia/Tokyo
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 RUN curl -sL https://deb.nodesource.com/setup_20.x |  bash -
 RUN apt-get update
