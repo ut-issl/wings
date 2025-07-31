@@ -21,6 +21,7 @@ import { cyan } from "@mui/material/colors";
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import { openErrorDialogAction } from '../../redux/ui/actions';
 import { AppDispatch } from '../../redux/store/store';
+import { apiFetch } from '../../lib/fetch';
 
 export interface OperationListProps {
   operations: Operation[],
@@ -48,7 +49,7 @@ const OperationList = (props: OperationListProps) => {
 
   const handleOk = async () => {
     if (stopOperation === null) return;
-    const res = await fetch(`/api/operations/${stopOperation.id}`, {
+    const res = await apiFetch(`/api/operations/${stopOperation.id}`, {
       method: 'DELETE'
     })
     if (res.status === 204) {

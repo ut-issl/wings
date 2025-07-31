@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Component, ComponentJson } from '../../models';
 import ComponentList from './ComponentList';
+import { apiFetch } from '../../lib/fetch';
 
 const ComponentManage = () => {
   const [compos, setCompos] = useState<Component[]>([]);
 
   const fetchData = async () => {
     try {
-      const response_compo = await fetch('/api/components', {
+      const response_compo = await apiFetch('/api/components', {
         method: 'GET'
       });
       if (response_compo.status === 200) {

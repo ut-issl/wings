@@ -45,7 +45,7 @@ namespace WINGS
       {
         options.AddPolicy("AllowFrontend", policy =>
         {
-          policy.WithOrigins("http://localhost:3000", "http://frontend:80")
+          policy.WithOrigins("http://localhost:3000", "http://frontend:3000")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();

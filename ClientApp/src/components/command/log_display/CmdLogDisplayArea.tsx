@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import { getOpid } from '../../../redux/operations/selectors';
 import { updateCommandLogAction } from '../../../redux/commands/actions';
 import { CommandLogsJson } from '../../../models';
+import { apiFetch } from '../../../lib/fetch';
 
 const CmdLogDisplayArea = () => {
   const dispatch = useDispatch();
@@ -16,7 +17,7 @@ const CmdLogDisplayArea = () => {
 
   const handleOk = async () => {
     if (opid === "") return;
-    const res = await fetch(`/api/operations/${opid}/cmd_fileline/log`, {
+    const res = await apiFetch(`/api/operations/${opid}/cmd_fileline/log`, {
       method: 'GET'
     });
     const json = await res.json() as CommandLogsJson;

@@ -9,6 +9,7 @@ import { RootState } from './redux/store/RootState';
 import { updateLatestTelemetriesAction, addTelemetryHistoriesAction } from './redux/telemetries/actions';
 import "./assets/style.css";
 import { TelemetryPacketJson } from './models';
+import { apiFetch } from './lib/fetch';
 
 export function useValueRef<T>(val: T) {
   const ref = React.useRef(val);
@@ -27,7 +28,7 @@ const App = () => {
 
   const fetchTelemetry = async () => {
     if (opid === "") return;
-    const res = await fetch(`/api/operations/${opid}/tlm?refTlmTime=${refTime.current}`, {
+    const res = await apiFetch(`/api/operations/${opid}/tlm?refTlmTime=${refTime.current}`, {
       method: 'GET'
     });
     if (res.status == 200) {

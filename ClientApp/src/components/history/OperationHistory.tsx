@@ -16,6 +16,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SearchIcon from '@mui/icons-material/Search';
 import { Operation, PaginationMeta } from '../../models';
 import ConfirmationDialog from '../common/ConfirmationDialog';
+import { apiFetch } from '../../lib/fetch';
 
 const sizePerPage = 12;
 
@@ -34,7 +35,7 @@ const OperationHistory = () => {
 
   const fetchOperations = async () => {
     try {
-      const response = await fetch(`/api/operations/history?page=${page}&size=${sizePerPage}&search=${search}`, {
+      const response = await apiFetch(`/api/operations/history?page=${page}&size=${sizePerPage}&search=${search}`, {
         method: 'GET'
       });
       if (response.status == 200) {
@@ -80,7 +81,7 @@ const OperationHistory = () => {
   const handleOkClick = async () => {
     if (deleteOperation === null) return;
     try {
-      const response = await fetch(`/api/operations/${deleteOperation.id}/history`, {
+      const response = await apiFetch(`/api/operations/${deleteOperation.id}/history`, {
         method: 'DELETE'
       });
       if (response.ok) {

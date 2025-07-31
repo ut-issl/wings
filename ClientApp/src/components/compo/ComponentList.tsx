@@ -19,6 +19,7 @@ import { openErrorDialogAction } from '../../redux/ui/actions';
 import ConfirmationDialog from '../common/ConfirmationDialog';
 import EditableInputTableCell from '../common/EditableInputTableCell';
 import EditableSelectTableCell from '../common/EditableSelectTableCell';
+import { apiFetch } from '../../lib/fetch';
 
 const initialValues = {
   name: "",
@@ -53,7 +54,7 @@ const ComponentList = (props: ComponentListProps) => {
   const handleOkClick = async () => {
     if (deleteCompo === null) return;
     try {
-      await fetch(`/api/components/${deleteCompo.id}`, {
+      await apiFetch(`/api/components/${deleteCompo.id}`, {
         method: 'DELETE'
       });
       updateState();
@@ -93,7 +94,7 @@ const ComponentList = (props: ComponentListProps) => {
   const updateComponent = async (i: number) => {
     try {
       const compo = compos[i];
-      const res = await fetch(`/api/components/${compo.id}`, {
+      const res = await apiFetch(`/api/components/${compo.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -128,7 +129,7 @@ const ComponentList = (props: ComponentListProps) => {
 
   const createComponent = async () => {
     try {
-      const res = await fetch(`/api/components`, {
+      const res = await apiFetch(`/api/components`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
