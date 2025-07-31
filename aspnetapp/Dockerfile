@@ -1,16 +1,11 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 5001
-RUN curl -sL https://deb.nodesource.com/setup_20.x |  bash -
-RUN apt-get update
-RUN apt-get install -y nodejs
+EXPOSE 5000
 ENV TZ=Asia/Tokyo
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-RUN curl -sL https://deb.nodesource.com/setup_20.x |  bash -
-RUN apt-get update
-RUN apt-get install -y nodejs
+
 COPY ["WINGS/WINGS.csproj", "WINGS/"]
 RUN dotnet restore "WINGS/WINGS.csproj"
 COPY . .

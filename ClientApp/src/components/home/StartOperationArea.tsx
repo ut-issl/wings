@@ -5,6 +5,7 @@ import RadioBox from '../common/RadioBox';
 import { Component, ComponentJson } from '../../models';
 import { useDispatch } from 'react-redux';
 import { openErrorDialogAction, startLoadingAction, endLoadingAction } from '../../redux/ui/actions';
+import { apiFetch } from '../../lib/fetch';
 
 const getDefaultPathNumber = () => {
   const dt = new Date();
@@ -48,7 +49,7 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
 
   const fetchComponents = async () => {
     try {
-      const res = await fetch('/api/components', {
+      const res = await apiFetch('/api/components', {
         method: 'GET'
       });
       if (res.status === 200) {
@@ -72,7 +73,7 @@ const StartOperationArea = (props: StartOperationAreaProps) => {
 
   const startOperation = async () => {
     dispatch(startLoadingAction());
-    const res = await fetch(`/api/operations`, {
+    const res = await apiFetch(`/api/operations`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

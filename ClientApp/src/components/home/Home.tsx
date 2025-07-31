@@ -6,6 +6,7 @@ import { Operation } from '../../models';
 import { RootState } from '../../redux/store/RootState';
 import { getOpid } from '../../redux/operations/selectors';
 import { leaveOperationAction } from '../../redux/operations/actions';
+import { apiFetch } from '../../lib/fetch';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -16,7 +17,7 @@ const Home = () => {
 
   const fetchOperations = async () => {
     try {
-      const res = await fetch('/api/operations', {
+      const res = await apiFetch('/api/operations', {
         method: 'GET'
       });
       if (res.status === 200) {
