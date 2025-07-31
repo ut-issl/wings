@@ -1,7 +1,9 @@
 using System.Text.Json.Serialization;
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+// SPA統合のusingを削除
+// using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using WINGS.Data;
 using WINGS.Models;
@@ -27,11 +29,28 @@ namespace WINGS
     {
       services.AddDbContext<ApplicationDbContext>(options =>
         options.UseMySql(
-          Configuration.GetConnectionString("DefaultConnection"),ServerVersion.Parse("8.0")));
+          Configuration.GetConnectionString("DefaultConnection"),
+          ServerVersion.Parse("8.0"),
+          mysqlOptions => mysqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null)));
 
-      services.AddControllersWithViews()
+      services.AddControllers()
         .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
-      services.AddRazorPages();
+      // RazorPagesは不要（SPA分離のため）
+      // services.AddRazorPages();
+
+      services.AddCors(options =>
+      {
+        options.AddPolicy("AllowFrontend", policy =>
+        {
+          policy.WithOrigins("http://localhost:3000", "http://frontend:80")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+      });
 
       services.AddGrpc();
 
@@ -60,13 +79,7 @@ namespace WINGS
       services.AddScoped<ICommandFileRepository, CommandFileRepository>();
       services.AddScoped<ICommandFileLogRepository, CommandFileLogRepository>();
 
-      ConfigureUserDefinedServices(services);
-      
-      // In production, the React files will be served from this directory
-      services.AddSpaStaticFiles(configuration =>
-      {
-        configuration.RootPath = "ClientApp/build";
-      });
+      ConfigureUserDefinedServices(services);   
     }
 
     private void ConfigureUserDefinedServices(IServiceCollection services)
@@ -93,33 +106,22 @@ namespace WINGS
       }
       else
       {
-        app.UseExceptionHandler("/Error");
+        app.UseExceptionHandler("/api/error");
         app.UseHsts();
       }
       
-      app.UseHttpsRedirection();
-      app.UseStaticFiles();
-      app.UseSpaStaticFiles();
+   
+      // If you are configuring HTTPS redirection, ensure that your environment is set up correctly.
+      // app.UseHttpsRedirection();
+      
+      app.UseCors("AllowFrontend");
 
       app.UseRouting();
 
       app.UseEndpoints(endpoints =>
       {
         endpoints.MapGrpcService<TmtcPacketService>();
-        endpoints.MapControllerRoute(
-          name: "default",
-          pattern: "{controller}/{action=Index}/{id?}");
-        endpoints.MapRazorPages();
-      });
-
-      app.UseSpa(spa =>
-      {
-        spa.Options.SourcePath = "ClientApp";
-
-        if (env.IsDevelopment())
-        {
-          spa.UseReactDevelopmentServer(npmScript: "start");
-        }
+        endpoints.MapControllers();
       });
     }
   }

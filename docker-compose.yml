@@ -1,22 +1,43 @@
-version: "3"
 services:
-  aspnetapp:
-    image: wings-aspnetapp-img
-    build: ./aspnetapp
-    container_name: wings-aspnetapp-ctr
+  backend:
+    image: wings-backend-img
+    build: 
+      context: ./aspnetapp
+      dockerfile: Dockerfile
+    container_name: wings-backend-ctr
     volumes:
       - "./aspnetapp/WINGS/TlmCmd:/app/TlmCmd" 
       - "./aspnetapp/WINGS/Logs:/app/Logs"
     environment:
       ConnectionStrings__DefaultConnection: "server=mysql; uid=root; pwd=P@ssw0rd!; database=wings;"
-      ASPNETCORE_URLS: "https://+;http://+"
-      ASPNETCORE_HTTPS_PORT: 5001
-      ASPNETCORE_Kestrel__Certificates__Default__Password: "P@ssw0rd!"
-      ASPNETCORE_Kestrel__Certificates__Default__Path: "/app/certificate.pfx"
+      ASPNETCORE_URLS: "http://+:5000"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      HTTP_PORTS: "5000"
+      HTTPS_PORTS: ""
+      ASPNETCORE_HTTPS_PORT: ""
     ports:
-      - "5001:5001"
+      - "5000:5000"  
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+    networks:
+      - wings-network
+
+  frontend:
+    image: wings-frontend-img
+    build:
+      context: ./aspnetapp/WINGS/ClientApp
+      dockerfile: Dockerfile
+    container_name: wings-frontend-ctr
+    environment:
+      - REACT_APP_API_BASE_URL=http://backend:5000/api
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - wings-network
+
   mysql:
     image: wings-mysql-img
     build: ./mysql
@@ -29,3 +50,15 @@ services:
     environment:
       - MYSQL_DATABASE=wings
       - MYSQL_ROOT_PASSWORD=P@ssw0rd!
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pP@ssw0rd!"]
+      timeout: 20s
+      retries: 10
+      interval: 5s
+      start_period: 30s
+    networks:
+      - wings-network
+
+networks:
+  wings-network:
+    driver: bridge
