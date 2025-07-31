@@ -26,7 +26,7 @@ services:
   frontend:
     image: wings-frontend-img
     build:
-      context: ./aspnetapp/WINGS/ClientApp
+      context: ./ClientApp
       dockerfile: Dockerfile
     container_name: wings-frontend-ctr
     environment:
