@@ -10,7 +10,7 @@ import { CommandPlanLine, RequestStatus, CmdFileVariable, Telemetry, TlmCmdConfi
 import RequestTableRow from './RequestTableRow';
 import { selectedPlanRowAction, execRequestSuccessAction, execRequestErrorAction, execRequestsStartAction, execRequestsEndAction, editCmdFileVariableAction } from '../../../redux/plans/actions';
 import { getActivePlanId, getAllIndexes, getInExecution, getPlanContents, getSelectedRow, getCommandFileVariables } from '../../../redux/plans/selectors';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector, useStore } from 'react-redux';
 import { openPlan, postCommand, postCommandFileLineLog } from '../../../redux/plans/operations';
 import { RootState } from '../../../redux/store/RootState';
 import { getLatestTelemetries } from '../../../redux/telemetries/selectors';
@@ -47,6 +47,9 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
   const { value, index, name, content, cmdType } = props;
   const dispatch = useDispatch<AppDispatch>();
   const selector = useSelector((state: RootState) => state);
+  // wait_until などの非同期ループ内では render 時に束縛した selector が古くなるため、
+  // 最新テレメトリはループの各周回で store.getState() から取得する。
+  const store = useStore<RootState>();
 
   const [lastSelectedRow, setLastSelectedRow] = React.useState(-1);
 
@@ -254,7 +257,7 @@ const PlanTabPanel = (props: PlanTabPanelProps) => {
       outcome.isSuccess = true;
     } else if (variableName.indexOf('.') > -1) {
       let tlms: Telemetry[] = [];
-      const latestTelemetries = getLatestTelemetries(selector);
+      const latestTelemetries = getLatestTelemetries(store.getState());
       const variableNameSplitList = variableName.split('.');
       let tlmCmdConfigIndex = 0;
       try {
